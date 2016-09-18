@@ -1,1 +1,3 @@
-bar=function(x){x/2}
+bar=function(x){
+   x/2
+}
