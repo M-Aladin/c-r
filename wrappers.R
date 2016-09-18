@@ -24,3 +24,23 @@ helloC <- function(greeting) {
   return(result$count)
 }
 
+# wrapper function to invoke cconv 
+dyn.load("cconv.so")
+rconv <- function(lag,x) {
+ .C("cconv",
+  as.integer(lag),
+  as.double(x),
+  as.integer(length(x)),
+  as.double(0.0))[[4]]
+}
+
+# wrapper function for cconv2
+dyn.load("cconv2.so")
+rconv2 <- function(lag,x) {
+  .C("cconv2",
+  as.integer(lag),
+  as.integer(length(lag)),
+  as.double(x),
+  as.integer(length(x)),
+  as.double(vector("double",length(lag))))[[5]]
+}
