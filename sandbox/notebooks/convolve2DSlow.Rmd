@@ -1,0 +1,9 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+# compile the C code
+system("R CMD SHLIB ../src/convolve2DSlow.cpp")
+```

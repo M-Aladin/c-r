@@ -1,0 +1,46 @@
+---
+title: "Convolution 1D by Song-Ho"
+output: html_notebook
+---
+
+http://www.songho.ca/dsp/convolution/convolution.html
+
+The Source command both executes the sourceCpp function and monitors the results of the compilation for errors. If errors do occur then the gcc error log is parsed into a navigable list:
+
+```{r}
+library(Rcpp)
+
+sourceCpp("../src/conv2.cpp")
+
+x <- matrix(rnorm(10))
+y <- matrix(rnorm(10))
+
+conv2(x, y)
+```
+
+
+```{r}
+library(Rcpp)
+
+sourceCpp("../src/conv2.cpp")
+
+x <- matrix(1, nrow=3, ncol=4)
+y <- matrix(1, nrow=5, ncol=2)
+
+conv2(x, y)
+
+#    1   2   2   2   1
+#    2   4   4   4   2
+#    3   6   6   6   3
+#    3   6   6   6   3
+#    3   6   6   6   3
+#    2   4   4   4   2
+#    1   2   2   2   1
+```
+
+
+```{r}
+print(x)
+print(y)
+```
+

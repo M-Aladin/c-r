@@ -1,0 +1,31 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+
+The Source command both executes the sourceCpp function and monitors the results of the compilation for errors. If errors do occur then the gcc error log is parsed into a navigable list:
+
+```{r}
+library(Rcpp)
+
+sourceCpp("../src/convolve.cpp")
+
+x <- matrix(rnorm(10))
+y <- matrix(rnorm(10))
+
+convolveCpp(x, y)
+```
+
+Note that you can also check the Source on Save option to automatically source the C++ file every time it is saved. This variation will keep the keyboard focus within the editor whereas the Source command will move focus to the console.
+
+```{r}
+x = c(3, 4, 5, 0, 0)
+y = c(2, 1)
+
+convolve(x, y)
+```
+
+
+

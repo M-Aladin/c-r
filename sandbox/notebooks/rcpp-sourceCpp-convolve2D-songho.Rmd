@@ -1,0 +1,35 @@
+---
+title: "Convolution 1D by Song-Ho"
+output: html_notebook
+---
+
+http://www.songho.ca/dsp/convolution/convolution.html
+
+
+http://www.songho.ca/dsp/convolution/convolution.html
+
+```{r}
+library(Rcpp)
+
+sourceCpp("../src/convolve2D.cpp")
+
+x <- matrix(1, nrow=3, ncol=4)
+y <- matrix(1, nrow=5, ncol=2)
+
+convolve2D(x, y)
+
+#    1   2   2   2   1
+#    2   4   4   4   2
+#    3   6   6   6   3
+#    3   6   6   6   3
+#    3   6   6   6   3
+#    2   4   4   4   2
+#    1   2   2   2   1
+```
+
+
+```{r}
+print(x)
+print(y)
+```
+
