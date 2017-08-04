@@ -4,7 +4,7 @@ output: html_notebook
 ---
 
 
-## Inline
+## Inline Cpp code
 
 ```{r}
 library(inline)
@@ -24,6 +24,7 @@ for (int i = 0; i < n_xa; i++)
 
 
 ```{r}
+# create the R function
 convolve1d <- cxxfunction(signature(a = "numeric", b = "numeric"), 
                    src, 
                    plugin = "Rcpp")
@@ -47,6 +48,7 @@ x = c(3, 4, 5, 0, 0)
 y = c(2, 1)
 
 convolve1d(x, y)
+# 6 11 14  5  0  0      same as in Matlab
 ```
 
 
@@ -55,12 +57,33 @@ x = c(3, 4, 5)
 y = c(2, 1)
 
 convolve1d(x, y)
+# 6 11 14  5  0  0      same as in Matlab
 ```
 
 
 ```{r}
 A = matrix(1, nrow=3, ncol=3)
 convolve1d(A, A)
+# 1 2 3 4 5 6 7 8 9 8 7 6 5 4 3 2 1
 
+# In Matlab the convolution of (A, A) is a 5x5 matrix:
+     # 1     2     3     2     1
+     # 2     4     6     4     2
+     # 3     6     9     6     3
+     # 2     4     6     4     2
+     # 1     2     3     2     1
+
+# if we convert A to a vector v1 ad fif the convolution using this function
+# the result is another vector of 17 elements.
+v1 = as.vector(A)
+length(v1)
+convolve1d(v1, v1)
+length(convolve1d(v1, v1))
+```
+
+```{r}
+v1 = as.vector(A)
+v1
+convolve1d(v1, v1)
 ```
 
