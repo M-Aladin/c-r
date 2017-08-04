@@ -1,0 +1,23 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(Rcpp)
+library(inline)
+```
+
+
+```{r}
+fx <- cxxfunction(signature(x = "numeric"), 'NumericVector xx(x);
+return wrap(std::accumulate(xx.begin(), xx.end(), 0.0));
+', plugin = "Rcpp")
+```
+
+
+```{r}
+res <- fx(seq(1, 10, by=0.5))
+res
+```
+

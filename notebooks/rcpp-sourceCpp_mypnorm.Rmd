@@ -1,0 +1,20 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+## Using a Cpp file
+ANother way to run this is by placing the Cpp code in a separate file:
+
+```{r}
+library(Rcpp)
+
+sourceCpp("../src/mypnorm.cpp")
+
+x <- seq(0, 1, length=1e3)
+res <- mypnormCpp(x)
+head(res)
+```
+
+

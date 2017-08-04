@@ -1,0 +1,38 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+    void cfoo(double *a, double *b, double *c)
+       {*c = *a +*b;
+    }
+
+
+
+```{r}
+# compile the C code
+system("R CMD SHLIB ./src/cfoo.c")
+```
+
+```{r}
+# this loads the library in any system, Windows or Linux
+dyn.load(paste("./src/cfoo", .Platform$dynlib.ext, sep = ""))
+```
+
+
+```{r}
+# wrapper
+cfoo = function(a, b) {
+   .C('cfoo',
+      as.double(a),
+      as.double(b),
+      c = as.double(0))$c  #returning value
+}
+
+```
+
+
+```{r}
+cfoo(5, 3)
+```
+

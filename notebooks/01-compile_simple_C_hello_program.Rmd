@@ -1,0 +1,40 @@
+---
+title: "Compile a simple hello C program"
+output: html_notebook
+---
+
+
+```{r}
+# remove the older compiled file
+file.remove(paste("./src/hello", .Platform$dynlib.ext, sep = ""))
+```
+
+```{r}
+# compile the C code
+system("R CMD SHLIB ./src/hello.c")
+```
+
+```{r}
+# this loads the library in any system, Windows or Linux
+dyn.load(paste("./src/hello", .Platform$dynlib.ext, sep = ""))
+```
+
+
+```{r}
+# a wrapper function in R calling C
+hello <- function(n) {
+  .C("hello", as.integer(n))
+}
+```
+
+```{r}
+# run the program
+hello(3)
+```
+
+
+```{r}
+# unload the library
+dyn.unload(paste("./src/hello", .Platform$dynlib.ext, sep = ""))
+```
+

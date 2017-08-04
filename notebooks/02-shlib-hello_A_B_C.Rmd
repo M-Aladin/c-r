@@ -1,0 +1,89 @@
+---
+title: "readme"
+author: "alfonso reyes"
+date: "September 22, 2016"
+output: 
+    html_document:
+    toc: true
+    highlight: zenburn
+---
+
+```{r}
+# first, remove old compiled libraries
+# remove the older compiled file
+file.remove(paste("./src/helloA", .Platform$dynlib.ext, sep = ""))
+file.remove(paste("./src/helloB", .Platform$dynlib.ext, sep = ""))
+file.remove(paste("./src/helloC", .Platform$dynlib.ext, sep = ""))
+```
+
+
+```{r}
+# compile the C code
+system("R CMD SHLIB ./src/helloA.c")
+system("R CMD SHLIB ./src/helloB.c")
+system("R CMD SHLIB ./src/helloC.c")
+```
+
+```{r}
+# this loads the library in any system, Windows or Linux
+dyn.load(paste("./src/helloA", .Platform$dynlib.ext, sep = ""))
+dyn.load(paste("./src/helloB", .Platform$dynlib.ext, sep = ""))
+dyn.load(paste("./src/helloC", .Platform$dynlib.ext, sep = ""))
+```
+
+
+# Wrapper for helloA
+```{r}
+# Wrapper function to invoke "helloA" at the shell.
+helloA <- function() {
+  # system(paste("./src", "helloA", sep="/"))
+ res <- .C("helloA")
+ res
+}
+```
+
+## calling helloA
+```{r}
+a <- helloA()
+```
+
+
+Add a R wrapper for the function helloB():
+
+```{r}
+# Wrapper function to invoke helloB with a named argument
+helloB <- function() {
+  result <- .C("helloB", greeting="")
+  return(result$greeting)
+}
+```
+
+```{r}
+helloB()
+```
+
+```{r}
+# Wrapper function to invoke helloC with two arguments
+helloC <- function(greeting) {
+  if (!is.character(greeting)) {
+    stop("Argument 'greeting' must be of type 'character'.")
+  }
+  result <- .C("helloC",
+               greeting=greeting,
+               count=as.integer(1))
+  return(result$count)
+}
+```
+
+```{r}
+helloC("Hi there!")
+```
+
+
+```{r}
+# this loads the library in any system, Windows or Linux
+dyn.unload(paste("./src/helloA", .Platform$dynlib.ext, sep = ""))
+dyn.unload(paste("./src/helloB", .Platform$dynlib.ext, sep = ""))
+dyn.unload(paste("./src/helloC", .Platform$dynlib.ext, sep = ""))
+```
+

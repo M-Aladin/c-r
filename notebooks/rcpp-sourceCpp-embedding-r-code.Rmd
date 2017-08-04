@@ -1,0 +1,11 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(Rcpp)
+
+sourceCpp("../src/embedding-r-code.cpp")
+```
+

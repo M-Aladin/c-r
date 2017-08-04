@@ -1,0 +1,20 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library(Rcpp)
+library(inline)
+```
+
+```{r}
+cppFunction('double accu(NumericVector x) {
+return(std::accumulate(x.begin(), x.end(), 0.0));
+}')
+
+res <- accu(seq(1, 10, by=0.5))
+res
+```
+
