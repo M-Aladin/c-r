@@ -5,6 +5,7 @@ output: html_notebook
 
 
 ## Inline Cpp code
+This 1D convolution works the same as in Matlab and other examples.
 
 ```{r}
 library(inline)
@@ -62,6 +63,9 @@ convolve1d(x, y)
 
 
 ```{r}
+# this example on applying 1D convolution to a matrix will not work.
+# See the output from Matlab and the results below. The 1D convolution response is
+# a vector not a matrix.
 A = matrix(1, nrow=3, ncol=3)
 convolve1d(A, A)
 # 1 2 3 4 5 6 7 8 9 8 7 6 5 4 3 2 1
