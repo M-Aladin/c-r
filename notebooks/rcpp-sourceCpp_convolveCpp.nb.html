@@ -174,7 +174,7 @@ $(document).ready(function () {
 <!-- rnb-text-begin -->
 <div id="using-a-cpp-file" class="section level2">
 <h2>Using a Cpp file</h2>
-<p>ANother way to run this is by placing the Cpp code in a separate file. Here is the code</p>
+<p>Another way to run this is by placing the Cpp code in a separate file. Here is the code</p>
 <pre><code>#include &lt;Rcpp.h&gt; 
 using namespace Rcpp;
 
@@ -191,9 +191,19 @@ NumericVector convolveCpp(NumericVector a, NumericVector b) {
 }</code></pre>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShSY3BwKVxuc291cmNlQ3BwKFwiLi4vc3JjL2NvbnZvbHZlLmNwcFwiKVxuY29udm9sdmVDcHAoMTozLCAxOjQpXG5gYGAifQ== -->
-<pre class="r"><code>library(Rcpp)
-sourceCpp(&quot;../src/convolve.cpp&quot;)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShSY3BwKVxuYGBgIn0= -->
+<pre class="r"><code>library(Rcpp)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiXG5BdHRhY2hpbmcgcGFja2FnZTog46S847ixUmNwcOOkvOO4slxuXG5UaGUgZm9sbG93aW5nIG9iamVjdCBpcyBtYXNrZWQgZnJvbSDjpLzjuLFwYWNrYWdlOmlubGluZeOkvOO4sjpcblxuICAgIHJlZ2lzdGVyUGx1Z2luXG4ifQ== -->
+<pre><code>
+Attaching package: 㤼㸱Rcpp㤼㸲
+
+The following object is masked from 㤼㸱package:inline㤼㸲:
+
+    registerPlugin</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc291cmNlQ3BwKFwiLi4vc3JjL2NvbnZvbHZlLmNwcFwiKVxuY29udm9sdmVDcHAoMTozLCAxOjQpXG5gYGAifQ== -->
+<pre class="r"><code>sourceCpp(&quot;../src/convolve.cpp&quot;)
 convolveCpp(1:3, 1:4)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-output-begin eyJkYXRhIjoiWzFdICAxICA0IDEwIDE2IDE3IDEyXG4ifQ== -->
@@ -211,6 +221,9 @@ convolveCpp(x, y) </code></pre>
 <!-- rnb-output-begin eyJkYXRhIjoiWzFdICA2IDExIDE0ICA1ICAwICAwXG4ifQ== -->
 <pre><code>[1]  6 11 14  5  0  0</code></pre>
 <!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyA2IDExIDE0ICA1ICAwICAwICAgICAgYXMgaW4gTWF0bGFiXG5gYGAifQ== -->
+<pre class="r"><code># 6 11 14  5  0  0      as in Matlab</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
@@ -223,10 +236,13 @@ convolveCpp(x, y)</code></pre>
 <!-- rnb-output-begin eyJkYXRhIjoiWzFdICA2IDExIDE0ICA1XG4ifQ== -->
 <pre><code>[1]  6 11 14  5</code></pre>
 <!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyA2IDExIDE0ICA1ICAgIGFzIGluIE1hdGxhYlxuYGBgIn0= -->
+<pre class="r"><code># 6 11 14  5    as in Matlab</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQoNCiMjIFVzaW5nIGEgQ3BwIGZpbGUNCkFOb3RoZXIgd2F5IHRvIHJ1biB0aGlzIGlzIGJ5IHBsYWNpbmcgdGhlIENwcCBjb2RlIGluIGEgc2VwYXJhdGUgZmlsZS4NCkhlcmUgaXMgdGhlIGNvZGUNCg0KICAgICNpbmNsdWRlIDxSY3BwLmg+IA0KICAgIHVzaW5nIG5hbWVzcGFjZSBSY3BwOw0KICAgIA0KICAgIC8vIFtbUmNwcDo6ZXhwb3J0XV0NCiAgICBOdW1lcmljVmVjdG9yIGNvbnZvbHZlQ3BwKE51bWVyaWNWZWN0b3IgYSwgTnVtZXJpY1ZlY3RvciBiKSB7DQogICAgICBpbnQgbmEgPSBhLnNpemUoKSwgbmIgPSBiLnNpemUoKTsNCiAgICAgIGludCBuYWIgPSBuYSArIG5iIC0gMTsNCiAgICAgIE51bWVyaWNWZWN0b3IgeGFiKG5hYik7DQogICAgICANCiAgICAgIGZvciAoaW50IGkgPSAwOyBpIDwgbmE7IGkrKykNCiAgICAgICAgZm9yIChpbnQgaiA9IDA7IGogPCBuYjsgaisrKQ0KICAgICAgICAgIHhhYltpICsgal0gKz0gYVtpXSAqIGJbal07DQogICAgICByZXR1cm4geGFiOw0KICAgIH0NCg0KDQoNCmBgYHtyfQ0KbGlicmFyeShSY3BwKQ0KDQpzb3VyY2VDcHAoIi4uL3NyYy9jb252b2x2ZS5jcHAiKQ0KDQpjb252b2x2ZUNwcCgxOjMsIDE6NCkNCmBgYA0KDQoNCmBgYHtyfQ0KeCA9IGMoMywgNCwgNSwgMCwgMCkNCnkgPSBjKDIsIDEpDQoNCmNvbnZvbHZlQ3BwKHgsIHkpIA0KIyA2IDExIDE0ICA1ICAwICAwICAgICAgYXMgaW4gTWF0bGFiDQpgYGANCg0KDQoNCmBgYHtyfQ0KeCA9IGMoMywgNCwgNSkNCnkgPSBjKDIsIDEpDQoNCmNvbnZvbHZlQ3BwKHgsIHkpDQojIDYgMTEgMTQgIDUgICAgYXMgaW4gTWF0bGFiDQpgYGA=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQoNCiMjIFVzaW5nIGEgQ3BwIGZpbGUNCkFub3RoZXIgd2F5IHRvIHJ1biB0aGlzIGlzIGJ5IHBsYWNpbmcgdGhlIENwcCBjb2RlIGluIGEgc2VwYXJhdGUgZmlsZS4NCkhlcmUgaXMgdGhlIGNvZGUNCg0KICAgICNpbmNsdWRlIDxSY3BwLmg+IA0KICAgIHVzaW5nIG5hbWVzcGFjZSBSY3BwOw0KICAgIA0KICAgIC8vIFtbUmNwcDo6ZXhwb3J0XV0NCiAgICBOdW1lcmljVmVjdG9yIGNvbnZvbHZlQ3BwKE51bWVyaWNWZWN0b3IgYSwgTnVtZXJpY1ZlY3RvciBiKSB7DQogICAgICBpbnQgbmEgPSBhLnNpemUoKSwgbmIgPSBiLnNpemUoKTsNCiAgICAgIGludCBuYWIgPSBuYSArIG5iIC0gMTsNCiAgICAgIE51bWVyaWNWZWN0b3IgeGFiKG5hYik7DQogICAgICANCiAgICAgIGZvciAoaW50IGkgPSAwOyBpIDwgbmE7IGkrKykNCiAgICAgICAgZm9yIChpbnQgaiA9IDA7IGogPCBuYjsgaisrKQ0KICAgICAgICAgIHhhYltpICsgal0gKz0gYVtpXSAqIGJbal07DQogICAgICByZXR1cm4geGFiOw0KICAgIH0NCg0KDQoNCmBgYHtyfQ0KbGlicmFyeShSY3BwKQ0KDQpzb3VyY2VDcHAoIi4uL3NyYy9jb252b2x2ZS5jcHAiKQ0KDQpjb252b2x2ZUNwcCgxOjMsIDE6NCkNCmBgYA0KDQoNCmBgYHtyfQ0KIyBzaW1wbGUgZXhhbXBsZSB0aGF0IGdpdmVzIHRoaXMgcmVzcG9uc2UgaW4gTWF0bGFiDQp4ID0gYygzLCA0LCA1LCAwLCAwKQ0KeSA9IGMoMiwgMSkNCg0KY29udm9sdmVDcHAoeCwgeSkgDQojIDYgMTEgMTQgIDUgIDAgIDAgICAgICBhcyBpbiBNYXRsYWINCmBgYA0KDQoNCg0KYGBge3J9DQojIHNpbXBsZSBleGFtcGxlIHRoYXQgZ2l2ZXMgdGhpcyByZXNwb25zZSBpbiBNYXRsYWINCnggPSBjKDMsIDQsIDUpDQp5ID0gYygyLCAxKQ0KDQpjb252b2x2ZUNwcCh4LCB5KQ0KIyA2IDExIDE0ICA1ICAgIGFzIGluIE1hdGxhYg0KYGBg</div>
 
 
 
