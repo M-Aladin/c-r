@@ -3,6 +3,8 @@ title: "R Notebook"
 output: html_notebook
 ---
 
+## cconv
+
     // cconv.c
     void cconv(int *l, double *x, int *n, double *s)
     {
@@ -55,6 +57,24 @@ rconv <- function(lag, x) {
 ```
 
 "Observe that we convert all arguments to the approriate type (just to be sure). The .C function returns a list with all its arguments, we only need the last (fourth) argument. In this case we did not name the last argument but extracted it using a numeric index. Whether one uses named arguments (as in Section 5.1) or numeric indices is a matter of personal preference.""
+
+
+```{r}
+x = c(3, 4, 5, 0, 0)
+y = c(2, 1)
+
+convolve1d(x, y)
+# 6 11 14  5  0  0      same as in Matlab
+```
+
+
+```{r}
+x = c(3, 4, 5)
+y = c(2, 1)
+
+convolve1d(x, y)
+# 6 11 14  5  0  0      same as in Matlab
+```
 
 ```{r}
 x <- rnorm(100)
