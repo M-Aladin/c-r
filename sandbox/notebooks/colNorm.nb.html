@@ -142,7 +142,7 @@ $(document).ready(function () {
 </style>
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("shlib-c--matrix-plus-one.Rmd");
+  window.initializeSourceEmbed("colNorm.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
@@ -172,77 +172,21 @@ $(document).ready(function () {
 
 
 <!-- rnb-text-begin -->
-<p>Source: <a href="https://stackoverflow.com/a/13004562/5270873" class="uri">https://stackoverflow.com/a/13004562/5270873</a></p>
-<div id="c-code" class="section level2">
-<h2>C code</h2>
-<pre><code>void cplus1(double *x, int *dim)
-{
-    for (int j = 0; j &lt; dim[1]; ++j)
-        for (int i = 0; i &lt; dim[0]; ++i)
-            x[j * dim[0] + i] += 1;
-}</code></pre>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBjb21waWxlIHRoZSBDIGNvZGVcbnN5c3RlbShcIlIgQ01EIFNITElCIC4uL3NyYy9tYXRyaXhfcGx1c19vbmUuY1wiKVxuYGBgIn0= -->
-<pre class="r"><code># compile the C code
-system(&quot;R CMD SHLIB ../src/matrix_plus_one.c&quot;)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShSY3BwR1NMKVxuc291cmNlQ3BwKFwiLi4vc3JjL2NvbE5vcm0uY3BwXCIpXG5gYGAifQ== -->
+<pre class="r"><code>library(RcppGSL)
+sourceCpp(&quot;../src/colNorm.cpp&quot;)</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gc291cmNlQ3BwKFwiLi4vc3JjL2NvbE5vcm0uY3BwXCIpIDogXG4gIGNvdWxkIG5vdCBmaW5kIGZ1bmN0aW9uIFwic291cmNlQ3BwXCJcbiJ9 -->
+<pre><code>Error in sourceCpp(&quot;../src/colNorm.cpp&quot;) : 
+  could not find function &quot;sourceCpp&quot;</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB0aGlzIGxvYWRzIHRoZSBsaWJyYXJ5IGluIGFueSBzeXN0ZW0sIFdpbmRvd3Mgb3IgTGludXhcbmR5bi5sb2FkKHBhc3RlKFwiLi4vc3JjL21hdHJpeF9wbHVzX29uZVwiLCAuUGxhdGZvcm0kZHlubGliLmV4dCwgc2VwID0gXCJcIikpXG5gYGAifQ== -->
-<pre class="r"><code># this loads the library in any system, Windows or Linux
-dyn.load(paste(&quot;../src/matrix_plus_one&quot;, .Platform$dynlib.ext, sep = &quot;&quot;))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB3cmFwcGVyXG5tYXRyaXhQbHVzMSA9IGZ1bmN0aW9uKG0pIHtcbiAgIG1bXSA9IC5DKCdjcGx1czEnLCBhcy5udW1lcmljKG0pLCBkaW0obSkpW1sxXV1cbiAgIG1cbn1cbmBgYCJ9 -->
-<pre class="r"><code># wrapper
-matrixPlus1 = function(m) {
-   m[] = .C('cplus1', as.numeric(m), dim(m))[[1]]
-   m
-}</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWF0cml4UGx1czEobWF0cml4KDMsIG5yb3c9MywgbmNvbD0zKSlcbmBgYCJ9 -->
-<pre class="r"><code>matrixPlus1(matrix(3, nrow=3, ncol=3))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBwYXNzaW5nIGFuIGFycmF5XG5tYXRyaXhQbHVzMShhcnJheSgxLCBkaW0gPSBjKDMsNCwyKSkpXG5cbiMgb25seSB0aGUgZmlyc3QgYXJyYXkgZ2V0cyBhZGRlZCBiZWNhdXNlIGluIEMgd2UgYXJlIG9ubHkgaGF2ZSB0d28gbG9vcHM6XG4jIG9uZSBsb29wIHBlciBkaW1lbnNpb25cbiMgLCAsIDFcbiMgXG4jICAgICAgWywxXSBbLDJdIFssM10gWyw0XVxuIyBbMSxdICAgIDIgICAgMiAgICAyICAgIDJcbiMgWzIsXSAgICAyICAgIDIgICAgMiAgICAyXG4jIFszLF0gICAgMiAgICAyICAgIDIgICAgMlxuI1xuIyAsICwgMlxuIyBcbiMgICAgICBbLDFdIFssMl0gWywzXSBbLDRdXG4jIFsxLF0gICAgMSAgICAxICAgIDEgICAgMVxuIyBbMixdICAgIDEgICAgMSAgICAxICAgIDFcbiMgWzMsXSAgICAxICAgIDEgICAgMSAgICAxXG5gYGAifQ== -->
-<pre class="r"><code># passing an array
-matrixPlus1(array(1, dim = c(3,4,2)))
 
-# only the first array gets added because in C we are only have two loops:
-# one loop per dimension
-# , , 1
-# 
-#      [,1] [,2] [,3] [,4]
-# [1,]    2    2    2    2
-# [2,]    2    2    2    2
-# [3,]    2    2    2    2
-#
-# , , 2
-# 
-#      [,1] [,2] [,3] [,4]
-# [1,]    1    1    1    1
-# [2,]    1    1    1    1
-# [3,]    1    1    1    1</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-</div>
-
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpTb3VyY2U6IGh0dHBzOi8vc3RhY2tvdmVyZmxvdy5jb20vYS8xMzAwNDU2Mi81MjcwODczDQoNCg0KIyMgQyBjb2RlDQoNCg0KICAgIHZvaWQgY3BsdXMxKGRvdWJsZSAqeCwgaW50ICpkaW0pDQogICAgew0KICAgICAgICBmb3IgKGludCBqID0gMDsgaiA8IGRpbVsxXTsgKytqKQ0KICAgICAgICAgICAgZm9yIChpbnQgaSA9IDA7IGkgPCBkaW1bMF07ICsraSkNCiAgICAgICAgICAgICAgICB4W2ogKiBkaW1bMF0gKyBpXSArPSAxOw0KICAgIH0NCiAgICANCiAgICANCiAgICANCiAgICANCmBgYHtyfQ0KIyBjb21waWxlIHRoZSBDIGNvZGUNCnN5c3RlbSgiUiBDTUQgU0hMSUIgLi4vc3JjL21hdHJpeF9wbHVzX29uZS5jIikNCmBgYA0KDQpgYGB7cn0NCiMgdGhpcyBsb2FkcyB0aGUgbGlicmFyeSBpbiBhbnkgc3lzdGVtLCBXaW5kb3dzIG9yIExpbnV4DQpkeW4ubG9hZChwYXN0ZSgiLi4vc3JjL21hdHJpeF9wbHVzX29uZSIsIC5QbGF0Zm9ybSRkeW5saWIuZXh0LCBzZXAgPSAiIikpDQpgYGANCg0KDQoNCmBgYHtyfQ0KIyB3cmFwcGVyDQptYXRyaXhQbHVzMSA9IGZ1bmN0aW9uKG0pIHsNCiAgIG1bXSA9IC5DKCdjcGx1czEnLCBhcy5udW1lcmljKG0pLCBkaW0obSkpW1sxXV0NCiAgIG0NCn0NCmBgYA0KDQoNCmBgYHtyfQ0KbWF0cml4UGx1czEobWF0cml4KDMsIG5yb3c9MywgbmNvbD0zKSkNCmBgYA0KDQpgYGB7cn0NCiMgcGFzc2luZyBhbiBhcnJheQ0KbWF0cml4UGx1czEoYXJyYXkoMSwgZGltID0gYygzLDQsMikpKQ0KDQojIG9ubHkgdGhlIGZpcnN0IGFycmF5IGdldHMgYWRkZWQgYmVjYXVzZSBpbiBDIHdlIGFyZSBvbmx5IGhhdmUgdHdvIGxvb3BzOg0KIyBvbmUgbG9vcCBwZXIgZGltZW5zaW9uDQojICwgLCAxDQojIA0KIyAgICAgIFssMV0gWywyXSBbLDNdIFssNF0NCiMgWzEsXSAgICAyICAgIDIgICAgMiAgICAyDQojIFsyLF0gICAgMiAgICAyICAgIDIgICAgMg0KIyBbMyxdICAgIDIgICAgMiAgICAyICAgIDINCiMNCiMgLCAsIDINCiMgDQojICAgICAgWywxXSBbLDJdIFssM10gWyw0XQ0KIyBbMSxdICAgIDEgICAgMSAgICAxICAgIDENCiMgWzIsXSAgICAxICAgIDEgICAgMSAgICAxDQojIFszLF0gICAgMSAgICAxICAgIDEgICAgMQ0KYGBgDQoNCg0K</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpgYGB7cn0NCmxpYnJhcnkoUmNwcEdTTCkNCg0Kc291cmNlQ3BwKCIuLi9zcmMvY29sTm9ybS5jcHAiKQ0KDQojIyBjcmVhdGUgTSBhcyBhIHN1bSBvZiB0d28gb3V0ZXIgcHJvZHVjdHMNCk0gPC0gb3V0ZXIoc2luKDA6OSksIHJlcCgxLDEwKSwgIioiKSArIG91dGVyKHJlcCgxLCAxMCksIGNvcygwOjkpLCAiKiIpDQpjb2xOb3JtKE0pDQpgYGANCg0K</div>
 
 
 

@@ -142,7 +142,7 @@ $(document).ready(function () {
 </style>
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("inline-c-code.Rmd");
+  window.initializeSourceEmbed("03-shlib-convolution_in_C.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
@@ -172,106 +172,175 @@ $(document).ready(function () {
 
 
 <!-- rnb-text-begin -->
-<p>Source: inline examples</p>
+<div id="cconv" class="section level2">
+<h2>cconv</h2>
+<pre><code>// cconv.c
+void cconv(int *l, double *x, int *n, double *s)
+{
+   double *y = x + (*n - *l), *z = x + *l, *u = x;
+
+   while (u &lt; y)
+      *s += *u++ * *z++;
+}</code></pre>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShpbmxpbmUpXG5gYGAifQ== -->
-<pre class="r"><code>library(inline)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyByZW1vdmUgdGhlIG9sZGVyIGNvbXBpbGVkIGZpbGVcbm5hbWUgPC0gXCJjY29udlwiXG5jbmFtZSA8LSBwYXN0ZTAobmFtZSwgXCIuY1wiKVxud2tkaXIgPC0gIFwiLi4vc3JjXCJcbmZpbGVuYW1lICA8LSBwYXN0ZSh3a2RpciwgbmFtZSwgc2VwID0gXCIvXCIpXG5jZmlsZW5hbWUgPC0gcGFzdGUod2tkaXIsIGNuYW1lLCBzZXAgPSBcIi9cIilcbmBgYCJ9 -->
+<pre class="r"><code># remove the older compiled file
+name &lt;- &quot;cconv&quot;
+cname &lt;- paste0(name, &quot;.c&quot;)
+wkdir &lt;-  &quot;../src&quot;
+filename  &lt;- paste(wkdir, name, sep = &quot;/&quot;)
+cfilename &lt;- paste(wkdir, cname, sep = &quot;/&quot;)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG5BdHRhY2hpbmcgcGFja2FnZTog46S847ixaW5saW5l46S847iyXG5cblRoZSBmb2xsb3dpbmcgb2JqZWN0IGlzIG1hc2tlZCBmcm9tIOOkvOO4sXBhY2thZ2U6UmNwcOOkvOO4sjpcblxuICAgIHJlZ2lzdGVyUGx1Z2luXG4ifQ== -->
-<pre><code>
-Attaching package: 㤼㸱inline㤼㸲
-
-The following object is masked from 㤼㸱package:Rcpp㤼㸲:
-
-    registerPlugin</code></pre>
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZmlsZS5yZW1vdmUocGFzdGUoZmlsZW5hbWUsIC5QbGF0Zm9ybSRkeW5saWIuZXh0LCBzZXAgPSBcIlwiKSlcbmBgYCJ9 -->
+<pre class="r"><code>file.remove(paste(filename, .Platform$dynlib.ext, sep = &quot;&quot;))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiY2Fubm90IHJlbW92ZSBmaWxlICcuLi9zcmMvY2NvbnYuZGxsJywgcmVhc29uICdObyBzdWNoIGZpbGUgb3IgZGlyZWN0b3J5J1xuIn0= -->
+<pre><code>cannot remove file '../src/cconv.dll', reason 'No such file or directory'</code></pre>
 <!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMgU2FtZSBleGFtcGxlIGluIENcbmNvZGU0IDwtIFwiXG4gICAgICBpbnQgaTtcbiAgICAgIGZvciAoaSA9IDA7IGkgPCAqbjsgaSsrKSBcbiAgICAgICAgeFtpXSA9IHhbaV0qeFtpXSp4W2ldO1xuXCJcbmN1YmVmbjQgPC0gY2Z1bmN0aW9uKHNpZ25hdHVyZShuPVwiaW50ZWdlclwiLCB4PVwibnVtZXJpY1wiKSwgY29kZTQsIGxhbmd1YWdlID0gXCJDXCIsIGNvbnZlbnRpb24gPSBcIi5DXCIpXG5jdWJlZm40KDIwLCAxOjIwKVxuYGBgIn0= -->
-<pre class="r"><code>## Same example in C
-code4 &lt;- &quot;
-      int i;
-      for (i = 0; i &lt; *n; i++) 
-        x[i] = x[i]*x[i]*x[i];
-&quot;
-cubefn4 &lt;- cfunction(signature(n=&quot;integer&quot;, x=&quot;numeric&quot;), code4, language = &quot;C&quot;, convention = &quot;.C&quot;)
-cubefn4(20, 1:20)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiJG5cblsxXSAyMFxuXG4keFxuIFsxXSAgICAxICAgIDggICAyNyAgIDY0ICAxMjUgIDIxNiAgMzQzICA1MTIgIDcyOSAxMDAwIDEzMzEgMTcyOCAyMTk3IDI3NDQgMzM3NVxuWzE2XSA0MDk2IDQ5MTMgNTgzMiA2ODU5IDgwMDBcbiJ9 -->
-<pre><code>$n
-[1] 20
-
-$x
- [1]    1    8   27   64  125  216  343  512  729 1000 1331 1728 2197 2744 3375
-[16] 4096 4913 5832 6859 8000</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIEZBTFNFXG4ifQ== -->
+<pre><code>[1] FALSE</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<div id="defining-two-functions-one-of-which-calls-the-other" class="section level2">
-<h2>Defining two functions, one of which calls the other</h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMgVXNlIG9mIC5DIGNvbnZlbnRpb24gd2l0aCBDIGNvZGVcbiMjIERlZmluaW5nIHR3byBmdW5jdGlvbnMsIG9uZSBvZiB3aGljaCBjYWxscyB0aGUgb3RoZXJcbnNpZ1NxIDwtIHNpZ25hdHVyZShuPVwiaW50ZWdlclwiLCB4PVwibnVtZXJpY1wiKVxuIyAxc3QgZnVuY3Rpb25cbmNvZGVTcSA8LSBcIlxuICBmb3IgKGludCBpPTA7IGkgPCAqbjsgaSsrKSB7XG4gICAgeFtpXSA9IHhbaV0qeFtpXTtcbiAgfVwiXG5zaWdRZCA8LSBzaWduYXR1cmUobj1cImludGVnZXJcIiwgeD1cIm51bWVyaWNcIilcbiMgMm5kIGZ1bmN0aW9uXG5jb2RlUWQgPC0gXCJcbiAgc3F1YXJlZm4obiwgeCk7XG4gIHNxdWFyZWZuKG4sIHgpO1xuXCJcbmZucyA8LSBjZnVuY3Rpb24oIGxpc3Qoc3F1YXJlZm49c2lnU3EsIHF1YWRmbj1zaWdRZCksIFxuICAgICAgICAgICAgICAgICAgbGlzdChjb2RlU3EsIGNvZGVRZCksIFxuICAgICAgICAgICAgICAgICAgY29udmVudGlvbj1cIi5DXCIpXG5zcXVhcmVmbiA8LSBmbnNbW1wic3F1YXJlZm5cIl1dXG5xdWFkZm4gPC0gZm5zW1tcInF1YWRmblwiXV1cbm4gPC0gNFxuc3F1YXJlZm4obiwgeCkkeFxuYGBgIn0= -->
-<pre class="r"><code>## Use of .C convention with C code
-## Defining two functions, one of which calls the other
-sigSq &lt;- signature(n=&quot;integer&quot;, x=&quot;numeric&quot;)
-# 1st function
-codeSq &lt;- &quot;
-  for (int i=0; i &lt; *n; i++) {
-    x[i] = x[i]*x[i];
-  }&quot;
-sigQd &lt;- signature(n=&quot;integer&quot;, x=&quot;numeric&quot;)
-# 2nd function
-codeQd &lt;- &quot;
-  squarefn(n, x);
-  squarefn(n, x);
-&quot;
-fns &lt;- cfunction( list(squarefn=sigSq, quadfn=sigQd), 
-                  list(codeSq, codeQd), 
-                  convention=&quot;.C&quot;)
-squarefn &lt;- fns[[&quot;squarefn&quot;]]
-quadfn &lt;- fns[[&quot;quadfn&quot;]]
-n &lt;- 4
-squarefn(n, x)$x</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBjb21waWxlIHRoZSBDIGNvZGVcbnN5c3RlbShcIlIgQ01EIFNITElCIC4uL3NyYy9jY29udi5jXCIpXG5gYGAifQ== -->
+<pre class="r"><code># compile the C code
+system(&quot;R CMD SHLIB ../src/cconv.c&quot;)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDEgNCA5XG4ifQ== -->
-<pre><code>[1] 1 4 9</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucXVhZGZuKG4sIHgpJHhcbmBgYCJ9 -->
-<pre class="r"><code>quadfn(n, x)$x</code></pre>
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB0aGlzIGxvYWRzIHRoZSBsaWJyYXJ5IGluIGFueSBzeXN0ZW0sIFdpbmRvd3Mgb3IgTGludXhcbmR5bi5sb2FkKHBhc3RlKGZpbGVuYW1lLCAuUGxhdGZvcm0kZHlubGliLmV4dCwgc2VwID0gXCJcIikpXG5gYGAifQ== -->
+<pre class="r"><code># this loads the library in any system, Windows or Linux
+dyn.load(paste(filename, .Platform$dynlib.ext, sep = &quot;&quot;))</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdICAxIDE2IDgxXG4ifQ== -->
-<pre><code>[1]  1 16 81</code></pre>
-<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB3cmFwcGVyIGZ1bmN0aW9uIHRvIGludm9rZSBjY29udiBcbnIuY2NvbnYgPC0gZnVuY3Rpb24obGFnLCB4KSB7XG4gICAgICAgIC5DKFwiY2NvbnZcIiwgXG4gICAgICAgICAgIGFzLmludGVnZXIobGFnKSxcbiAgICAgICAgICAgYXMuZG91YmxlKHgpLFxuICAgICAgICAgICBhcy5pbnRlZ2VyKGxlbmd0aCh4KSksXG4gICAgICAgICAgIGFzLmRvdWJsZSgwLjApKVtbNF1dXG59XG5gYGAifQ== -->
+<pre class="r"><code># wrapper function to invoke cconv 
+r.cconv &lt;- function(lag, x) {
+        .C(&quot;cconv&quot;, 
+           as.integer(lag),
+           as.double(x),
+           as.integer(length(x)),
+           as.double(0.0))[[4]]
+}</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>“Observe that we convert all arguments to the approriate type (just to be sure). The .C function returns a list with all its arguments, we only need the last (fourth) argument. In this case we did not name the last argument but extracted it using a numeric index. Whether one uses named arguments (as in Section 5.1) or numeric indices is a matter of personal preference.”&quot;</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxueCA9IGMoMywgNCwgNSwgMCwgMClcbnkgPSBjKDIsIDEpXG5cbnIuY2NvbnYoeCwgeSlcbiMgNiAxMSAxNCAgNSAgMCAgMCAgICAgIHNhbWUgYXMgaW4gTWF0bGFiXG5gYGAifQ== -->
+<pre class="r"><code>x = c(3, 4, 5, 0, 0)
+y = c(2, 1)
+
+r.cconv(x, y)
+# 6 11 14  5  0  0      same as in Matlab</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxueCA9IGMoMywgNCwgNSlcbnkgPSBjKDIsIDEpXG5cbnIuY2NvbnYoeCwgeSlcbiMgNiAxMSAxNCAgNSAgMCAgMCAgICAgIHNhbWUgYXMgaW4gTWF0bGFiXG5gYGAifQ== -->
+<pre class="r"><code>x = c(3, 4, 5)
+y = c(2, 1)
+
+r.cconv(x, y)
+# 6 11 14  5  0  0      same as in Matlab</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxueCA8LSBybm9ybSgxMDApXG5yY29udigyLCB4KVxuYGBgIn0= -->
+<pre class="r"><code>x &lt;- rnorm(100)
+rconv(2, x)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxueCA8LSBybm9ybSgxMDApXG5yY29udigxLCB4KVxuYGBgIn0= -->
+<pre class="r"><code>x &lt;- rnorm(100)
+rconv(1, x)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
-<div id="alternative-declaration-using-setcmethod" class="section level2">
-<h2>Alternative declaration using ‘setCMethod’</h2>
+<div id="cconv2" class="section level2">
+<h2>cconv2</h2>
+<p>With a little bit more trouble we can vectorize this, i.e. make it accept a vector of lags and return a vector of convolutions of the same length. The C code now becomes:</p>
+<pre><code>void cconv (int *l, int *m, double *x, int *n, double *s)
+{
+  double *y, *z, *u;
+  int i;
+  for (i = 0; i &lt; *m; i++)
+    {
+      y = x + (*n - l[i]);
+      z = x + l[i];
+      u = x;
+      s[i] = 0.0;
+      while (u &lt; y)
+        s[i] += *u++ * *z++;
+    }
+}</code></pre>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMgQWx0ZXJuYXRpdmUgZGVjbGFyYXRpb24gdXNpbmcgJ3NldENNZXRob2QnXG5zZXRDTWV0aG9kKGMoXCJzcXVhcmVmblwiLCBcInF1YWRmblwiKSwgbGlzdChzaWdTcSwgc2lnUWQpLCBcbiAgICAgICAgICAgbGlzdChjb2RlU3EsIGNvZGVRZCksIGNvbnZlbnRpb249XCIuQ1wiKVxuIFxubiA8LSA1ICAgICAgICAgIFxuc3F1YXJlZm4obiwgeCkkeFxuYGBgIn0= -->
-<pre class="r"><code>## Alternative declaration using 'setCMethod'
-setCMethod(c(&quot;squarefn&quot;, &quot;quadfn&quot;), list(sigSq, sigQd), 
-           list(codeSq, codeQd), convention=&quot;.C&quot;)
- 
-n &lt;- 5          
-squarefn(n, x)$x</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB1bmxvYWQgdGhlIGxpYnJhcnlcbmR5bi51bmxvYWQocGFzdGUoZmlsZW5hbWUsIC5QbGF0Zm9ybSRkeW5saWIuZXh0LCBzZXAgPSBcIlwiKSlcbmBgYCJ9 -->
+<pre class="r"><code># unload the library
+dyn.unload(paste(filename, .Platform$dynlib.ext, sep = &quot;&quot;))</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDEgNCA5XG4ifQ== -->
-<pre><code>[1] 1 4 9</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucXVhZGZuKG4sIHgpJHhcbmBgYCJ9 -->
-<pre class="r"><code>quadfn(n, x)$x</code></pre>
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZmlsZS5yZW1vdmUocGFzdGUoXCIuLi9zcmMvY2NvbnYyXCIsIC5QbGF0Zm9ybSRkeW5saWIuZXh0LCBzZXAgPSBcIlwiKSlcblxuIyBjb21waWxlIHRoZSBDIGNvZGVcbnN5c3RlbShcIlIgQ01EIFNITElCIC4uL3NyYy9jY29udjIuY1wiKVxuYGBgIn0= -->
+<pre class="r"><code>file.remove(paste(&quot;../src/cconv2&quot;, .Platform$dynlib.ext, sep = &quot;&quot;))
+
+# compile the C code
+system(&quot;R CMD SHLIB ../src/cconv2.c&quot;)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdICAxIDE2IDgxXG4ifQ== -->
-<pre><code>[1]  1 16 81</code></pre>
-<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG4jIHRoaXMgbG9hZHMgdGhlIGxpYnJhcnkgaW4gYW55IHN5c3RlbSwgV2luZG93cyBvciBMaW51eFxuZHluLmxvYWQocGFzdGUoXCIuLi9zcmMvY2NvbnYyXCIsIC5QbGF0Zm9ybSRkeW5saWIuZXh0LCBzZXAgPSBcIlwiKSlcblxuIyB3cmFwcGVyIGZ1bmN0aW9uIHRvIGludm9rZSBjY29udiBcbnJjb252MiA8LSBmdW5jdGlvbihsYWcsIHgpIHtcbiAgICAgICAgLkMoXCJjY29udjJcIiwgXG4gICAgICAgICAgIGFzLmludGVnZXIobGFnKSxcbiAgICAgICAgICAgYXMuaW50ZWdlcihsZW5ndGgobGFnKSksXG4gICAgICAgICAgIGFzLmRvdWJsZSh4KSxcbiAgICAgICAgICAgYXMuaW50ZWdlcihsZW5ndGgoeCkpLFxuICAgICAgICAgICBhcy5kb3VibGUoMC4wKSlbWzVdXVxufVxuXG5sYWcgPC0gYygxLDIsMyw1KVxubGFnID0gcm5vcm0oMTApXG55IDwtIHJub3JtKDEwKVxucmNvbnYyKGxhZywgeSlcblxuYGBgIn0= -->
+<pre class="r"><code>
+# this loads the library in any system, Windows or Linux
+dyn.load(paste(&quot;../src/cconv2&quot;, .Platform$dynlib.ext, sep = &quot;&quot;))
+
+# wrapper function to invoke cconv 
+rconv2 &lt;- function(lag, x) {
+        .C(&quot;cconv2&quot;, 
+           as.integer(lag),
+           as.integer(length(lag)),
+           as.double(x),
+           as.integer(length(x)),
+           as.double(0.0))[[5]]
+}
+
+lag &lt;- c(1,2,3,5)
+lag = rnorm(10)
+y &lt;- rnorm(10)
+rconv2(lag, y)
+</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpTb3VyY2U6IGlubGluZSBleGFtcGxlcw0KDQpgYGB7cn0NCmxpYnJhcnkoaW5saW5lKQ0KIyMgU2FtZSBleGFtcGxlIGluIEMNCmNvZGU0IDwtICINCiAgICAgIGludCBpOw0KICAgICAgZm9yIChpID0gMDsgaSA8ICpuOyBpKyspIA0KICAgICAgICB4W2ldID0geFtpXSp4W2ldKnhbaV07DQoiDQpjdWJlZm40IDwtIGNmdW5jdGlvbihzaWduYXR1cmUobj0iaW50ZWdlciIsIHg9Im51bWVyaWMiKSwgY29kZTQsIGxhbmd1YWdlID0gIkMiLCBjb252ZW50aW9uID0gIi5DIikNCmN1YmVmbjQoMjAsIDE6MjApDQpgYGANCg0KIyMgRGVmaW5pbmcgdHdvIGZ1bmN0aW9ucywgb25lIG9mIHdoaWNoIGNhbGxzIHRoZSBvdGhlcg0KDQpgYGB7cn0NCiMjIFVzZSBvZiAuQyBjb252ZW50aW9uIHdpdGggQyBjb2RlDQojIyBEZWZpbmluZyB0d28gZnVuY3Rpb25zLCBvbmUgb2Ygd2hpY2ggY2FsbHMgdGhlIG90aGVyDQpzaWdTcSA8LSBzaWduYXR1cmUobj0iaW50ZWdlciIsIHg9Im51bWVyaWMiKQ0KDQojIDFzdCBmdW5jdGlvbg0KY29kZVNxIDwtICINCiAgZm9yIChpbnQgaT0wOyBpIDwgKm47IGkrKykgew0KICAgIHhbaV0gPSB4W2ldKnhbaV07DQogIH0iDQpzaWdRZCA8LSBzaWduYXR1cmUobj0iaW50ZWdlciIsIHg9Im51bWVyaWMiKQ0KDQojIDJuZCBmdW5jdGlvbg0KY29kZVFkIDwtICINCiAgc3F1YXJlZm4obiwgeCk7DQogIHNxdWFyZWZuKG4sIHgpOw0KIg0KDQpmbnMgPC0gY2Z1bmN0aW9uKCBsaXN0KHNxdWFyZWZuPXNpZ1NxLCBxdWFkZm49c2lnUWQpLCANCiAgICAgICAgICAgICAgICAgIGxpc3QoY29kZVNxLCBjb2RlUWQpLCANCiAgICAgICAgICAgICAgICAgIGNvbnZlbnRpb249Ii5DIikNCg0Kc3F1YXJlZm4gPC0gZm5zW1sic3F1YXJlZm4iXV0NCnF1YWRmbiA8LSBmbnNbWyJxdWFkZm4iXV0NCg0KbiA8LSA0DQpzcXVhcmVmbihuLCB4KSR4DQpxdWFkZm4obiwgeCkkeA0KYGBgDQoNCiMjIEFsdGVybmF0aXZlIGRlY2xhcmF0aW9uIHVzaW5nICdzZXRDTWV0aG9kJw0KDQpgYGB7cn0NCiMjIEFsdGVybmF0aXZlIGRlY2xhcmF0aW9uIHVzaW5nICdzZXRDTWV0aG9kJw0Kc2V0Q01ldGhvZChjKCJzcXVhcmVmbiIsICJxdWFkZm4iKSwgbGlzdChzaWdTcSwgc2lnUWQpLCANCiAgICAgICAgICAgbGlzdChjb2RlU3EsIGNvZGVRZCksIGNvbnZlbnRpb249Ii5DIikNCiANCm4gPC0gNSAgICAgICAgICANCnNxdWFyZWZuKG4sIHgpJHgNCnF1YWRmbihuLCB4KSR4DQpgYGANCg0KDQoNCg0K</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQojIyBjY29udg0KDQogICAgLy8gY2NvbnYuYw0KICAgIHZvaWQgY2NvbnYoaW50ICpsLCBkb3VibGUgKngsIGludCAqbiwgZG91YmxlICpzKQ0KICAgIHsNCiAgICAgICBkb3VibGUgKnkgPSB4ICsgKCpuIC0gKmwpLCAqeiA9IHggKyAqbCwgKnUgPSB4Ow0KICAgIA0KICAgICAgIHdoaWxlICh1IDwgeSkNCiAgICAgICAgICAqcyArPSAqdSsrICogKnorKzsNCiAgICB9DQoNCg0KDQpgYGB7cn0NCiMgcmVtb3ZlIHRoZSBvbGRlciBjb21waWxlZCBmaWxlDQpuYW1lIDwtICJjY29udiINCmNuYW1lIDwtIHBhc3RlMChuYW1lLCAiLmMiKQ0Kd2tkaXIgPC0gICIuLi9zcmMiDQpmaWxlbmFtZSAgPC0gcGFzdGUod2tkaXIsIG5hbWUsIHNlcCA9ICIvIikNCmNmaWxlbmFtZSA8LSBwYXN0ZSh3a2RpciwgY25hbWUsIHNlcCA9ICIvIikNCg0KDQpgYGANCg0KYGBge3J9DQpmaWxlLnJlbW92ZShwYXN0ZShmaWxlbmFtZSwgLlBsYXRmb3JtJGR5bmxpYi5leHQsIHNlcCA9ICIiKSkNCmBgYA0KDQoNCmBgYHtyfQ0KIyBjb21waWxlIHRoZSBDIGNvZGUNCnN5c3RlbSgiUiBDTUQgU0hMSUIgLi4vc3JjL2Njb252LmMiKQ0KYGBgDQoNCg0KYGBge3J9DQojIHRoaXMgbG9hZHMgdGhlIGxpYnJhcnkgaW4gYW55IHN5c3RlbSwgV2luZG93cyBvciBMaW51eA0KZHluLmxvYWQocGFzdGUoZmlsZW5hbWUsIC5QbGF0Zm9ybSRkeW5saWIuZXh0LCBzZXAgPSAiIikpDQpgYGANCg0KDQoNCmBgYHtyfQ0KIyB3cmFwcGVyIGZ1bmN0aW9uIHRvIGludm9rZSBjY29udiANCnIuY2NvbnYgPC0gZnVuY3Rpb24obGFnLCB4KSB7DQogICAgICAgIC5DKCJjY29udiIsIA0KICAgICAgICAgICBhcy5pbnRlZ2VyKGxhZyksDQogICAgICAgICAgIGFzLmRvdWJsZSh4KSwNCiAgICAgICAgICAgYXMuaW50ZWdlcihsZW5ndGgoeCkpLA0KICAgICAgICAgICBhcy5kb3VibGUoMC4wKSlbWzRdXQ0KfQ0KYGBgDQoNCiJPYnNlcnZlIHRoYXQgd2UgY29udmVydCBhbGwgYXJndW1lbnRzIHRvIHRoZSBhcHByb3JpYXRlIHR5cGUgKGp1c3QgdG8gYmUgc3VyZSkuIFRoZSAuQyBmdW5jdGlvbiByZXR1cm5zIGEgbGlzdCB3aXRoIGFsbCBpdHMgYXJndW1lbnRzLCB3ZSBvbmx5IG5lZWQgdGhlIGxhc3QgKGZvdXJ0aCkgYXJndW1lbnQuIEluIHRoaXMgY2FzZSB3ZSBkaWQgbm90IG5hbWUgdGhlIGxhc3QgYXJndW1lbnQgYnV0IGV4dHJhY3RlZCBpdCB1c2luZyBhIG51bWVyaWMgaW5kZXguIFdoZXRoZXIgb25lIHVzZXMgbmFtZWQgYXJndW1lbnRzIChhcyBpbiBTZWN0aW9uIDUuMSkgb3IgbnVtZXJpYyBpbmRpY2VzIGlzIGEgbWF0dGVyIG9mIHBlcnNvbmFsIHByZWZlcmVuY2UuIiINCg0KDQpgYGB7cn0NCnggPSBjKDMsIDQsIDUsIDAsIDApDQp5ID0gYygyLCAxKQ0KDQpyLmNjb252KHgsIHkpDQojIDYgMTEgMTQgIDUgIDAgIDAgICAgICBzYW1lIGFzIGluIE1hdGxhYg0KYGBgDQoNCg0KYGBge3J9DQp4ID0gYygzLCA0LCA1KQ0KeSA9IGMoMiwgMSkNCg0Kci5jY29udih4LCB5KQ0KIyA2IDExIDE0ICA1ICAwICAwICAgICAgc2FtZSBhcyBpbiBNYXRsYWINCmBgYA0KDQpgYGB7cn0NCnggPC0gcm5vcm0oMTAwKQ0KcmNvbnYoMiwgeCkNCmBgYA0KDQpgYGB7cn0NCnggPC0gcm5vcm0oMTAwKQ0KcmNvbnYoMSwgeCkNCmBgYA0KDQojIyBjY29udjINCg0KV2l0aCBhIGxpdHRsZSBiaXQgbW9yZSB0cm91YmxlIHdlIGNhbiB2ZWN0b3JpemUgdGhpcywgDQppLmUuIG1ha2UgaXQgYWNjZXB0IGEgdmVjdG9yIG9mIGxhZ3MgYW5kIHJldHVybiBhIHZlY3RvciBvZiANCmNvbnZvbHV0aW9ucyBvZiB0aGUgc2FtZSBsZW5ndGguIFRoZSBDIGNvZGUgbm93IGJlY29tZXM6DQoNCiAgICB2b2lkIGNjb252IChpbnQgKmwsIGludCAqbSwgZG91YmxlICp4LCBpbnQgKm4sIGRvdWJsZSAqcykNCiAgICB7DQogICAgICBkb3VibGUgKnksICp6LCAqdTsNCiAgICAgIGludCBpOw0KICAgICAgZm9yIChpID0gMDsgaSA8ICptOyBpKyspDQogICAgICAgIHsNCiAgICAgICAgICB5ID0geCArICgqbiAtIGxbaV0pOw0KICAgICAgICAgIHogPSB4ICsgbFtpXTsNCiAgICAgICAgICB1ID0geDsNCiAgICAgICAgICBzW2ldID0gMC4wOw0KICAgICAgICAgIHdoaWxlICh1IDwgeSkNCiAgICAgICAgICAgIHNbaV0gKz0gKnUrKyAqICp6Kys7DQogICAgICAgIH0NCiAgICB9DQoNCg0KDQoNCmBgYHtyfQ0KIyB1bmxvYWQgdGhlIGxpYnJhcnkNCmR5bi51bmxvYWQocGFzdGUoZmlsZW5hbWUsIC5QbGF0Zm9ybSRkeW5saWIuZXh0LCBzZXAgPSAiIikpDQpgYGANCg0KDQpgYGB7cn0NCmZpbGUucmVtb3ZlKHBhc3RlKCIuLi9zcmMvY2NvbnYyIiwgLlBsYXRmb3JtJGR5bmxpYi5leHQsIHNlcCA9ICIiKSkNCg0KIyBjb21waWxlIHRoZSBDIGNvZGUNCnN5c3RlbSgiUiBDTUQgU0hMSUIgLi4vc3JjL2Njb252Mi5jIikNCmBgYA0KDQoNCmBgYHtyfQ0KDQojIHRoaXMgbG9hZHMgdGhlIGxpYnJhcnkgaW4gYW55IHN5c3RlbSwgV2luZG93cyBvciBMaW51eA0KZHluLmxvYWQocGFzdGUoIi4uL3NyYy9jY29udjIiLCAuUGxhdGZvcm0kZHlubGliLmV4dCwgc2VwID0gIiIpKQ0KDQojIHdyYXBwZXIgZnVuY3Rpb24gdG8gaW52b2tlIGNjb252IA0KcmNvbnYyIDwtIGZ1bmN0aW9uKGxhZywgeCkgew0KICAgICAgICAuQygiY2NvbnYyIiwgDQogICAgICAgICAgIGFzLmludGVnZXIobGFnKSwNCiAgICAgICAgICAgYXMuaW50ZWdlcihsZW5ndGgobGFnKSksDQogICAgICAgICAgIGFzLmRvdWJsZSh4KSwNCiAgICAgICAgICAgYXMuaW50ZWdlcihsZW5ndGgoeCkpLA0KICAgICAgICAgICBhcy5kb3VibGUoMC4wKSlbWzVdXQ0KfQ0KDQpsYWcgPC0gYygxLDIsMyw1KQ0KbGFnID0gcm5vcm0oMTApDQp5IDwtIHJub3JtKDEwKQ0KcmNvbnYyKGxhZywgeSkNCg0KYGBgDQoNCg0K</div>
 
 
 
