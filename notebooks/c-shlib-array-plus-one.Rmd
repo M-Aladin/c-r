@@ -24,12 +24,12 @@ arrayPlus1 = function(m) {
 
 arrayPlus1(array(1, dim = c(4,5,3)))
 
-dyn.unload(paste("../src/array_plus_one", .Platform$dynlib.ext, sep = ""))
+
 ```
 
 ```{r}
 # passing an array
-matrixPlus1(array(1, dim = c(3,4,2)))
+arrayPlus1(array(1, dim = c(3,4,2)))
 
 # only the first array gets added because in C we are only have two loops:
 # one loop per dimension
@@ -46,5 +46,7 @@ matrixPlus1(array(1, dim = c(3,4,2)))
 # [1,]    1    1    1    1
 # [2,]    1    1    1    1
 # [3,]    1    1    1    1
+
+dyn.unload(paste("../src/array_plus_one", .Platform$dynlib.ext, sep = ""))
 ```
 
