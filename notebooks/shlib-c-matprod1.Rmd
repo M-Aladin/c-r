@@ -1,0 +1,67 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+Source: http://people.math.aau.dk/~sorenh/teaching/2012-ASC/day4/interfaceC-notes.pdf
+
+```
+void matprod1 ( double *X , int * dimX , double *Y , int * dimY , double * ans ){
+  double sum ;
+  int ii , jj , kk ;
+  
+  int nrX = dimX[0] , ncX = dimX[1] , nrY = dimY[0] , ncY = dimY[1];
+  
+  for ( ii = 0; ii < nrX ; ii ++){
+    for ( jj = 0; jj < ncY ; jj ++){
+      sum = 0;
+       for ( kk = 0; kk < ncX ; kk ++){
+          sum = sum + X[ ii + nrX * kk ]*  Y[ kk + nrY * jj ];
+       }
+       ans [ ii + nrX * jj ] = sum ;
+     }
+   }
+}
+```
+
+
+```{r}
+# compile the C code but unload the library first
+system("R CMD SHLIB ../src/matprod1.c")
+```
+
+```{r}
+# this loads the library in any system, Windows or Linux
+dyn.load(paste("../src/matprod1", .Platform$dynlib.ext, sep = ""))
+```
+
+
+```{r}
+# Using .C and own C code
+mprod1_C_C <- function(A,B) { 
+    ans1 <- .C("matprod1", as.numeric(A), dim(A), as.numeric(B), dim(B),
+    result = numeric(nrow(A)*ncol(B)))$result
+    dim(ans1) <- c(nrow(A), ncol(B))
+    ans1
+ }
+```
+
+```{r}
+A <- matrix(1:12, nc=6)  # passing the dimensions as well
+B <- matrix(1:18, nr=6)
+
+mprod1_C_C(A, B)
+```
+
+Notice the following:
+* Matrices are converted to vectors (of the right type) and dimensions of the matrices are supplied explicitly.
+
+* A vector designated to hold the answer is created and supplied as well.
+
+
+
+```{r}
+# this loads the library in any system, Windows or Linux
+dyn.unload(paste("../src/matprod1", .Platform$dynlib.ext, sep = ""))
+```

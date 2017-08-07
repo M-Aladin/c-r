@@ -1,0 +1,21 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+# compile the C code
+system("R CMD SHLIB ../src/exp_01.c")
+```
+
+```{r}
+# this loads the library in any system, Windows or Linux
+dyn.load(paste("../src/exp_01", .Platform$dynlib.ext, sep = ""))
+```
+
+
+
+```{r}
+exp_01
+```
+
