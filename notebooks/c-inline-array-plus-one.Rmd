@@ -44,11 +44,40 @@ plus3(array(1, dim = c(3, 1, 1)))
 ```
 
 
+## inverting the indices
 
 
 
+```{r}
+# http://eli.thegreenplace.net/2015/memory-layout-of-multi-dimensional-arrays/
 
+# instead of having `i` outside we put `k`.
+# The result is the same
 
+library(inline)
+
+sig <- signature(x="numeric", dim="integer")
+
+body <- "
+    #include <stdio.h>
+    for (int k = 0; k < dim[0]; ++k)
+        for (int j = 0; j < dim[1]; ++j)
+            for (int i = 0; i < dim[2]; ++i) {
+                x[ k + dim[2]*(j+ i*dim[1]) ] += 1;
+            }
+        
+"
+
+cfun <- cfunction(sig, body=body, language="C", convention=".C")
+
+# using the C function in R
+plus <- function(m) {
+    m[] = cfun(as.numeric(m), dim(m))$x
+    m
+}
+
+plus(array(1, dim = c(3, 4, 3)))
+```
 
 
 
