@@ -24,7 +24,6 @@ wkdir <-  "../src"
 filename  <- paste(wkdir, name, sep = "/")
 cfilename <- paste(wkdir, cname, sep = "/")
 
-
 ```
 
 ```{r}
@@ -86,64 +85,5 @@ x <- rnorm(100)
 rconv(1, x)
 ```
 
-## cconv2
-
-With a little bit more trouble we can vectorize this, 
-i.e. make it accept a vector of lags and return a vector of 
-convolutions of the same length. The C code now becomes:
-
-    void cconv (int *l, int *m, double *x, int *n, double *s)
-    {
-      double *y, *z, *u;
-      int i;
-      for (i = 0; i < *m; i++)
-        {
-          y = x + (*n - l[i]);
-          z = x + l[i];
-          u = x;
-          s[i] = 0.0;
-          while (u < y)
-            s[i] += *u++ * *z++;
-        }
-    }
-
-
-
-
-```{r}
-# unload the library
-dyn.unload(paste(filename, .Platform$dynlib.ext, sep = ""))
-```
-
-
-```{r}
-file.remove(paste("../src/cconv2", .Platform$dynlib.ext, sep = ""))
-
-# compile the C code
-system("R CMD SHLIB ../src/cconv2.c")
-```
-
-
-```{r}
-
-# this loads the library in any system, Windows or Linux
-dyn.load(paste("../src/cconv2", .Platform$dynlib.ext, sep = ""))
-
-# wrapper function to invoke cconv 
-rconv2 <- function(lag, x) {
-        .C("cconv2", 
-           as.integer(lag),
-           as.integer(length(lag)),
-           as.double(x),
-           as.integer(length(x)),
-           as.double(0.0))[[5]]
-}
-
-lag <- c(1,2,3,5)
-lag = rnorm(10)
-y <- rnorm(10)
-rconv2(lag, y)
-
-```
 
 

@@ -35,17 +35,11 @@ plus1(matrix(1, nrow=3, ncol=4))
 
 
 ```{r}
-# the same input variable is used as output
+# the same input variable `x` is used as output
 mx <- matrix(1, nrow=3, ncol=4)
 mx[] = cfun(as.numeric(mx), dim(mx))$x
 mx
 ```
-
-
-```{r}
-plus1(matrix(1, nrow=3, ncol=4))
-```
-
 
 
 

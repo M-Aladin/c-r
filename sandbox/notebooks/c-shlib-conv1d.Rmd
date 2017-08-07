@@ -17,6 +17,7 @@ output: html_notebook
     }
 
 
+CRASHING CRASHING CRASHING CRASHING CRASHING CRASHING CRASHING CRASHING 
 
 ```{r}
 # compile the C code

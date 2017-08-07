@@ -142,7 +142,7 @@ $(document).ready(function () {
 </style>
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("colNorm.Rmd");
+  window.initializeSourceEmbed("c-inline-matrix-plus-one.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
@@ -172,21 +172,134 @@ $(document).ready(function () {
 
 
 <!-- rnb-text-begin -->
+<p>Source: <a href="https://stackoverflow.com/a/13004562/5270873" class="uri">https://stackoverflow.com/a/13004562/5270873</a></p>
+<div id="passing-a-matrix-as-an-argument" class="section level2">
+<h2>Passing a matrix as an argument</h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShSY3BwR1NMKVxuc291cmNlQ3BwKFwiLi4vc3JjL2NvbE5vcm0uY3BwXCIpXG5gYGAifQ== -->
-<pre class="r"><code>library(RcppGSL)
-sourceCpp(&quot;../src/colNorm.cpp&quot;)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShpbmxpbmUpXG5gYGAifQ== -->
+<pre class="r"><code>library(inline)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gc291cmNlQ3BwKFwiLi4vc3JjL2NvbE5vcm0uY3BwXCIpIDogXG4gIGNvdWxkIG5vdCBmaW5kIGZ1bmN0aW9uIFwic291cmNlQ3BwXCJcbiJ9 -->
-<pre><code>Error in sourceCpp(&quot;../src/colNorm.cpp&quot;) : 
-  could not find function &quot;sourceCpp&quot;</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiXG5BdHRhY2hpbmcgcGFja2FnZTog46S847ixaW5saW5l46S847iyXG5cblRoZSBmb2xsb3dpbmcgb2JqZWN0IGlzIG1hc2tlZCBmcm9tIOOkvOO4sXBhY2thZ2U6UmNwcOOkvOO4sjpcblxuICAgIHJlZ2lzdGVyUGx1Z2luXG4ifQ== -->
+<pre><code>
+Attaching package: 㤼㸱inline㤼㸲
+
+The following object is masked from 㤼㸱package:Rcpp㤼㸲:
+
+    registerPlugin</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2lnIDwtIHNpZ25hdHVyZSh4PVwibnVtZXJpY1wiLCBkaW09XCJpbnRlZ2VyXCIpXG5ib2R5IDwtIFwiXG4gICAgZm9yIChpbnQgaiA9IDA7IGogPCBkaW1bMV07ICsrailcbiAgICAgICAgZm9yIChpbnQgaSA9IDA7IGkgPCBkaW1bMF07ICsraSlcbiAgICAgICAgICAgIHhbaiAqIGRpbVswXSArIGldICs9IDE7XG5cIlxuY2Z1biA8LSBjZnVuY3Rpb24oc2lnLCBib2R5PWJvZHksIGxhbmd1YWdlPVwiQ1wiLCBjb252ZW50aW9uPVwiLkNcIilcbmBgYCJ9 -->
+<pre class="r"><code>sig &lt;- signature(x=&quot;numeric&quot;, dim=&quot;integer&quot;)
+body &lt;- &quot;
+    for (int j = 0; j &lt; dim[1]; ++j)
+        for (int i = 0; i &lt; dim[0]; ++i)
+            x[j * dim[0] + i] += 1;
+&quot;
+cfun &lt;- cfunction(sig, body=body, language=&quot;C&quot;, convention=&quot;.C&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB1c2luZyB0aGUgQyBmdW5jdGlvbiBpbiBSXG5wbHVzMSA8LSBmdW5jdGlvbihtKSB7XG4gICAgbVtdID0gY2Z1bihhcy5udW1lcmljKG0pLCBkaW0obSkpJHhcbiAgICBtXG59XG5wbHVzMShtYXRyaXgoMSwgbnJvdz0zLCBuY29sPTQpKVxuYGBgIn0= -->
+<pre class="r"><code># using the C function in R
+plus1 &lt;- function(m) {
+    m[] = cfun(as.numeric(m), dim(m))$x
+    m
+}
+plus1(matrix(1, nrow=3, ncol=4))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICBbLDFdIFssMl0gWywzXSBbLDRdXG5bMSxdICAgIDIgICAgMiAgICAyICAgIDJcblsyLF0gICAgMiAgICAyICAgIDIgICAgMlxuWzMsXSAgICAyICAgIDIgICAgMiAgICAyXG4ifQ== -->
+<pre><code>     [,1] [,2] [,3] [,4]
+[1,]    2    2    2    2
+[2,]    2    2    2    2
+[3,]    2    2    2    2</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB0aGUgc2FtZSBpbnB1dCB2YXJpYWJsZSBpcyB1c2VkIGFzIG91dHB1dFxubXggPC0gbWF0cml4KDEsIG5yb3c9MywgbmNvbD00KVxubXhbXSA9IGNmdW4oYXMubnVtZXJpYyhteCksIGRpbShteCkpJHhcbm14XG5gYGAifQ== -->
+<pre class="r"><code># the same input variable is used as output
+mx &lt;- matrix(1, nrow=3, ncol=4)
+mx[] = cfun(as.numeric(mx), dim(mx))$x
+mx</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICBbLDFdIFssMl0gWywzXSBbLDRdXG5bMSxdICAgIDIgICAgMiAgICAyICAgIDJcblsyLF0gICAgMiAgICAyICAgIDIgICAgMlxuWzMsXSAgICAyICAgIDIgICAgMiAgICAyXG4ifQ== -->
+<pre><code>     [,1] [,2] [,3] [,4]
+[1,]    2    2    2    2
+[2,]    2    2    2    2
+[3,]    2    2    2    2</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="changing-the-loop-to-three-dimensions" class="section level2">
+<h2>changing the loop to three dimensions</h2>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShpbmxpbmUpXG5cbnNpZyA8LSBzaWduYXR1cmUoeD1cIm51bWVyaWNcIiwgZGltPVwiaW50ZWdlclwiKVxuXG5ib2R5MyA8LSBcIlxuICAgIGZvciAoaW50IGsgPSAwOyBrIDwgZGltWzJdOyArK2spXG4gICAgICAgIGZvciAoaW50IGogPSAwOyBqIDwgZGltWzFdOyArK2opXG4gICAgICAgICAgICBmb3IgKGludCBpID0gMDsgaSA8IGRpbVswXTsgKytpKVxuICAgICAgICAgICAgICAgIHhbIGkqKGRpbVswXSpkaW1bMV0qZGltWzJdKSArIGkgXSArPSAxO1xuICAgICAgICBcblwiXG5cbmNmdW4zIDwtIGNmdW5jdGlvbihzaWcsIGJvZHk9Ym9keTMsIGxhbmd1YWdlPVwiQ1wiLCBjb252ZW50aW9uPVwiLkNcIilcbmBgYCJ9 -->
+<pre class="r"><code>library(inline)
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpgYGB7cn0NCmxpYnJhcnkoUmNwcEdTTCkNCg0Kc291cmNlQ3BwKCIuLi9zcmMvY29sTm9ybS5jcHAiKQ0KDQojIyBjcmVhdGUgTSBhcyBhIHN1bSBvZiB0d28gb3V0ZXIgcHJvZHVjdHMNCk0gPC0gb3V0ZXIoc2luKDA6OSksIHJlcCgxLDEwKSwgIioiKSArIG91dGVyKHJlcCgxLCAxMCksIGNvcygwOjkpLCAiKiIpDQpjb2xOb3JtKE0pDQpgYGANCg0K</div>
+sig &lt;- signature(x=&quot;numeric&quot;, dim=&quot;integer&quot;)
+
+body3 &lt;- &quot;
+    for (int k = 0; k &lt; dim[2]; ++k)
+        for (int j = 0; j &lt; dim[1]; ++j)
+            for (int i = 0; i &lt; dim[0]; ++i)
+                x[ i*(dim[0]*dim[1]*dim[2]) + i ] += 1;
+        
+&quot;
+
+cfun3 &lt;- cfunction(sig, body=body3, language=&quot;C&quot;, convention=&quot;.C&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB1c2luZyB0aGUgQyBmdW5jdGlvbiBpbiBSXG5wbHVzMyA8LSBmdW5jdGlvbihtKSB7XG4gICAgbVtdID0gY2Z1bjMoYXMubnVtZXJpYyhtKSwgZGltKG0pKSR4XG4gICAgbVxufVxuXG5wbHVzMyhhcnJheSgxLCBkaW0gPSBjKDQsIDMsIDIpKSlcbmBgYCJ9 -->
+<pre class="r"><code># using the C function in R
+plus3 &lt;- function(m) {
+    m[] = cfun3(as.numeric(m), dim(m))$x
+    m
+}
+
+plus3(array(1, dim = c(4, 3, 2)))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShpbmxpbmUpXG5cbnNpZyA8LSBzaWduYXR1cmUoeD1cIm51bWVyaWNcIiwgZGltPVwiaW50ZWdlclwiKVxuXG5ib2R5NCA8LSBcIlxuICAgIGZvciAoaW50IGogPSAwOyBqIDwgZGltWzFdOyArK2opXG4gICAgICAgIGZvciAoaW50IGkgPSAwOyBpIDwgZGltWzBdOyArK2kpXG4gICAgICAgICAgICB4W2ogKiBkaW1bMF0gKyBpXSArPSAxO1xuXCJcblxuY2Z1bjQgPC0gY2Z1bmN0aW9uKHNpZywgYm9keT1ib2R5NCwgbGFuZ3VhZ2U9XCJDXCIsIGNvbnZlbnRpb249XCIuQ1wiKVxuYGBgIn0= -->
+<pre class="r"><code>library(inline)
+
+sig &lt;- signature(x=&quot;numeric&quot;, dim=&quot;integer&quot;)
+
+body4 &lt;- &quot;
+    for (int j = 0; j &lt; dim[1]; ++j)
+        for (int i = 0; i &lt; dim[0]; ++i)
+            x[j * dim[0] + i] += 1;
+&quot;
+
+cfun4 &lt;- cfunction(sig, body=body4, language=&quot;C&quot;, convention=&quot;.C&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB1c2luZyB0aGUgQyBmdW5jdGlvbiBpbiBSXG5wbHVzNCA8LSBmdW5jdGlvbihtKSB7XG4gICAgbVtdID0gY2Z1bjQoYXMubnVtZXJpYyhtKSwgZGltKG0pKSR4XG4gICAgbVxufVxuXG5wbHVzNChtYXRyaXgoMSwgbnJvdz0zLCBuY29sPTQpKVxuYGBgIn0= -->
+<pre class="r"><code># using the C function in R
+plus4 &lt;- function(m) {
+    m[] = cfun4(as.numeric(m), dim(m))$x
+    m
+}
+
+plus4(matrix(1, nrow=3, ncol=4))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+</div>
+
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpTb3VyY2U6IGh0dHBzOi8vc3RhY2tvdmVyZmxvdy5jb20vYS8xMzAwNDU2Mi81MjcwODczDQoNCg0KIyMgUGFzc2luZyBhIG1hdHJpeCBhcyBhbiBhcmd1bWVudA0KDQpgYGB7cn0NCmxpYnJhcnkoaW5saW5lKQ0KDQpzaWcgPC0gc2lnbmF0dXJlKHg9Im51bWVyaWMiLCBkaW09ImludGVnZXIiKQ0KDQpib2R5IDwtICINCiAgICBmb3IgKGludCBqID0gMDsgaiA8IGRpbVsxXTsgKytqKQ0KICAgICAgICBmb3IgKGludCBpID0gMDsgaSA8IGRpbVswXTsgKytpKQ0KICAgICAgICAgICAgeFtqICogZGltWzBdICsgaV0gKz0gMTsNCiINCg0KY2Z1biA8LSBjZnVuY3Rpb24oc2lnLCBib2R5PWJvZHksIGxhbmd1YWdlPSJDIiwgY29udmVudGlvbj0iLkMiKQ0KYGBgDQoNCmBgYHtyfQ0KIyB1c2luZyB0aGUgQyBmdW5jdGlvbiBpbiBSDQpwbHVzMSA8LSBmdW5jdGlvbihtKSB7DQogICAgbVtdID0gY2Z1bihhcy5udW1lcmljKG0pLCBkaW0obSkpJHgNCiAgICBtDQp9DQoNCnBsdXMxKG1hdHJpeCgxLCBucm93PTMsIG5jb2w9NCkpDQpgYGANCg0KDQoNCmBgYHtyfQ0KIyB0aGUgc2FtZSBpbnB1dCB2YXJpYWJsZSBgeGAgaXMgdXNlZCBhcyBvdXRwdXQNCm14IDwtIG1hdHJpeCgxLCBucm93PTMsIG5jb2w9NCkNCm14W10gPSBjZnVuKGFzLm51bWVyaWMobXgpLCBkaW0obXgpKSR4DQpteA0KYGBgDQoNCg0KDQojIyBjaGFuZ2luZyB0aGUgbG9vcCB0byB0aHJlZSBkaW1lbnNpb25zDQoNCmBgYHtyfQ0KbGlicmFyeShpbmxpbmUpDQoNCnNpZyA8LSBzaWduYXR1cmUoeD0ibnVtZXJpYyIsIGRpbT0iaW50ZWdlciIpDQoNCmJvZHkzIDwtICINCiAgICBmb3IgKGludCBrID0gMDsgayA8IGRpbVsyXTsgKytrKQ0KICAgICAgICBmb3IgKGludCBqID0gMDsgaiA8IGRpbVsxXTsgKytqKQ0KICAgICAgICAgICAgZm9yIChpbnQgaSA9IDA7IGkgPCBkaW1bMF07ICsraSkNCiAgICAgICAgICAgICAgICB4WyBpKihkaW1bMF0qZGltWzFdKmRpbVsyXSkgKyBpIF0gKz0gMTsNCiAgICAgICAgDQoiDQoNCmNmdW4zIDwtIGNmdW5jdGlvbihzaWcsIGJvZHk9Ym9keTMsIGxhbmd1YWdlPSJDIiwgY29udmVudGlvbj0iLkMiKQ0KYGBgDQoNCmBgYHtyfQ0KIyB1c2luZyB0aGUgQyBmdW5jdGlvbiBpbiBSDQpwbHVzMyA8LSBmdW5jdGlvbihtKSB7DQogICAgbVtdID0gY2Z1bjMoYXMubnVtZXJpYyhtKSwgZGltKG0pKSR4DQogICAgbQ0KfQ0KDQpwbHVzMyhhcnJheSgxLCBkaW0gPSBjKDQsIDMsIDIpKSkNCmBgYA0KDQoNCg0KYGBge3J9DQpsaWJyYXJ5KGlubGluZSkNCg0Kc2lnIDwtIHNpZ25hdHVyZSh4PSJudW1lcmljIiwgZGltPSJpbnRlZ2VyIikNCg0KYm9keTQgPC0gIg0KICAgIGZvciAoaW50IGogPSAwOyBqIDwgZGltWzFdOyArK2opDQogICAgICAgIGZvciAoaW50IGkgPSAwOyBpIDwgZGltWzBdOyArK2kpDQogICAgICAgICAgICB4W2ogKiBkaW1bMF0gKyBpXSArPSAxOw0KIg0KDQpjZnVuNCA8LSBjZnVuY3Rpb24oc2lnLCBib2R5PWJvZHk0LCBsYW5ndWFnZT0iQyIsIGNvbnZlbnRpb249Ii5DIikNCmBgYA0KDQpgYGB7cn0NCiMgdXNpbmcgdGhlIEMgZnVuY3Rpb24gaW4gUg0KcGx1czQgPC0gZnVuY3Rpb24obSkgew0KICAgIG1bXSA9IGNmdW40KGFzLm51bWVyaWMobSksIGRpbShtKSkkeA0KICAgIG0NCn0NCg0KcGx1czQobWF0cml4KDEsIG5yb3c9MywgbmNvbD00KSkNCmBgYA==</div>
 
 
 

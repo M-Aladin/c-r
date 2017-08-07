@@ -142,7 +142,7 @@ $(document).ready(function () {
 </style>
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("rcpp-sourceCpp-convolve2D-songho.Rmd");
+  window.initializeSourceEmbed("rcpp-sourceCpp-convolve1D-songho.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
@@ -173,61 +173,79 @@ $(document).ready(function () {
 
 <!-- rnb-text-begin -->
 <p><a href="http://www.songho.ca/dsp/convolution/convolution.html" class="uri">http://www.songho.ca/dsp/convolution/convolution.html</a></p>
-<p><a href="http://www.songho.ca/dsp/convolution/convolution.html" class="uri">http://www.songho.ca/dsp/convolution/convolution.html</a></p>
+<p>The Source command both executes the sourceCpp function and monitors the results of the compilation for errors. If errors do occur then the gcc error log is parsed into a navigable list:</p>
+<p>Note that you can also check the Source on Save option to automatically source the C++ file every time it is saved. This variation will keep the keyboard focus within the editor whereas the Source command will move focus to the console.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShSY3BwKVxuc291cmNlQ3BwKFwiLi4vc3JjL2NvbnZvbHZlMkQuY3BwXCIpXG54IDwtIG1hdHJpeCgxLCBucm93PTMsIG5jb2w9NClcbnkgPC0gbWF0cml4KDEsIG5yb3c9NSwgbmNvbD0yKVxuY29udm9sdmUyRCh4LCB5KVxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShSY3BwKVxuc291cmNlQ3BwKFwiLi4vc3JjL2NvbnZvbHZlMUQuY3BwXCIpXG54ID0gYygzLCA0LCA1LCAwLCAwKVxueSA9IGMoMiwgMSlcbmNvbnZvbHZlMUQoeCwgeSlcbmBgYCJ9 -->
 <pre class="r"><code>library(Rcpp)
-sourceCpp(&quot;../src/convolve2D.cpp&quot;)
-x &lt;- matrix(1, nrow=3, ncol=4)
-y &lt;- matrix(1, nrow=5, ncol=2)
-convolve2D(x, y)</code></pre>
+sourceCpp(&quot;../src/convolve1D.cpp&quot;)
+x = c(3, 4, 5, 0, 0)
+y = c(2, 1)
+convolve1D(x, y)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSAzIDYgNiA2IDMgNiA2IDYgMyA2IDYgNlxuIn0= -->
-<pre><code> [1] 3 6 6 6 3 6 6 6 3 6 6 6</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdICA2LjAwMDAwMGUrMDAgIDEuMTAwMDAwZSswMSAgMS40MDAwMDBlKzAxICA1LjAwMDAwMGUrMDAgIDAuMDAwMDAwZSswMCAzLjk5NTk1N2UtMzE2XG4ifQ== -->
+<pre><code>[1]  6.000000e+00  1.100000e+01  1.400000e+01  5.000000e+00  0.000000e+00 3.995957e-316</code></pre>
 <!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyAgICAxICAgMiAgIDIgICAyICAgMVxuIyAgICAyICAgNCAgIDQgICA0ICAgMlxuIyAgICAzICAgNiAgIDYgICA2ICAgM1xuIyAgICAzICAgNiAgIDYgICA2ICAgM1xuIyAgICAzICAgNiAgIDYgICA2ICAgM1xuIyAgICAyICAgNCAgIDQgICA0ICAgMlxuIyAgICAxICAgMiAgIDIgICAyICAgMVxuYGBgIn0= -->
-<pre class="r"><code>#    1   2   2   2   1
-#    2   4   4   4   2
-#    3   6   6   6   3
-#    3   6   6   6   3
-#    3   6   6   6   3
-#    2   4   4   4   2
-#    1   2   2   2   1</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyA2ICAgIDExICAgIDE0ICAgICA1ICAgICAwICAgICAwXG5gYGAifQ== -->
+<pre class="r"><code># 6    11    14     5     0     0</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuYGBgclxucHJpbnQoeClcbmBgYFxuYGBgXG5gYGAifQ== -->
-<p><code>r</code>r</p>
-<pre class="r"><code>print(x)</code></pre>
-<pre><code></code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShSY3BwKVxuc291cmNlQ3BwKFwiLi4vc3JjL2NvbnZvbHZlMUQuY3BwXCIpXG5cbnggPSBjKDMsIDQsIDUpXG55ID0gYygyLCAxKVxuXG5jb252b2x2ZTFEKHgsIHkpXG4jIDYgICAgMTEgICAgMTQgICAgIDVcbmBgYCJ9 -->
+<pre class="r"><code>library(Rcpp)
+sourceCpp(&quot;../src/convolve1D.cpp&quot;)
+
+x = c(3, 4, 5)
+y = c(2, 1)
+
+convolve1D(x, y)
+# 6    11    14     5</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiICAgICBbLDFdIFssMl0gWywzXSBbLDRdXG5bMSxdICAgIDEgICAgMSAgICAxICAgIDFcblsyLF0gICAgMSAgICAxICAgIDEgICAgMVxuWzMsXSAgICAxICAgIDEgICAgMSAgICAxXG4ifQ== -->
-<pre><code>     [,1] [,2] [,3] [,4]
-[1,]    1    1    1    1
-[2,]    1    1    1    1
-[3,]    1    1    1    1</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuYGBgclxucHJpbnQoeSlcbmBgYFxuYGBgXG5gYGAifQ== -->
-<p><code>r</code>r</p>
-<pre class="r"><code>print(y)</code></pre>
-<pre><code></code></pre>
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShSY3BwKVxuXG5zb3VyY2VDcHAoXCIuLi9zcmMvY29udm9sdmUxRC5jcHBcIilcblxueCA8LSBtYXRyaXgocm5vcm0oMTApKVxueSA8LSBtYXRyaXgocm5vcm0oMTApKVxuXG5jb252b2x2ZTFEKHgsIHkpXG5gYGAifQ== -->
+<pre class="r"><code>library(Rcpp)
+
+sourceCpp(&quot;../src/convolve1D.cpp&quot;)
+
+x &lt;- matrix(rnorm(10))
+y &lt;- matrix(rnorm(10))
+
+convolve1D(x, y)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiICAgICBbLDFdIFssMl1cblsxLF0gICAgMSAgICAxXG5bMixdICAgIDEgICAgMVxuWzMsXSAgICAxICAgIDFcbls0LF0gICAgMSAgICAxXG5bNSxdICAgIDEgICAgMVxuIn0= -->
-<pre><code>     [,1] [,2]
-[1,]    1    1
-[2,]    1    1
-[3,]    1    1
-[4,]    1    1
-[5,]    1    1</code></pre>
-<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><a href="http://www.songho.ca/dsp/convolution/convolution.html" class="uri">http://www.songho.ca/dsp/convolution/convolution.html</a></p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShSY3BwKVxuXG5zb3VyY2VDcHAoXCIuLi9zcmMvY29udm9sdmUyRC5jcHBcIilcblxueCA8LSBtYXRyaXgoMSwgbnJvdz0zLCBuY29sPTQpXG55IDwtIG1hdHJpeCgxLCBucm93PTUsIG5jb2w9MilcblxuY29udm9sdmUyRCh4LCB5KVxuYGBgIn0= -->
+<pre class="r"><code>library(Rcpp)
+
+sourceCpp(&quot;../src/convolve2D.cpp&quot;)
+
+x &lt;- matrix(1, nrow=3, ncol=4)
+y &lt;- matrix(1, nrow=5, ncol=2)
+
+convolve2D(x, y)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJpbnQoeClcbnByaW50KHkpXG5gYGAifQ== -->
+<pre class="r"><code>print(x)
+print(y)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIkNvbnZvbHV0aW9uIDFEIGJ5IFNvbmctSG8iDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpodHRwOi8vd3d3LnNvbmdoby5jYS9kc3AvY29udm9sdXRpb24vY29udm9sdXRpb24uaHRtbA0KDQoNCmh0dHA6Ly93d3cuc29uZ2hvLmNhL2RzcC9jb252b2x1dGlvbi9jb252b2x1dGlvbi5odG1sDQoNCmBgYHtyfQ0KbGlicmFyeShSY3BwKQ0KDQpzb3VyY2VDcHAoIi4uL3NyYy9jb252b2x2ZTJELmNwcCIpDQoNCnggPC0gbWF0cml4KDEsIG5yb3c9MywgbmNvbD00KQ0KeSA8LSBtYXRyaXgoMSwgbnJvdz01LCBuY29sPTIpDQoNCmNvbnZvbHZlMkQoeCwgeSkNCg0KIyAgICAxICAgMiAgIDIgICAyICAgMQ0KIyAgICAyICAgNCAgIDQgICA0ICAgMg0KIyAgICAzICAgNiAgIDYgICA2ICAgMw0KIyAgICAzICAgNiAgIDYgICA2ICAgMw0KIyAgICAzICAgNiAgIDYgICA2ICAgMw0KIyAgICAyICAgNCAgIDQgICA0ICAgMg0KIyAgICAxICAgMiAgIDIgICAyICAgMQ0KYGBgDQoNCg0KYGBge3J9DQpwcmludCh4KQ0KcHJpbnQoeSkNCmBgYA0KDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkNvbnZvbHV0aW9uIDFEIGJ5IFNvbmctSG8iDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpodHRwOi8vd3d3LnNvbmdoby5jYS9kc3AvY29udm9sdXRpb24vY29udm9sdXRpb24uaHRtbA0KDQpUaGUgU291cmNlIGNvbW1hbmQgYm90aCBleGVjdXRlcyB0aGUgc291cmNlQ3BwIGZ1bmN0aW9uIGFuZCBtb25pdG9ycyB0aGUgcmVzdWx0cyBvZiB0aGUgY29tcGlsYXRpb24gZm9yIGVycm9ycy4gSWYgZXJyb3JzIGRvIG9jY3VyIHRoZW4gdGhlIGdjYyBlcnJvciBsb2cgaXMgcGFyc2VkIGludG8gYSBuYXZpZ2FibGUgbGlzdDoNCg0KTm90ZSB0aGF0IHlvdSBjYW4gYWxzbyBjaGVjayB0aGUgU291cmNlIG9uIFNhdmUgb3B0aW9uIHRvIGF1dG9tYXRpY2FsbHkgc291cmNlIHRoZSBDKysgZmlsZSBldmVyeSB0aW1lIGl0IGlzIHNhdmVkLiBUaGlzIHZhcmlhdGlvbiB3aWxsIGtlZXAgdGhlIGtleWJvYXJkIGZvY3VzIHdpdGhpbiB0aGUgZWRpdG9yIHdoZXJlYXMgdGhlIFNvdXJjZSBjb21tYW5kIHdpbGwgbW92ZSBmb2N1cyB0byB0aGUgY29uc29sZS4NCg0KYGBge3J9DQpsaWJyYXJ5KFJjcHApDQpzb3VyY2VDcHAoIi4uL3NyYy9jb252b2x2ZTFELmNwcCIpDQoNCnggPSBjKDMsIDQsIDUsIDAsIDApDQp5ID0gYygyLCAxKQ0KDQpjb252b2x2ZTFEKHgsIHkpDQojIDYgICAgMTEgICAgMTQgICAgIDUgICAgIDAgICAgIDANCmBgYA0KDQpgYGB7cn0NCmxpYnJhcnkoUmNwcCkNCnNvdXJjZUNwcCgiLi4vc3JjL2NvbnZvbHZlMUQuY3BwIikNCg0KeCA9IGMoMywgNCwgNSkNCnkgPSBjKDIsIDEpDQoNCmNvbnZvbHZlMUQoeCwgeSkNCiMgNiAgICAxMSAgICAxNCAgICAgNQ0KYGBgDQoNCg0KYGBge3J9DQpsaWJyYXJ5KFJjcHApDQoNCnNvdXJjZUNwcCgiLi4vc3JjL2NvbnZvbHZlMUQuY3BwIikNCg0KeCA8LSBtYXRyaXgocm5vcm0oMTApKQ0KeSA8LSBtYXRyaXgocm5vcm0oMTApKQ0KDQpjb252b2x2ZTFEKHgsIHkpDQpgYGANCg0KaHR0cDovL3d3dy5zb25naG8uY2EvZHNwL2NvbnZvbHV0aW9uL2NvbnZvbHV0aW9uLmh0bWwNCg0KYGBge3J9DQpsaWJyYXJ5KFJjcHApDQoNCnNvdXJjZUNwcCgiLi4vc3JjL2NvbnZvbHZlMkQuY3BwIikNCg0KeCA8LSBtYXRyaXgoMSwgbnJvdz0zLCBuY29sPTQpDQp5IDwtIG1hdHJpeCgxLCBucm93PTUsIG5jb2w9MikNCg0KY29udm9sdmUyRCh4LCB5KQ0KYGBgDQoNCg0KYGBge3J9DQpwcmludCh4KQ0KcHJpbnQoeSkNCmBgYA0KDQo=</div>
 
 
 
