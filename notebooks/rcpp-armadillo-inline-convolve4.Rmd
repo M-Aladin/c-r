@@ -14,7 +14,7 @@ cppFunction(code = '
     NumericVector convolve4cpp(NumericVector a, NumericVector b) {
         Rcpp::NumericVector xa(a), xb(b);
         int n_xa = xa.size(), n_xb = xb.size();
-        Rcpp::NumericVector xab(n_xa + n_xb - 1);
+        Rcpp::NumericVector xab(n_xa + n_xb - 1);      // size of the result vector
         
         typedef Rcpp::NumericVector::iterator vec_iterator;
         vec_iterator ia = xa.begin(), ib = xb.begin();
