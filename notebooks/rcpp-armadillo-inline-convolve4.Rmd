@@ -3,12 +3,11 @@ title: "R Notebook"
 output: html_notebook
 ---
 
+Source: manual
+
 ## convolution of vectors
 
-
 ```{r}
-
-# include <Rcpp.h>
 
 cppFunction(code = '
     NumericVector convolve4cpp(NumericVector a, NumericVector b) {
