@@ -142,7 +142,7 @@ $(document).ready(function () {
 </style>
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("rcpp-armadillo-sourceCpp-loop_cube.Rmd");
+  window.initializeSourceEmbed("vecToMat.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
@@ -172,174 +172,74 @@ $(document).ready(function () {
 
 
 <!-- rnb-text-begin -->
-<p><a href="http://lists.r-forge.r-project.org/pipermail/rcpp-devel/2016-September/009375.html" class="uri">http://lists.r-forge.r-project.org/pipermail/rcpp-devel/2016-September/009375.html</a></p>
-<div id="looping-a-cube" class="section level2">
-<h2>Looping a cube</h2>
-<p>It is much, much, much easier to deal with small, simplified, examples, as Dirk and others have explained before. Changing your code to make n = 4 and the values seq(1, 12), we can see the pattern. For each slice, you are taking the product down the rows of “slice” number of entries. So the first slice is the 1-element product of the entries, or just a copy of the original matrix.</p>
-<p>Now, putting the index names back in familiar context (M rows and N columns), for the second slice, C(2, 1, 2) = A(1, 1) * A(2, 1). C(3, 1, 2) = A(2, 1) * A(3, 1), etc. For the third slice, we have 3-element products So C(1, , 3) and C(2, , 3) are 0. C(3, 1, 3) = A(1, 1) * A(2, 1) * A(3, 1), etc. In the last slice there is only one entry in the last row and it is the product of each column in its entirety.</p>
-<p>That being said, the way I would approach it is to use Armadillo’s subsetting to get the needed vector and use Armadillo’s product function to get their product.</p>
-<pre><code>#include &lt;RcppArmadillo.h&gt;
-using namespace Rcpp;
-using namespace RcppArmadillo;
-using namespace arma;
-//[[Rcpp::depends(RcppArmadillo)]]
-
-//[[Rcpp::export]]
-cube up_C(mat a){
-    int m = a.n_rows;
-    int n = a.n_cols;
-    
-    cube C = cube(m, n, m, fill::zeros);
-    
-    C.slice(0) = a;
-    for (int slices = 1; slices &lt; m; ++slices){
-        for (int j = 0; j &lt; n; ++j) {
-            for (int i = slices; i &lt; m; ++i) {
-                vec S = C.subcube(i - slices, j, 0, i, j, 0);
-                C(i, j, slices) = prod(S);
-            }
-        }
-    }
-    return(C);
-}</code></pre>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShSY3BwKVxuXG5zb3VyY2VDcHAoXCIuLi9zcmMvYXJtYUxvb3AuY3BwXCIpXG5cbm14IDwtIG1hdHJpeCgxMCwgbnJvdz01LCBuY29sPTIpICAgICMgUiBhcnJheSB0byBzZW5kXG51cF9DKG14KVxuYGBgIn0= -->
-<pre class="r"><code>library(Rcpp)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMgTm93IGxldCdzIGFjY29tcGxpc2ggdGhlIHNhbWUgdGFzayB3aXRoIFJjcHAgYW5kIGlubGluZVxuIyMgTm90ZTogaW5saW5lIHJlcXVpcmVzIFJjcHAgc28gdGhlIGxhdHRlciB3aWxsIGJlIGxvYWRlZCBhdXRvbWF0aWNhbGx5XG5cbmxpYnJhcnkoUmNwcClcbmxpYnJhcnkoaW5saW5lKVxuXG4jIGFuZCBkZWZpbmUgb3VyIHZlcnNpb24gaW4gQysrXG5yY3BwLnNyYyA8LSAnXG4gICNpbmNsdWRlIDxjbWF0aD5cbiAgXG4gIE51bWVyaWNWZWN0b3IgeHgoeCk7XG4gIGRvdWJsZSB5eSA9IGFzPGRvdWJsZT4oeSk7XG4gIGludCBuX3h4ID0geHguc2l6ZSgpO1xuXG4gIE51bWVyaWNNYXRyaXggYW5zKG5feHgsIG5feHgpOyAgICAgIC8vICByZXR1cm4gbWF0cml4XG5cbiAgZm9yKGludCBpID0gMDsgaSA8IG5feHg7IGkrKykge1xuICAgIGZvcihpbnQgaiA9IDA7IGogPCBuX3h4OyBqKyspe1xuICAgICAgaWYgKCh4eFtpXS14eFtqXTwxMGUtNykgJiYgKHh4W2ldLXh4W2pdPi0xMGUtNykpe1xuICAgICAgICBhbnMoaSxqKSA9IGV4cCh4eFtqXSp5eSkqeXk7XG4gICAgICB9ZWxzZXtcblx0ICAgICAgYW5zKGksaikgPSAoZXhwKHh4W2ldKnl5KSAtIGV4cCh4eFtqXSp5eSkpLyh4eFtpXSAtIHh4W2pdKTtcbiAgICAgIH1cbiAgICB9XG4gIH1cbiAgXG4gIHJldHVybiB3cmFwKGFucyk7XG4nXG4gXG5hdXgubWF0LnJjcHAgPSBjeHhmdW5jdGlvbihzaWduYXR1cmUoeD1cIm51bWVyaWNcIiwgXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgeT1cIm51bWVyaWNcIiksIFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgYm9keT1yY3BwLnNyYywgXG4gICAgICAgICAgICAgICAgICAgICAgICAgICBwbHVnaW49XCJSY3BwXCIpXG5zZXQuc2VlZCgxMjM0KVxuIyB0ZXN0LnZlYyA9IHJ1bmlmKDUpXG50ZXN0LnZlYyA9IHNlcSgxLDUpXG50ZXN0LnNjYWxhciA9IHJ1bmlmKDEpXG5cbmF1eC5tYXQucmNwcCh0ZXN0LnZlYywgdGVzdC5zY2FsYXIpXG5gYGAifQ== -->
+<pre class="r"><code>## Now let's accomplish the same task with Rcpp and inline
+## Note: inline requires Rcpp so the latter will be loaded automatically
 
-sourceCpp(&quot;../src/armaLoop.cpp&quot;)
+library(Rcpp)
+library(inline)
 
-mx &lt;- matrix(10, nrow=5, ncol=2)    # R array to send
-up_C(mx)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>This pulls the “slices” length subset of the jth column starting at slices and ending at i from the 0th slice (which is the original matrix) and puts the product in to the C(i, j, slices) entry.</p>
-<p>You can test the two are identical through identical(up_C(a), up_R(a)) for any a, and the C version is, of course, much faster especially for large matrices.</p>
-<p>It often pays to start with something simpler, and see if there is a pattern you can identify which would help you conceptually, even if not completely optimized.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB0aGUgUiBlcXVpdmFsZW50IGFib3ZlXG5cbnVwX1IgPC0gZnVuY3Rpb24oYSl7XG4gIG0gPSBkaW0oYSlbWzFdXVxuICBuID0gZGltKGEpW1syXV1cbiAgXG4gIGIgPSBhcnJheShhcy5kb3VibGUoMCksIGRpbSA9IGMobSwgbiwgbSkpXG4gIFxuICBmb3IoaSBpbiAxOm0pe1xuICAgIGZvcihqIGluIDE6bil7XG4gICAgICBmb3IocSBpbiAxOmkpe1xuICAgICAgICBpZihxPT0xKXtcbiAgICAgICAgICBiW2ksIGosIHFdID0gYVtpLCBqXTtcbiAgICAgICAgfVxuICAgICAgICBlbHNle1xuICAgICAgICAgIGJbaSwgaiwgcV0gPSBiW2ktMSwgaiwgcS0xXSAqIGFbaSwgal07XG4gICAgICAgIH1cbiAgICAgIH1cbiAgICB9XG4gIH1cbiAgcmV0dXJuKGIpXG59XG5cbnVwX1IobXgpXG5gYGAifQ== -->
-<pre class="r"><code># the R equivalent above
-
-up_R &lt;- function(a){
-  m = dim(a)[[1]]
-  n = dim(a)[[2]]
+# and define our version in C++
+rcpp.src &lt;- '
+  #include &lt;cmath&gt;
   
-  b = array(as.double(0), dim = c(m, n, m))
-  
-  for(i in 1:m){
-    for(j in 1:n){
-      for(q in 1:i){
-        if(q==1){
-          b[i, j, q] = a[i, j];
-        }
-        else{
-          b[i, j, q] = b[i-1, j, q-1] * a[i, j];
-        }
+  NumericVector xx(x);
+  double yy = as&lt;double&gt;(y);
+  int n_xx = xx.size();
+
+  NumericMatrix ans(n_xx, n_xx);      //  return matrix
+
+  for(int i = 0; i &lt; n_xx; i++) {
+    for(int j = 0; j &lt; n_xx; j++){
+      if ((xx[i]-xx[j]&lt;10e-7) &amp;&amp; (xx[i]-xx[j]&gt;-10e-7)){
+        ans(i,j) = exp(xx[j]*yy)*yy;
+      }else{
+          ans(i,j) = (exp(xx[i]*yy) - exp(xx[j]*yy))/(xx[i] - xx[j]);
       }
     }
   }
-  return(b)
-}
+  
+  return wrap(ans);
+'
+ 
+aux.mat.rcpp = cxxfunction(signature(x=&quot;numeric&quot;, 
+                                     y=&quot;numeric&quot;), 
+                           body=rcpp.src, 
+                           plugin=&quot;Rcpp&quot;)
+set.seed(1234)
+# test.vec = runif(5)
+test.vec = seq(1,5)
+test.scalar = runif(1)
 
-up_R(mx)</code></pre>
+aux.mat.rcpp(test.vec, test.scalar)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShSY3BwKVxuc3JjIDwtICdcbiNpbmNsdWRlIDxSY3BwQXJtYWRpbGxvLmg+XG51c2luZyBuYW1lc3BhY2UgUmNwcDtcbnVzaW5nIG5hbWVzcGFjZSBSY3BwQXJtYWRpbGxvO1xudXNpbmcgbmFtZXNwYWNlIGFybWE7XG4vL1tbUmNwcDo6ZGVwZW5kcyhSY3BwQXJtYWRpbGxvKV1dXG4vL1tbUmNwcDo6ZXhwb3J0XV1cbmN1YmUgdXBfQ0kobWF0IGEpe1xuICAgIGludCBtID0gYS5uX3Jvd3M7ICAgIC8vIGdldCByb3dzIGZyb20gbWF0cml4IGFcbiAgICBpbnQgbiA9IGEubl9jb2xzOyAgICAvLyBnZXQgY29scyBmcm9tIG1hdHJpeCBhXG4gICAgXG4gICAgY3ViZSBDID0gY3ViZShtLCBuLCBtLCBmaWxsOjp6ZXJvcyk7ICAvLyBjcmVhdGUgYXJyYXkgYW5kIGZpbGwgdy96ZXJvc1xuICAgIFxuICAgIEMuc2xpY2UoMCkgPSBhOyAgLy8gb3V0cHV0IGFycmF5IDFzdCBtYXRyaXggaXMgbWF0cml4IGFcbiAgICBcbiAgICBmb3IgKGludCBzbGljZXMgPSAxOyBzbGljZXMgPCBtOyArK3NsaWNlcyl7ICAgLy8gbW92ZSB0aHJvdWdoIHNsaWNlc1xuICAgICAgICBmb3IgKGludCBqID0gMDsgaiA8IG47ICsraikgeyAgICAgICAgICAgICAvLyBtb3ZlIHRocm91Z2ggY29sc1xuICAgICAgICAgICAgZm9yIChpbnQgaSA9IHNsaWNlczsgaSA8IG07ICsraSkgeyAgICAvLyBtb3ZlIHRocm91Z2ggcm93c1xuICAgICAgICAgICAgICAgIC8vIGV4dHJhY3Qgc3ViY3ViZXNcbiAgICAgICAgICAgICAgICB2ZWMgUyA9IEMuc3ViY3ViZShpIC0gc2xpY2VzLCBqLCAwLCBpLCBqLCAwKTtcbiAgICAgICAgICAgICAgICAvLyBBcm1hZGlsbG8gcHJvZHVjdCBmdW5jdGlvbiBhcm1hOjpwcm9kKFMpXG4gICAgICAgICAgICAgICAgQyhpLCBqLCBzbGljZXMpID0gcHJvZChTKTtcbiAgICAgICAgICAgIH1cbiAgICAgICAgfVxuICAgIH1cbiAgICByZXR1cm4oQyk7XG59XG4nXG5jcHBGdW5jdGlvbihjb2RlPXNyYywgZGVwZW5kcz1cIlJjcHBBcm1hZGlsbG9cIilcbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShSY3BwKVxuc291cmNlQ3BwKFwiLi4vc3JjL3ZlY1RvTWF0LmNwcFwiKVxuc2V0LnNlZWQoMTIzNClcbnRlc3QudmVjID0gc2VxKDEsNSlcbnRlc3Quc2NhbGFyID0gcnVuaWYoMSlcbnZlY1RvTWF0KHRlc3QudmVjLCB0ZXN0LnNjYWxhcilcbmBgYCJ9 -->
 <pre class="r"><code>library(Rcpp)
-src &lt;- '
-#include &lt;RcppArmadillo.h&gt;
-using namespace Rcpp;
-using namespace RcppArmadillo;
-using namespace arma;
-//[[Rcpp::depends(RcppArmadillo)]]
-//[[Rcpp::export]]
-cube up_CI(mat a){
-    int m = a.n_rows;    // get rows from matrix a
-    int n = a.n_cols;    // get cols from matrix a
-    
-    cube C = cube(m, n, m, fill::zeros);  // create array and fill w/zeros
-    
-    C.slice(0) = a;  // output array 1st matrix is matrix a
-    
-    for (int slices = 1; slices &lt; m; ++slices){   // move through slices
-        for (int j = 0; j &lt; n; ++j) {             // move through cols
-            for (int i = slices; i &lt; m; ++i) {    // move through rows
-                // extract subcubes
-                vec S = C.subcube(i - slices, j, 0, i, j, 0);
-                // Armadillo product function arma::prod(S)
-                C(i, j, slices) = prod(S);
-            }
-        }
-    }
-    return(C);
-}
-'
-cppFunction(code=src, depends=&quot;RcppArmadillo&quot;)</code></pre>
+sourceCpp(&quot;../src/vecToMat.cpp&quot;)
+set.seed(1234)
+test.vec = seq(1,5)
+test.scalar = runif(1)
+vecToMat(test.vec, test.scalar)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiTm8gZnVuY3Rpb24gZm91bmQgZm9yIFJjcHA6OmV4cG9ydCBhdHRyaWJ1dGUgYXQgZmlsZTZlMDQ1NjkyNDY2LmNwcDo4XG4ifQ== -->
-<pre><code>No function found for Rcpp::export attribute at file6e045692466.cpp:8</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubXggPC0gbWF0cml4KDEwLCBucm93PTUsIG5jb2w9MikgICAgIyBSIGFycmF5IHRvIHNlbmRcbnVwX0NJKG14KVxuYGBgIn0= -->
-<pre class="r"><code>mx &lt;- matrix(10, nrow=5, ncol=2)    # R array to send
-up_CI(mx)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiLCAsIDFcblxuICAgICBbLDFdIFssMl1cblsxLF0gICAxMCAgIDEwXG5bMixdICAgMTAgICAxMFxuWzMsXSAgIDEwICAgMTBcbls0LF0gICAxMCAgIDEwXG5bNSxdICAgMTAgICAxMFxuXG4sICwgMlxuXG4gICAgIFssMV0gWywyXVxuWzEsXSAgICAwICAgIDBcblsyLF0gIDEwMCAgMTAwXG5bMyxdICAxMDAgIDEwMFxuWzQsXSAgMTAwICAxMDBcbls1LF0gIDEwMCAgMTAwXG5cbiwgLCAzXG5cbiAgICAgWywxXSBbLDJdXG5bMSxdICAgIDAgICAgMFxuWzIsXSAgICAwICAgIDBcblszLF0gMTAwMCAxMDAwXG5bNCxdIDEwMDAgMTAwMFxuWzUsXSAxMDAwIDEwMDBcblxuLCAsIDRcblxuICAgICAgWywxXSAgWywyXVxuWzEsXSAgICAgMCAgICAgMFxuWzIsXSAgICAgMCAgICAgMFxuWzMsXSAgICAgMCAgICAgMFxuWzQsXSAxMDAwMCAxMDAwMFxuWzUsXSAxMDAwMCAxMDAwMFxuXG4sICwgNVxuXG4gICAgICBbLDFdICBbLDJdXG5bMSxdIDBlKzAwIDBlKzAwXG5bMixdIDBlKzAwIDBlKzAwXG5bMyxdIDBlKzAwIDBlKzAwXG5bNCxdIDBlKzAwIDBlKzAwXG5bNSxdIDFlKzA1IDFlKzA1XG4ifQ== -->
-<pre><code>, , 1
-
-     [,1] [,2]
-[1,]   10   10
-[2,]   10   10
-[3,]   10   10
-[4,]   10   10
-[5,]   10   10
-
-, , 2
-
-     [,1] [,2]
-[1,]    0    0
-[2,]  100  100
-[3,]  100  100
-[4,]  100  100
-[5,]  100  100
-
-, , 3
-
-     [,1] [,2]
-[1,]    0    0
-[2,]    0    0
-[3,] 1000 1000
-[4,] 1000 1000
-[5,] 1000 1000
-
-, , 4
-
-      [,1]  [,2]
-[1,]     0     0
-[2,]     0     0
-[3,]     0     0
-[4,] 10000 10000
-[5,] 10000 10000
-
-, , 5
-
-      [,1]  [,2]
-[1,] 0e+00 0e+00
-[2,] 0e+00 0e+00
-[3,] 0e+00 0e+00
-[4,] 0e+00 0e+00
-[5,] 1e+05 1e+05</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICAgIFssMV0gICAgICBbLDJdICAgICAgWywzXSAgICAgIFssNF0gICAgICBbLDVdXG5bMSxdIDAuMTI3Mzk1NiAwLjEzNDkyMDcgMC4xNDMwNDQzIDAuMTUxODIwMCAwLjE2MTMwNjdcblsyLF0gMC4xMzQ5MjA3IDAuMTQyNzM2NSAwLjE1MTE2NzggMC4xNjAyNjk2IDAuMTcwMTAyMVxuWzMsXSAwLjE0MzA0NDMgMC4xNTExNjc4IDAuMTU5OTI0OCAwLjE2OTM3MTQgMC4xNzk1NjkyXG5bNCxdIDAuMTUxODIwMCAwLjE2MDI2OTYgMC4xNjkzNzE0IDAuMTc5MTgyOSAwLjE4OTc2NzFcbls1LF0gMC4xNjEzMDY3IDAuMTcwMTAyMSAwLjE3OTU2OTIgMC4xODk3NjcxIDAuMjAwNzYwMVxuIn0= -->
+<pre><code>          [,1]      [,2]      [,3]      [,4]      [,5]
+[1,] 0.1273956 0.1349207 0.1430443 0.1518200 0.1613067
+[2,] 0.1349207 0.1427365 0.1511678 0.1602696 0.1701021
+[3,] 0.1430443 0.1511678 0.1599248 0.1693714 0.1795692
+[4,] 0.1518200 0.1602696 0.1693714 0.1791829 0.1897671
+[5,] 0.1613067 0.1701021 0.1795692 0.1897671 0.2007601</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
-</div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpodHRwOi8vbGlzdHMuci1mb3JnZS5yLXByb2plY3Qub3JnL3BpcGVybWFpbC9yY3BwLWRldmVsLzIwMTYtU2VwdGVtYmVyLzAwOTM3NS5odG1sDQoNCiMjIExvb3BpbmcgYSBjdWJlDQoNCkl0IGlzIG11Y2gsIG11Y2gsIG11Y2ggZWFzaWVyIHRvIGRlYWwgd2l0aCBzbWFsbCwgc2ltcGxpZmllZCwNCmV4YW1wbGVzLCBhcyBEaXJrIGFuZCBvdGhlcnMgaGF2ZSBleHBsYWluZWQgYmVmb3JlLiBDaGFuZ2luZyB5b3VyIGNvZGUNCnRvIG1ha2UgbiA9IDQgYW5kIHRoZSB2YWx1ZXMgc2VxKDEsIDEyKSwgd2UgY2FuIHNlZSB0aGUgcGF0dGVybi4gRm9yDQplYWNoIHNsaWNlLCB5b3UgYXJlIHRha2luZyB0aGUgcHJvZHVjdCBkb3duIHRoZSByb3dzIG9mICJzbGljZSIgbnVtYmVyDQpvZiBlbnRyaWVzLiBTbyB0aGUgZmlyc3Qgc2xpY2UgaXMgdGhlIDEtZWxlbWVudCBwcm9kdWN0IG9mIHRoZQ0KZW50cmllcywgb3IganVzdCBhIGNvcHkgb2YgdGhlIG9yaWdpbmFsIG1hdHJpeC4gDQoNCk5vdywgcHV0dGluZyB0aGUgaW5kZXgNCm5hbWVzIGJhY2sgaW4gZmFtaWxpYXIgY29udGV4dCAoTSByb3dzIGFuZCBOIGNvbHVtbnMpLCBmb3IgdGhlIHNlY29uZA0Kc2xpY2UsIEMoMiwgMSwgMikgPSBBKDEsIDEpICogQSgyLCAxKS4gQygzLCAxLCAyKSA9IEEoMiwgMSkgKiBBKDMsIDEpLA0KZXRjLiBGb3IgdGhlIHRoaXJkIHNsaWNlLCB3ZSBoYXZlIDMtZWxlbWVudCBwcm9kdWN0cyBTbyBDKDEsICwgMykgYW5kDQpDKDIsICwgMykgYXJlIDAuIEMoMywgMSwgMykgPSBBKDEsIDEpICogQSgyLCAxKSAqIEEoMywgMSksIGV0Yy4gSW4gdGhlDQpsYXN0IHNsaWNlIHRoZXJlIGlzIG9ubHkgb25lIGVudHJ5IGluIHRoZSBsYXN0IHJvdyBhbmQgaXQgaXMgdGhlDQpwcm9kdWN0IG9mIGVhY2ggY29sdW1uIGluIGl0cyBlbnRpcmV0eS4NCg0KVGhhdCBiZWluZyBzYWlkLCB0aGUgd2F5IEkgd291bGQgYXBwcm9hY2ggaXQgaXMgdG8gdXNlIEFybWFkaWxsbydzDQpzdWJzZXR0aW5nIHRvIGdldCB0aGUgbmVlZGVkIHZlY3RvciBhbmQgdXNlIEFybWFkaWxsbydzIHByb2R1Y3QNCmZ1bmN0aW9uIHRvIGdldCB0aGVpciBwcm9kdWN0Lg0KDQogICAgI2luY2x1ZGUgPFJjcHBBcm1hZGlsbG8uaD4NCiAgICB1c2luZyBuYW1lc3BhY2UgUmNwcDsNCiAgICB1c2luZyBuYW1lc3BhY2UgUmNwcEFybWFkaWxsbzsNCiAgICB1c2luZyBuYW1lc3BhY2UgYXJtYTsNCiAgICAvL1tbUmNwcDo6ZGVwZW5kcyhSY3BwQXJtYWRpbGxvKV1dDQogICAgDQogICAgLy9bW1JjcHA6OmV4cG9ydF1dDQogICAgY3ViZSB1cF9DKG1hdCBhKXsNCiAgICAgICAgaW50IG0gPSBhLm5fcm93czsNCiAgICAgICAgaW50IG4gPSBhLm5fY29sczsNCiAgICAgICAgDQogICAgICAgIGN1YmUgQyA9IGN1YmUobSwgbiwgbSwgZmlsbDo6emVyb3MpOw0KICAgICAgICANCiAgICAgICAgQy5zbGljZSgwKSA9IGE7DQogICAgICAgIGZvciAoaW50IHNsaWNlcyA9IDE7IHNsaWNlcyA8IG07ICsrc2xpY2VzKXsNCiAgICAgICAgICAgIGZvciAoaW50IGogPSAwOyBqIDwgbjsgKytqKSB7DQogICAgICAgICAgICAgICAgZm9yIChpbnQgaSA9IHNsaWNlczsgaSA8IG07ICsraSkgew0KICAgICAgICAgICAgICAgICAgICB2ZWMgUyA9IEMuc3ViY3ViZShpIC0gc2xpY2VzLCBqLCAwLCBpLCBqLCAwKTsNCiAgICAgICAgICAgICAgICAgICAgQyhpLCBqLCBzbGljZXMpID0gcHJvZChTKTsNCiAgICAgICAgICAgICAgICB9DQogICAgICAgICAgICB9DQogICAgICAgIH0NCiAgICAgICAgcmV0dXJuKEMpOw0KICAgIH0NCg0KYGBge3J9DQpsaWJyYXJ5KFJjcHApDQoNCnNvdXJjZUNwcCgiLi4vc3JjL2FybWFMb29wLmNwcCIpDQoNCm14IDwtIG1hdHJpeCgxMCwgbnJvdz01LCBuY29sPTIpICAgICMgUiBhcnJheSB0byBzZW5kDQp1cF9DKG14KQ0KYGBgDQoNClRoaXMgcHVsbHMgdGhlICJzbGljZXMiIGxlbmd0aCBzdWJzZXQgb2YgdGhlIGp0aCBjb2x1bW4gc3RhcnRpbmcgYXQNCnNsaWNlcyBhbmQgZW5kaW5nIGF0IGkgZnJvbSB0aGUgMHRoIHNsaWNlICh3aGljaCBpcyB0aGUgb3JpZ2luYWwNCm1hdHJpeCkgYW5kIHB1dHMgdGhlIHByb2R1Y3QgaW4gdG8gdGhlIEMoaSwgaiwgc2xpY2VzKSBlbnRyeS4NCg0KWW91IGNhbiB0ZXN0IHRoZSB0d28gYXJlIGlkZW50aWNhbCB0aHJvdWdoIGlkZW50aWNhbCh1cF9DKGEpLCB1cF9SKGEpKQ0KZm9yIGFueSBhLCBhbmQgdGhlIEMgdmVyc2lvbiBpcywgb2YgY291cnNlLCBtdWNoIGZhc3RlciBlc3BlY2lhbGx5IGZvcg0KbGFyZ2UgbWF0cmljZXMuDQoNCkl0IG9mdGVuIHBheXMgdG8gc3RhcnQgd2l0aCBzb21ldGhpbmcgc2ltcGxlciwgYW5kIHNlZSBpZiB0aGVyZSBpcyBhDQpwYXR0ZXJuIHlvdSBjYW4gaWRlbnRpZnkgd2hpY2ggd291bGQgaGVscCB5b3UgY29uY2VwdHVhbGx5LCBldmVuIGlmDQpub3QgY29tcGxldGVseSBvcHRpbWl6ZWQuDQoNCg0KYGBge3J9DQojIHRoZSBSIGVxdWl2YWxlbnQgYWJvdmUNCg0KdXBfUiA8LSBmdW5jdGlvbihhKXsNCiAgbSA9IGRpbShhKVtbMV1dDQogIG4gPSBkaW0oYSlbWzJdXQ0KICANCiAgYiA9IGFycmF5KGFzLmRvdWJsZSgwKSwgZGltID0gYyhtLCBuLCBtKSkNCiAgDQogIGZvcihpIGluIDE6bSl7DQogICAgZm9yKGogaW4gMTpuKXsNCiAgICAgIGZvcihxIGluIDE6aSl7DQogICAgICAgIGlmKHE9PTEpew0KICAgICAgICAgIGJbaSwgaiwgcV0gPSBhW2ksIGpdOw0KICAgICAgICB9DQogICAgICAgIGVsc2V7DQogICAgICAgICAgYltpLCBqLCBxXSA9IGJbaS0xLCBqLCBxLTFdICogYVtpLCBqXTsNCiAgICAgICAgfQ0KICAgICAgfQ0KICAgIH0NCiAgfQ0KICByZXR1cm4oYikNCn0NCg0KdXBfUihteCkNCmBgYA0KDQoNCg0KYGBge3J9DQpsaWJyYXJ5KFJjcHApDQoNCnNyYyA8LSAnDQojaW5jbHVkZSA8UmNwcEFybWFkaWxsby5oPg0KdXNpbmcgbmFtZXNwYWNlIFJjcHA7DQp1c2luZyBuYW1lc3BhY2UgUmNwcEFybWFkaWxsbzsNCnVzaW5nIG5hbWVzcGFjZSBhcm1hOw0KLy9bW1JjcHA6OmRlcGVuZHMoUmNwcEFybWFkaWxsbyldXQ0KDQovL1tbUmNwcDo6ZXhwb3J0XV0NCmN1YmUgdXBfQ0kobWF0IGEpew0KICAgIGludCBtID0gYS5uX3Jvd3M7ICAgIC8vIGdldCByb3dzIGZyb20gbWF0cml4IGENCiAgICBpbnQgbiA9IGEubl9jb2xzOyAgICAvLyBnZXQgY29scyBmcm9tIG1hdHJpeCBhDQogICAgDQogICAgY3ViZSBDID0gY3ViZShtLCBuLCBtLCBmaWxsOjp6ZXJvcyk7ICAvLyBjcmVhdGUgYXJyYXkgYW5kIGZpbGwgdy96ZXJvcw0KICAgIA0KICAgIEMuc2xpY2UoMCkgPSBhOyAgLy8gb3V0cHV0IGFycmF5IDFzdCBtYXRyaXggaXMgbWF0cml4IGENCiAgICANCiAgICBmb3IgKGludCBzbGljZXMgPSAxOyBzbGljZXMgPCBtOyArK3NsaWNlcyl7ICAgLy8gbW92ZSB0aHJvdWdoIHNsaWNlcw0KICAgICAgICBmb3IgKGludCBqID0gMDsgaiA8IG47ICsraikgeyAgICAgICAgICAgICAvLyBtb3ZlIHRocm91Z2ggY29scw0KICAgICAgICAgICAgZm9yIChpbnQgaSA9IHNsaWNlczsgaSA8IG07ICsraSkgeyAgICAvLyBtb3ZlIHRocm91Z2ggcm93cw0KICAgICAgICAgICAgICAgIC8vIGV4dHJhY3Qgc3ViY3ViZXMNCiAgICAgICAgICAgICAgICB2ZWMgUyA9IEMuc3ViY3ViZShpIC0gc2xpY2VzLCBqLCAwLCBpLCBqLCAwKTsNCiAgICAgICAgICAgICAgICAvLyBBcm1hZGlsbG8gcHJvZHVjdCBmdW5jdGlvbiBhcm1hOjpwcm9kKFMpDQogICAgICAgICAgICAgICAgQyhpLCBqLCBzbGljZXMpID0gcHJvZChTKTsNCiAgICAgICAgICAgIH0NCiAgICAgICAgfQ0KICAgIH0NCiAgICByZXR1cm4oQyk7DQp9DQonDQoNCmNwcEZ1bmN0aW9uKGNvZGU9c3JjLCBkZXBlbmRzPSJSY3BwQXJtYWRpbGxvIikNCg0KbXggPC0gbWF0cml4KDEwLCBucm93PTUsIG5jb2w9MikgICAgIyBSIGFycmF5IHRvIHNlbmQNCnVwX0NJKG14KQ0KDQpgYGANCg0KDQoNCg0KDQoNCg0KDQoNCg==</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQoNCg0KYGBge3J9DQojIyBOb3cgbGV0J3MgYWNjb21wbGlzaCB0aGUgc2FtZSB0YXNrIHdpdGggUmNwcCBhbmQgaW5saW5lDQojIyBOb3RlOiBpbmxpbmUgcmVxdWlyZXMgUmNwcCBzbyB0aGUgbGF0dGVyIHdpbGwgYmUgbG9hZGVkIGF1dG9tYXRpY2FsbHkNCg0KbGlicmFyeShSY3BwKQ0KbGlicmFyeShpbmxpbmUpDQoNCiMgYW5kIGRlZmluZSBvdXIgdmVyc2lvbiBpbiBDKysNCnJjcHAuc3JjIDwtICcNCiAgI2luY2x1ZGUgPGNtYXRoPg0KICANCiAgTnVtZXJpY1ZlY3RvciB4eCh4KTsNCiAgZG91YmxlIHl5ID0gYXM8ZG91YmxlPih5KTsNCiAgaW50IG5feHggPSB4eC5zaXplKCk7DQoNCiAgTnVtZXJpY01hdHJpeCBhbnMobl94eCwgbl94eCk7ICAgICAgLy8gIHJldHVybiBtYXRyaXgNCg0KICBmb3IoaW50IGkgPSAwOyBpIDwgbl94eDsgaSsrKSB7DQogICAgZm9yKGludCBqID0gMDsgaiA8IG5feHg7IGorKyl7DQogICAgICBpZiAoKHh4W2ldLXh4W2pdPDEwZS03KSAmJiAoeHhbaV0teHhbal0+LTEwZS03KSl7DQogICAgICAgIGFucyhpLGopID0gZXhwKHh4W2pdKnl5KSp5eTsNCiAgICAgIH1lbHNlew0KCSAgICAgIGFucyhpLGopID0gKGV4cCh4eFtpXSp5eSkgLSBleHAoeHhbal0qeXkpKS8oeHhbaV0gLSB4eFtqXSk7DQogICAgICB9DQogICAgfQ0KICB9DQogIA0KICByZXR1cm4gd3JhcChhbnMpOw0KJw0KIA0KYXV4Lm1hdC5yY3BwID0gY3h4ZnVuY3Rpb24oc2lnbmF0dXJlKHg9Im51bWVyaWMiLCANCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB5PSJudW1lcmljIiksIA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgYm9keT1yY3BwLnNyYywgDQogICAgICAgICAgICAgICAgICAgICAgICAgICBwbHVnaW49IlJjcHAiKQ0Kc2V0LnNlZWQoMTIzNCkNCiMgdGVzdC52ZWMgPSBydW5pZig1KQ0KdGVzdC52ZWMgPSBzZXEoMSw1KQ0KdGVzdC5zY2FsYXIgPSBydW5pZigxKQ0KDQphdXgubWF0LnJjcHAodGVzdC52ZWMsIHRlc3Quc2NhbGFyKQ0KYGBgDQoNCg0KYGBge3J9DQpsaWJyYXJ5KFJjcHApDQpzb3VyY2VDcHAoIi4uL3NyYy92ZWNUb01hdC5jcHAiKQ0KDQpzZXQuc2VlZCgxMjM0KQ0KdGVzdC52ZWMgPSBzZXEoMSw1KQ0KdGVzdC5zY2FsYXIgPSBydW5pZigxKQ0KDQp2ZWNUb01hdCh0ZXN0LnZlYywgdGVzdC5zY2FsYXIpDQpgYGANCg0K</div>
 
 
 

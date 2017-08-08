@@ -1,0 +1,61 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+
+```{r}
+## Now let's accomplish the same task with Rcpp and inline
+## Note: inline requires Rcpp so the latter will be loaded automatically
+
+library(Rcpp)
+library(inline)
+
+# and define our version in C++
+rcpp.src <- '
+  #include <cmath>
+  
+  NumericVector xx(x);
+  double yy = as<double>(y);
+  int n_xx = xx.size();
+
+  NumericMatrix ans(n_xx, n_xx);      //  return matrix
+
+  for(int i = 0; i < n_xx; i++) {
+    for(int j = 0; j < n_xx; j++){
+      if ((xx[i]-xx[j]<10e-7) && (xx[i]-xx[j]>-10e-7)){
+        ans(i,j) = exp(xx[j]*yy)*yy;
+      }else{
+	      ans(i,j) = (exp(xx[i]*yy) - exp(xx[j]*yy))/(xx[i] - xx[j]);
+      }
+    }
+  }
+  
+  return wrap(ans);
+'
+ 
+aux.mat.rcpp = cxxfunction(signature(x="numeric", 
+                                     y="numeric"), 
+                           body=rcpp.src, 
+                           plugin="Rcpp")
+set.seed(1234)
+# test.vec = runif(5)
+test.vec = seq(1,5)
+test.scalar = runif(1)
+
+aux.mat.rcpp(test.vec, test.scalar)
+```
+
+
+```{r}
+library(Rcpp)
+sourceCpp("../src/vecToMat.cpp")
+
+set.seed(1234)
+test.vec = seq(1,5)
+test.scalar = runif(1)
+
+vecToMat(test.vec, test.scalar)
+```
+
