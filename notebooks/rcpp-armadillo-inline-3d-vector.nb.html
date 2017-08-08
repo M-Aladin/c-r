@@ -142,7 +142,7 @@ $(document).ready(function () {
 </style>
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("c-inline-array-plus-one.Rmd");
+  window.initializeSourceEmbed("rcpp-armadillo-inline-3d-vector.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
@@ -172,127 +172,45 @@ $(document).ready(function () {
 
 
 <!-- rnb-text-begin -->
-<p>Source: <a href="http://eli.thegreenplace.net/2015/memory-layout-of-multi-dimensional-arrays/" class="uri">http://eli.thegreenplace.net/2015/memory-layout-of-multi-dimensional-arrays/</a></p>
-<div id="changing-the-loop-to-three-dimensions" class="section level2">
-<h2>changing the loop to three dimensions</h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBodHRwOi8vZWxpLnRoZWdyZWVucGxhY2UubmV0LzIwMTUvbWVtb3J5LWxheW91dC1vZi1tdWx0aS1kaW1lbnNpb25hbC1hcnJheXMvXG5saWJyYXJ5KGlubGluZSlcbnNpZyA8LSBzaWduYXR1cmUoeD1cIm51bWVyaWNcIiwgZGltPVwiaW50ZWdlclwiKVxuYm9keTMgPC0gXCJcbiAgICAjaW5jbHVkZSA8c3RkaW8uaD5cbiAgICBmb3IgKGludCBpID0gMDsgaSA8IGRpbVswXTsgKytpKVxuICAgICAgICBmb3IgKGludCBqID0gMDsgaiA8IGRpbVsxXTsgKytqKVxuICAgICAgICAgICAgZm9yIChpbnQgayA9IDA7IGsgPCBkaW1bMl07ICsraykge1xuICAgICAgICAgICAgICAgIHhbIGsgKyBkaW1bMl0qKGorIGkqZGltWzFdKSBdICs9IDE7XG4gICAgICAgICAgICB9XG4gICAgICAgIFxuXCJcbmNmdW4zIDwtIGNmdW5jdGlvbihzaWcsIGJvZHk9Ym9keTMsIGxhbmd1YWdlPVwiQ1wiLCBjb252ZW50aW9uPVwiLkNcIilcbiMgdXNpbmcgdGhlIEMgZnVuY3Rpb24gaW4gUlxucGx1czMgPC0gZnVuY3Rpb24obSkge1xuICAgIG1bXSA9IGNmdW4zKGFzLm51bWVyaWMobSksIGRpbShtKSkkeFxuICAgIG1cbn1cbnBsdXMzKGFycmF5KDEsIGRpbSA9IGMoMywgNCwgMykpKVxuYGBgIn0= -->
-<pre class="r"><code># http://eli.thegreenplace.net/2015/memory-layout-of-multi-dimensional-arrays/
-library(inline)
-sig &lt;- signature(x=&quot;numeric&quot;, dim=&quot;integer&quot;)
-body3 &lt;- &quot;
-    #include &lt;stdio.h&gt;
-    for (int i = 0; i &lt; dim[0]; ++i)
-        for (int j = 0; j &lt; dim[1]; ++j)
-            for (int k = 0; k &lt; dim[2]; ++k) {
-                x[ k + dim[2]*(j+ i*dim[1]) ] += 1;
-            }
-        
-&quot;
-cfun3 &lt;- cfunction(sig, body=body3, language=&quot;C&quot;, convention=&quot;.C&quot;)
-# using the C function in R
-plus3 &lt;- function(m) {
-    m[] = cfun3(as.numeric(m), dim(m))$x
-    m
-}
-plus3(array(1, dim = c(3, 4, 3)))</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShpbmxpbmUpXG5meCA8LSBjeHhmdW5jdGlvbihzaWduYXR1cmUodnM9XCJudW1lcmljXCIsIGRzPVwiaW50ZWdlclwiKSwgcGx1Z2luPVwiUmNwcFwiLCBcbmJvZHk9J1xuICAgIFJjcHA6Ok51bWVyaWNWZWN0b3Igdih2cyk7ICAgICAgICAgICAgLy8gZ2V0IHRoZSBkYXRhXG4gICAgUmNwcDo6RGltZW5zaW9uIGQoZHMpOyAgICAgICAgICAgICAgICAvLyBnZXQgdGhlIGRpbSBvYmplY3RcbiAgICBSY3BwOjpOdW1lcmljVmVjdG9yIHIoZCk7ICAgICAgICAgICAgIC8vIGNyZWF0ZSB2ZWMuIHdpdGggY29ycmVjdCBkaW1zXG4gICAgc3RkOjpjb3B5KHYuYmVnaW4oKSwgdi5lbmQoKSwgci5iZWdpbigpKTsgIC8vIGFuZCBjb3B5XG4gICAgcmV0dXJuIFJjcHA6Okxpc3Q6OmNyZWF0ZSh2LCBkLCByKTtcbiAgICAnKVxuZngoMTo4LCBjKDIsMiwyKSlcbmBgYCJ9 -->
+<pre class="r"><code>library(inline)
+fx &lt;- cxxfunction(signature(vs=&quot;numeric&quot;, ds=&quot;integer&quot;), plugin=&quot;Rcpp&quot;, 
+body='
+    Rcpp::NumericVector v(vs);            // get the data
+    Rcpp::Dimension d(ds);                // get the dim object
+    Rcpp::NumericVector r(d);             // create vec. with correct dims
+    std::copy(v.begin(), v.end(), r.begin());  // and copy
+    return Rcpp::List::create(v, d, r);
+    ')
+fx(1:8, c(2,2,2))</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiLCAsIDFcblxuICAgICBbLDFdIFssMl0gWywzXSBbLDRdXG5bMSxdICAgIDIgICAgMiAgICAyICAgIDJcblsyLF0gICAgMiAgICAyICAgIDIgICAgMlxuWzMsXSAgICAyICAgIDIgICAgMiAgICAyXG5cbiwgLCAyXG5cbiAgICAgWywxXSBbLDJdIFssM10gWyw0XVxuWzEsXSAgICAyICAgIDIgICAgMiAgICAyXG5bMixdICAgIDIgICAgMiAgICAyICAgIDJcblszLF0gICAgMiAgICAyICAgIDIgICAgMlxuXG4sICwgM1xuXG4gICAgIFssMV0gWywyXSBbLDNdIFssNF1cblsxLF0gICAgMiAgICAyICAgIDIgICAgMlxuWzIsXSAgICAyICAgIDIgICAgMiAgICAyXG5bMyxdICAgIDIgICAgMiAgICAyICAgIDJcbiJ9 -->
-<pre><code>, , 1
+<!-- rnb-output-begin eyJkYXRhIjoiW1sxXV1cblsxXSAxIDIgMyA0IDUgNiA3IDhcblxuW1syXV1cblsxXSAyIDIgMlxuXG5bWzNdXVxuLCAsIDFcblxuICAgICBbLDFdIFssMl1cblsxLF0gICAgMSAgICAzXG5bMixdICAgIDIgICAgNFxuXG4sICwgMlxuXG4gICAgIFssMV0gWywyXVxuWzEsXSAgICA1ICAgIDdcblsyLF0gICAgNiAgICA4XG4ifQ== -->
+<pre><code>[[1]]
+[1] 1 2 3 4 5 6 7 8
 
-     [,1] [,2] [,3] [,4]
-[1,]    2    2    2    2
-[2,]    2    2    2    2
-[3,]    2    2    2    2
+[[2]]
+[1] 2 2 2
+
+[[3]]
+, , 1
+
+     [,1] [,2]
+[1,]    1    3
+[2,]    2    4
 
 , , 2
 
-     [,1] [,2] [,3] [,4]
-[1,]    2    2    2    2
-[2,]    2    2    2    2
-[3,]    2    2    2    2
-
-, , 3
-
-     [,1] [,2] [,3] [,4]
-[1,]    2    2    2    2
-[2,]    2    2    2    2
-[3,]    2    2    2    2</code></pre>
+     [,1] [,2]
+[1,]    5    7
+[2,]    6    8</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBhcHBseWluZyBvbiBhIHZlY3RvciAzeDF4MVxucGx1czMoYXJyYXkoMSwgZGltID0gYygzLCAxLCAxKSkpXG5gYGAifQ== -->
-<pre class="r"><code># applying on a vector 3x1x1
-plus3(array(1, dim = c(3, 1, 1)))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiLCAsIDFcblxuICAgICBbLDFdXG5bMSxdICAgIDJcblsyLF0gICAgMlxuWzMsXSAgICAyXG4ifQ== -->
-<pre><code>, , 1
 
-     [,1]
-[1,]    2
-[2,]    2
-[3,]    2</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="inverting-the-indices" class="section level2">
-<h2>inverting the indices</h2>
-<p>instead of having <code>i</code> outside we put <code>k</code>. The result is the same.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBodHRwOi8vZWxpLnRoZWdyZWVucGxhY2UubmV0LzIwMTUvbWVtb3J5LWxheW91dC1vZi1tdWx0aS1kaW1lbnNpb25hbC1hcnJheXMvXG5saWJyYXJ5KGlubGluZSlcbnNpZyA8LSBzaWduYXR1cmUoeD1cIm51bWVyaWNcIiwgZGltPVwiaW50ZWdlclwiKVxuYm9keSA8LSBcIlxuICAgICNpbmNsdWRlIDxzdGRpby5oPlxuICAgIGZvciAoaW50IGsgPSAwOyBrIDwgZGltWzBdOyArK2spXG4gICAgICAgIGZvciAoaW50IGogPSAwOyBqIDwgZGltWzFdOyArK2opXG4gICAgICAgICAgICBmb3IgKGludCBpID0gMDsgaSA8IGRpbVsyXTsgKytpKSB7XG4gICAgICAgICAgICAgICAgeFsgayArIGRpbVsyXSooaisgaSpkaW1bMV0pIF0gKz0gMTtcbiAgICAgICAgICAgIH1cbiAgICAgICAgXG5cIlxuY2Z1biA8LSBjZnVuY3Rpb24oc2lnLCBib2R5PWJvZHksIGxhbmd1YWdlPVwiQ1wiLCBjb252ZW50aW9uPVwiLkNcIilcbiMgdXNpbmcgdGhlIEMgZnVuY3Rpb24gaW4gUlxucGx1cyA8LSBmdW5jdGlvbihtKSB7XG4gICAgbVtdID0gY2Z1bihhcy5udW1lcmljKG0pLCBkaW0obSkpJHhcbiAgICBtXG59XG5wbHVzKGFycmF5KDEsIGRpbSA9IGMoMywgNCwgMykpKVxuYGBgIn0= -->
-<pre class="r"><code># http://eli.thegreenplace.net/2015/memory-layout-of-multi-dimensional-arrays/
-library(inline)
-sig &lt;- signature(x=&quot;numeric&quot;, dim=&quot;integer&quot;)
-body &lt;- &quot;
-    #include &lt;stdio.h&gt;
-    for (int k = 0; k &lt; dim[0]; ++k)
-        for (int j = 0; j &lt; dim[1]; ++j)
-            for (int i = 0; i &lt; dim[2]; ++i) {
-                x[ k + dim[2]*(j+ i*dim[1]) ] += 1;
-            }
-        
-&quot;
-cfun &lt;- cfunction(sig, body=body, language=&quot;C&quot;, convention=&quot;.C&quot;)
-# using the C function in R
-plus &lt;- function(m) {
-    m[] = cfun(as.numeric(m), dim(m))$x
-    m
-}
-plus(array(1, dim = c(3, 4, 3)))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiLCAsIDFcblxuICAgICBbLDFdIFssMl0gWywzXSBbLDRdXG5bMSxdICAgIDIgICAgMiAgICAyICAgIDJcblsyLF0gICAgMiAgICAyICAgIDIgICAgMlxuWzMsXSAgICAyICAgIDIgICAgMiAgICAyXG5cbiwgLCAyXG5cbiAgICAgWywxXSBbLDJdIFssM10gWyw0XVxuWzEsXSAgICAyICAgIDIgICAgMiAgICAyXG5bMixdICAgIDIgICAgMiAgICAyICAgIDJcblszLF0gICAgMiAgICAyICAgIDIgICAgMlxuXG4sICwgM1xuXG4gICAgIFssMV0gWywyXSBbLDNdIFssNF1cblsxLF0gICAgMiAgICAyICAgIDIgICAgMlxuWzIsXSAgICAyICAgIDIgICAgMiAgICAyXG5bMyxdICAgIDIgICAgMiAgICAyICAgIDJcbiJ9 -->
-<pre><code>, , 1
-
-     [,1] [,2] [,3] [,4]
-[1,]    2    2    2    2
-[2,]    2    2    2    2
-[3,]    2    2    2    2
-
-, , 2
-
-     [,1] [,2] [,3] [,4]
-[1,]    2    2    2    2
-[2,]    2    2    2    2
-[3,]    2    2    2    2
-
-, , 3
-
-     [,1] [,2] [,3] [,4]
-[1,]    2    2    2    2
-[2,]    2    2    2    2
-[3,]    2    2    2    2</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-</div>
-
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpTb3VyY2U6IGh0dHA6Ly9lbGkudGhlZ3JlZW5wbGFjZS5uZXQvMjAxNS9tZW1vcnktbGF5b3V0LW9mLW11bHRpLWRpbWVuc2lvbmFsLWFycmF5cy8NCg0KDQoNCiMjIGNoYW5naW5nIHRoZSBsb29wIHRvIHRocmVlIGRpbWVuc2lvbnMNCg0KYGBge3J9DQojIGh0dHA6Ly9lbGkudGhlZ3JlZW5wbGFjZS5uZXQvMjAxNS9tZW1vcnktbGF5b3V0LW9mLW11bHRpLWRpbWVuc2lvbmFsLWFycmF5cy8NCg0KbGlicmFyeShpbmxpbmUpDQoNCnNpZyA8LSBzaWduYXR1cmUoeD0ibnVtZXJpYyIsIGRpbT0iaW50ZWdlciIpDQoNCmJvZHkzIDwtICINCiAgICAjaW5jbHVkZSA8c3RkaW8uaD4NCiAgICBmb3IgKGludCBpID0gMDsgaSA8IGRpbVswXTsgKytpKQ0KICAgICAgICBmb3IgKGludCBqID0gMDsgaiA8IGRpbVsxXTsgKytqKQ0KICAgICAgICAgICAgZm9yIChpbnQgayA9IDA7IGsgPCBkaW1bMl07ICsraykgew0KICAgICAgICAgICAgICAgIHhbIGsgKyBkaW1bMl0qKGorIGkqZGltWzFdKSBdICs9IDE7DQogICAgICAgICAgICB9DQogICAgICAgIA0KIg0KDQpjZnVuMyA8LSBjZnVuY3Rpb24oc2lnLCBib2R5PWJvZHkzLCBsYW5ndWFnZT0iQyIsIGNvbnZlbnRpb249Ii5DIikNCg0KIyB1c2luZyB0aGUgQyBmdW5jdGlvbiBpbiBSDQpwbHVzMyA8LSBmdW5jdGlvbihtKSB7DQogICAgbVtdID0gY2Z1bjMoYXMubnVtZXJpYyhtKSwgZGltKG0pKSR4DQogICAgbQ0KfQ0KDQpwbHVzMyhhcnJheSgxLCBkaW0gPSBjKDMsIDQsIDMpKSkNCmBgYA0KDQoNCmBgYHtyfQ0KIyBhcHBseWluZyBvbiBhIHZlY3RvciAzeDF4MQ0KcGx1czMoYXJyYXkoMSwgZGltID0gYygzLCAxLCAxKSkpDQpgYGANCg0KDQojIyBpbnZlcnRpbmcgdGhlIGluZGljZXMNCmluc3RlYWQgb2YgaGF2aW5nIGBpYCBvdXRzaWRlIHdlIHB1dCBga2AuIFRoZSByZXN1bHQgaXMgdGhlIHNhbWUuDQoNCmBgYHtyfQ0KIyBodHRwOi8vZWxpLnRoZWdyZWVucGxhY2UubmV0LzIwMTUvbWVtb3J5LWxheW91dC1vZi1tdWx0aS1kaW1lbnNpb25hbC1hcnJheXMvDQoNCiMgaW5zdGVhZCBvZiBoYXZpbmcgYGlgIG91dHNpZGUgd2UgcHV0IGBrYC4NCiMgVGhlIHJlc3VsdCBpcyB0aGUgc2FtZQ0KDQpsaWJyYXJ5KGlubGluZSkNCg0Kc2lnIDwtIHNpZ25hdHVyZSh4PSJudW1lcmljIiwgZGltPSJpbnRlZ2VyIikNCg0KYm9keSA8LSAiDQogICAgI2luY2x1ZGUgPHN0ZGlvLmg+DQogICAgZm9yIChpbnQgayA9IDA7IGsgPCBkaW1bMF07ICsraykNCiAgICAgICAgZm9yIChpbnQgaiA9IDA7IGogPCBkaW1bMV07ICsraikNCiAgICAgICAgICAgIGZvciAoaW50IGkgPSAwOyBpIDwgZGltWzJdOyArK2kpIHsNCiAgICAgICAgICAgICAgICB4WyBrICsgZGltWzJdKihqKyBpKmRpbVsxXSkgXSArPSAxOw0KICAgICAgICAgICAgfQ0KICAgICAgICANCiINCg0KY2Z1biA8LSBjZnVuY3Rpb24oc2lnLCBib2R5PWJvZHksIGxhbmd1YWdlPSJDIiwgY29udmVudGlvbj0iLkMiKQ0KDQojIHVzaW5nIHRoZSBDIGZ1bmN0aW9uIGluIFINCnBsdXMgPC0gZnVuY3Rpb24obSkgew0KICAgIG1bXSA9IGNmdW4oYXMubnVtZXJpYyhtKSwgZGltKG0pKSR4DQogICAgbQ0KfQ0KDQpwbHVzKGFycmF5KDEsIGRpbSA9IGMoMywgNCwgMykpKQ0KYGBgDQoNCg0KDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpgYGB7cn0NCmxpYnJhcnkoaW5saW5lKQ0KZnggPC0gY3h4ZnVuY3Rpb24oc2lnbmF0dXJlKHZzPSJudW1lcmljIiwgZHM9ImludGVnZXIiKSwgcGx1Z2luPSJSY3BwIiwgDQpib2R5PScNCiAgICBSY3BwOjpOdW1lcmljVmVjdG9yIHYodnMpOyAgICAgICAgICAgICAgICAgLy8gZ2V0IHRoZSBkYXRhDQogICAgUmNwcDo6RGltZW5zaW9uIGQoZHMpOyAgICAgICAgICAgICAgICAgICAgIC8vIGdldCB0aGUgZGltIG9iamVjdA0KICAgIFJjcHA6Ok51bWVyaWNWZWN0b3IgcihkKTsgICAgICAgICAgICAgICAgICAvLyBjcmVhdGUgdmVjLiB3aXRoIGNvcnJlY3QgZGltcw0KICAgIHN0ZDo6Y29weSh2LmJlZ2luKCksIHYuZW5kKCksIHIuYmVnaW4oKSk7ICAvLyBhbmQgY29weQ0KICAgIHJldHVybiBSY3BwOjpMaXN0OjpjcmVhdGUodiwgZCwgcik7DQogICAgJykNCg0KZngoMTo4LCBjKDIsMiwyKSkNCmBgYA0KDQo=</div>
 
 
 

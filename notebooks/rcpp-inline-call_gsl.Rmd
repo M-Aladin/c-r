@@ -1,0 +1,60 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+# library(Rcpp)
+require(inline)
+library(Rcpp)
+library(RcppGSL)
+
+src <- "int seed = Rcpp::as<int>(par) ;
+    gsl_rng_env_setup();
+    gsl_rng *r = gsl_rng_alloc (gsl_rng_default);
+    gsl_rng_set (r, (unsigned long) seed);
+    double v = gsl_rng_get (r);
+    gsl_rng_free(r);
+    return Rcpp::wrap(v); "
+
+```
+
+
+```{r}
+fun <- cfunction(signature(par="numeric"), body=src, 
+                 includes="#include <gsl/gsl_rng.h>", 
+                 Rcpp=FALSE,
+                 cppargs="-I/usr/include", 
+                 libargs="-lgsl -lgslcblas")
+
+# fun(4)
+```
+
+
+
+```{r}
+require(inline)
+inctxt='
+#include <gsl/gsl_matrix.h>
+#include <gsl/gsl_blas.h>
+'
+bodytxt='
+RcppGSL::matrix<double> M = sM; // create data structures from SEXP
+int k = M.ncol();
+Rcpp::NumericVector n(k); // to store results
+for (int j = 0; j < k; j++) {
+RcppGSL::vector_view<double> colview = gsl_matrix_column (M, j);
+n[j] = gsl_blas_dnrm2(colview);
+}
+return n; // return vector
+'
+
+foo <- cxxfunction(
+ signature(sM="numeric"),
+ body=bodytxt, inc=inctxt, plugin="RcppGSL")
+
+M <- outer(sin(0:9), rep(1,10), "*") + outer(rep(1, 10), cos(0:9), "*")
+foo(M)
+
+```
+

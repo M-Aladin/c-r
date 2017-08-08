@@ -142,7 +142,7 @@ $(document).ready(function () {
 </style>
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("c-inline-array-plus-one.Rmd");
+  window.initializeSourceEmbed("rcpp-inline-call_gsl.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
@@ -172,127 +172,208 @@ $(document).ready(function () {
 
 
 <!-- rnb-text-begin -->
-<p>Source: <a href="http://eli.thegreenplace.net/2015/memory-layout-of-multi-dimensional-arrays/" class="uri">http://eli.thegreenplace.net/2015/memory-layout-of-multi-dimensional-arrays/</a></p>
-<div id="changing-the-loop-to-three-dimensions" class="section level2">
-<h2>changing the loop to three dimensions</h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBodHRwOi8vZWxpLnRoZWdyZWVucGxhY2UubmV0LzIwMTUvbWVtb3J5LWxheW91dC1vZi1tdWx0aS1kaW1lbnNpb25hbC1hcnJheXMvXG5saWJyYXJ5KGlubGluZSlcbnNpZyA8LSBzaWduYXR1cmUoeD1cIm51bWVyaWNcIiwgZGltPVwiaW50ZWdlclwiKVxuYm9keTMgPC0gXCJcbiAgICAjaW5jbHVkZSA8c3RkaW8uaD5cbiAgICBmb3IgKGludCBpID0gMDsgaSA8IGRpbVswXTsgKytpKVxuICAgICAgICBmb3IgKGludCBqID0gMDsgaiA8IGRpbVsxXTsgKytqKVxuICAgICAgICAgICAgZm9yIChpbnQgayA9IDA7IGsgPCBkaW1bMl07ICsraykge1xuICAgICAgICAgICAgICAgIHhbIGsgKyBkaW1bMl0qKGorIGkqZGltWzFdKSBdICs9IDE7XG4gICAgICAgICAgICB9XG4gICAgICAgIFxuXCJcbmNmdW4zIDwtIGNmdW5jdGlvbihzaWcsIGJvZHk9Ym9keTMsIGxhbmd1YWdlPVwiQ1wiLCBjb252ZW50aW9uPVwiLkNcIilcbiMgdXNpbmcgdGhlIEMgZnVuY3Rpb24gaW4gUlxucGx1czMgPC0gZnVuY3Rpb24obSkge1xuICAgIG1bXSA9IGNmdW4zKGFzLm51bWVyaWMobSksIGRpbShtKSkkeFxuICAgIG1cbn1cbnBsdXMzKGFycmF5KDEsIGRpbSA9IGMoMywgNCwgMykpKVxuYGBgIn0= -->
-<pre class="r"><code># http://eli.thegreenplace.net/2015/memory-layout-of-multi-dimensional-arrays/
-library(inline)
-sig &lt;- signature(x=&quot;numeric&quot;, dim=&quot;integer&quot;)
-body3 &lt;- &quot;
-    #include &lt;stdio.h&gt;
-    for (int i = 0; i &lt; dim[0]; ++i)
-        for (int j = 0; j &lt; dim[1]; ++j)
-            for (int k = 0; k &lt; dim[2]; ++k) {
-                x[ k + dim[2]*(j+ i*dim[1]) ] += 1;
-            }
-        
-&quot;
-cfun3 &lt;- cfunction(sig, body=body3, language=&quot;C&quot;, convention=&quot;.C&quot;)
-# using the C function in R
-plus3 &lt;- function(m) {
-    m[] = cfun3(as.numeric(m), dim(m))$x
-    m
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBsaWJyYXJ5KFJjcHApXG5yZXF1aXJlKGlubGluZSlcbmxpYnJhcnkoUmNwcClcbmBgYCJ9 -->
+<pre class="r"><code># library(Rcpp)
+require(inline)
+library(Rcpp)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiXG5BdHRhY2hpbmcgcGFja2FnZTog46S847ixUmNwcOOkvOO4slxuXG5UaGUgZm9sbG93aW5nIG9iamVjdCBpcyBtYXNrZWQgZnJvbSDjpLzjuLFwYWNrYWdlOmlubGluZeOkvOO4sjpcblxuICAgIHJlZ2lzdGVyUGx1Z2luXG4ifQ== -->
+<pre><code>
+Attaching package: 㤼㸱Rcpp㤼㸲
+
+The following object is masked from 㤼㸱package:inline㤼㸲:
+
+    registerPlugin</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShSY3BwR1NMKVxuYGBgIn0= -->
+<pre class="r"><code>library(RcppGSL)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiXG5BdHRhY2hpbmcgcGFja2FnZTog46S847ixUmNwcEdTTOOkvOO4slxuXG5UaGUgZm9sbG93aW5nIG9iamVjdCBpcyBtYXNrZWQgZnJvbSDjpLzjuLFwYWNrYWdlOlJjcHDjpLzjuLI6XG5cbiAgICBMZEZsYWdzXG4ifQ== -->
+<pre><code>
+Attaching package: 㤼㸱RcppGSL㤼㸲
+
+The following object is masked from 㤼㸱package:Rcpp㤼㸲:
+
+    LdFlags</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3JjIDwtIFwiaW50IHNlZWQgPSBSY3BwOjphczxpbnQ+KHBhcikgO1xuICAgIGdzbF9ybmdfZW52X3NldHVwKCk7XG4gICAgZ3NsX3JuZyAqciA9IGdzbF9ybmdfYWxsb2MgKGdzbF9ybmdfZGVmYXVsdCk7XG4gICAgZ3NsX3JuZ19zZXQgKHIsICh1bnNpZ25lZCBsb25nKSBzZWVkKTtcbiAgICBkb3VibGUgdiA9IGdzbF9ybmdfZ2V0IChyKTtcbiAgICBnc2xfcm5nX2ZyZWUocik7XG4gICAgcmV0dXJuIFJjcHA6OndyYXAodik7IFwiXG5gYGAifQ== -->
+<pre class="r"><code>src &lt;- &quot;int seed = Rcpp::as&lt;int&gt;(par) ;
+    gsl_rng_env_setup();
+    gsl_rng *r = gsl_rng_alloc (gsl_rng_default);
+    gsl_rng_set (r, (unsigned long) seed);
+    double v = gsl_rng_get (r);
+    gsl_rng_free(r);
+    return Rcpp::wrap(v); &quot;</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZnVuIDwtIGNmdW5jdGlvbihzaWduYXR1cmUocGFyPVwibnVtZXJpY1wiKSwgYm9keT1zcmMsIFxuICAgICAgICAgICAgICAgICBpbmNsdWRlcz1cIiNpbmNsdWRlIDxnc2wvZ3NsX3JuZy5oPlwiLCBcbiAgICAgICAgICAgICAgICAgUmNwcD1GQUxTRSxcbiAgICAgICAgICAgICAgICAgY3BwYXJncz1cIi1JL3Vzci9pbmNsdWRlXCIsIFxuICAgICAgICAgICAgICAgICBsaWJhcmdzPVwiLWxnc2wgLWxnc2xjYmxhc1wiKVxuYGBgIn0= -->
+<pre class="r"><code>fun &lt;- cfunction(signature(par=&quot;numeric&quot;), body=src, 
+                 includes=&quot;#include &lt;gsl/gsl_rng.h&gt;&quot;, 
+                 Rcpp=FALSE,
+                 cppargs=&quot;-I/usr/include&quot;, 
+                 libargs=&quot;-lgsl -lgslcblas&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoicnVubmluZyBjb21tYW5kICdDOi9QUk9HUkF+MS9SL1ItMzR+MS4xL2Jpbi94NjQvUiBDTUQgU0hMSUIgZmlsZTFiYjA1MzI0MmQ3My5jcHAgMj4gZmlsZTFiYjA1MzI0MmQ3My5jcHAuZXJyLnR4dCcgaGFkIHN0YXR1cyAxXG4ifQ== -->
+<pre><code>running command 'C:/PROGRA~1/R/R-34~1.1/bin/x64/R CMD SHLIB file1bb053242d73.cpp 2&gt; file1bb053242d73.cpp.err.txt' had status 1</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiZmlsZTFiYjA1MzI0MmQ3My5jcHA6NToyNTogZmF0YWwgZXJyb3I6IGdzbC9nc2xfcm5nLmg6IE5vIHN1Y2ggZmlsZSBvciBkaXJlY3RvcnlcbiAjaW5jbHVkZSA8Z3NsL2dzbF9ybmcuaD5cbiAgICAgICAgICAgICAgICAgICAgICAgICBeXG5jb21waWxhdGlvbiB0ZXJtaW5hdGVkLlxubWFrZTogKioqIFtmaWxlMWJiMDUzMjQyZDczLm9dIEVycm9yIDFcbldhcm5pbmcgbWVzc2FnZTpcbnJ1bm5pbmcgY29tbWFuZCAnbWFrZSAtZiBcIkM6L1BST0dSQX4xL1IvUi0zNH4xLjEvZXRjL3g2NC9NYWtlY29uZlwiIC1mIFwiQzovUFJPR1JBfjEvUi9SLTM0fjEuMS9zaGFyZS9tYWtlL3dpbnNobGliLm1rXCIgU0hMSUJfTERGTEFHUz0nJChTSExJQl9DWFhMREZMQUdTKScgU0hMSUJfTEQ9JyQoU0hMSUJfQ1hYTEQpJyBTSExJQj1cImZpbGUxYmIwNTMyNDJkNzMuZGxsXCIgV0lOPTY0IFRDTEJJTj02NCBPQkpFQ1RTPVwiZmlsZTFiYjA1MzI0MmQ3My5vXCInIGhhZCBzdGF0dXMgMiBcblxuRVJST1IocykgZHVyaW5nIGNvbXBpbGF0aW9uOiBzb3VyY2UgY29kZSBlcnJvcnMgb3IgY29tcGlsZXIgY29uZmlndXJhdGlvbiBlcnJvcnMhXG5cblByb2dyYW0gc291cmNlOlxuICAxOiAjaW5jbHVkZSA8Ui5oPlxuICAyOiAjaW5jbHVkZSA8UmRlZmluZXMuaD5cbiAgMzogI2luY2x1ZGUgPFJfZXh0L0Vycm9yLmg+XG4gIDQ6IFxuICA1OiAjaW5jbHVkZSA8Z3NsL2dzbF9ybmcuaD5cbiAgNjogXG4gIDc6IGV4dGVybiBcIkNcIiB7XG4gIDg6ICAgU0VYUCBmaWxlMWJiMDUzMjQyZDczICggU0VYUCBwYXIgKTtcbiAgOTogfVxuIDEwOiBcbiAxMTogU0VYUCBmaWxlMWJiMDUzMjQyZDczICggU0VYUCBwYXIgKSB7XG4gMTI6IGludCBzZWVkID0gUmNwcDo6YXM8aW50PihwYXIpIDtcbiAxMzogICAgIGdzbF9ybmdfZW52X3NldHVwKCk7XG4gMTQ6ICAgICBnc2xfcm5nICpyID0gZ3NsX3JuZ19hbGxvYyAoZ3NsX3JuZ19kZWZhdWx0KTtcbiAxNTogICAgIGdzbF9ybmdfc2V0IChyLCAodW5zaWduZWQgbG9uZykgc2VlZCk7XG4gMTY6ICAgICBkb3VibGUgdiA9IGdzbF9ybmdfZ2V0IChyKTtcbiAxNzogICAgIGdzbF9ybmdfZnJlZShyKTtcbiAxODogICAgIHJldHVybiBSY3BwOjp3cmFwKHYpOyBcbiAxOTogICB3YXJuaW5nKFwieW91ciBDIHByb2dyYW0gZG9lcyBub3QgcmV0dXJuIGFueXRoaW5nIVwiKTtcbiAyMDogICByZXR1cm4gUl9OaWxWYWx1ZTtcbiAyMTogfVxuIn0= -->
+<pre><code>file1bb053242d73.cpp:5:25: fatal error: gsl/gsl_rng.h: No such file or directory
+ #include &lt;gsl/gsl_rng.h&gt;
+                         ^
+compilation terminated.
+make: *** [file1bb053242d73.o] Error 1
+Warning message:
+running command 'make -f &quot;C:/PROGRA~1/R/R-34~1.1/etc/x64/Makeconf&quot; -f &quot;C:/PROGRA~1/R/R-34~1.1/share/make/winshlib.mk&quot; SHLIB_LDFLAGS='$(SHLIB_CXXLDFLAGS)' SHLIB_LD='$(SHLIB_CXXLD)' SHLIB=&quot;file1bb053242d73.dll&quot; WIN=64 TCLBIN=64 OBJECTS=&quot;file1bb053242d73.o&quot;' had status 2 
+
+ERROR(s) during compilation: source code errors or compiler configuration errors!
+
+Program source:
+  1: #include &lt;R.h&gt;
+  2: #include &lt;Rdefines.h&gt;
+  3: #include &lt;R_ext/Error.h&gt;
+  4: 
+  5: #include &lt;gsl/gsl_rng.h&gt;
+  6: 
+  7: extern &quot;C&quot; {
+  8:   SEXP file1bb053242d73 ( SEXP par );
+  9: }
+ 10: 
+ 11: SEXP file1bb053242d73 ( SEXP par ) {
+ 12: int seed = Rcpp::as&lt;int&gt;(par) ;
+ 13:     gsl_rng_env_setup();
+ 14:     gsl_rng *r = gsl_rng_alloc (gsl_rng_default);
+ 15:     gsl_rng_set (r, (unsigned long) seed);
+ 16:     double v = gsl_rng_get (r);
+ 17:     gsl_rng_free(r);
+ 18:     return Rcpp::wrap(v); 
+ 19:   warning(&quot;your C program does not return anything!&quot;);
+ 20:   return R_NilValue;
+ 21: }</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gY29tcGlsZUNvZGUoZiwgY29kZSwgbGFuZ3VhZ2UsIHZlcmJvc2UpIDogXG4gIENvbXBpbGF0aW9uIEVSUk9SLCBmdW5jdGlvbihzKS9tZXRob2Qocykgbm90IGNyZWF0ZWQhIGZpbGUxYmIwNTMyNDJkNzMuY3BwOjU6MjU6IGZhdGFsIGVycm9yOiBnc2wvZ3NsX3JuZy5oOiBObyBzdWNoIGZpbGUgb3IgZGlyZWN0b3J5XG4gI2luY2x1ZGUgPGdzbC9nc2xfcm5nLmg+XG4gICAgICAgICAgICAgICAgICAgICAgICAgXlxuY29tcGlsYXRpb24gdGVybWluYXRlZC5cbm1ha2U6ICoqKiBbZmlsZTFiYjA1MzI0MmQ3My5vXSBFcnJvciAxXG5XYXJuaW5nIG1lc3NhZ2U6XG5ydW5uaW5nIGNvbW1hbmQgJ21ha2UgLWYgXCJDOi9QUk9HUkF+MS9SL1ItMzR+MS4xL2V0Yy94NjQvTWFrZWNvbmZcIiAtZiBcIkM6L1BST0dSQX4xL1IvUi0zNH4xLjEvc2hhcmUvbWFrZS93aW5zaGxpYi5ta1wiIFNITElCX0xERkxBR1M9JyQoU0hMSUJfQ1hYTERGTEFHUyknIFNITElCX0xEPSckKFNITElCX0NYWExEKScgU0hMSUI9XCJmaWxlMWJiMDUzMjQyZDczLmRsbFwiIFdJTj02NCBUQ0xCSU49NjQgT0JKRUNUUz1cImZpbGUxYmIwNTMyNDJkNzMub1wiJyBoYWQgc3RhdHVzIDIgXG4ifQ== -->
+<pre><code>Error in compileCode(f, code, language, verbose) : 
+  Compilation ERROR, function(s)/method(s) not created! file1bb053242d73.cpp:5:25: fatal error: gsl/gsl_rng.h: No such file or directory
+ #include &lt;gsl/gsl_rng.h&gt;
+                         ^
+compilation terminated.
+make: *** [file1bb053242d73.o] Error 1
+Warning message:
+running command 'make -f &quot;C:/PROGRA~1/R/R-34~1.1/etc/x64/Makeconf&quot; -f &quot;C:/PROGRA~1/R/R-34~1.1/share/make/winshlib.mk&quot; SHLIB_LDFLAGS='$(SHLIB_CXXLDFLAGS)' SHLIB_LD='$(SHLIB_CXXLD)' SHLIB=&quot;file1bb053242d73.dll&quot; WIN=64 TCLBIN=64 OBJECTS=&quot;file1bb053242d73.o&quot;' had status 2 </code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVxdWlyZShpbmxpbmUpXG5gYGAifQ== -->
+<pre class="r"><code>require(inline)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBpbmxpbmVcbiJ9 -->
+<pre><code>Loading required package: inline</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaW5jdHh0PSdcbiNpbmNsdWRlIDxnc2wvZ3NsX21hdHJpeC5oPlxuI2luY2x1ZGUgPGdzbC9nc2xfYmxhcy5oPlxuJ1xuYm9keXR4dD0nXG5SY3BwR1NMOjptYXRyaXg8ZG91YmxlPiBNID0gc007IC8vIGNyZWF0ZSBkYXRhIHN0cnVjdHVyZXMgZnJvbSBTRVhQXG5pbnQgayA9IE0ubmNvbCgpO1xuUmNwcDo6TnVtZXJpY1ZlY3RvciBuKGspOyAvLyB0byBzdG9yZSByZXN1bHRzXG5mb3IgKGludCBqID0gMDsgaiA8IGs7IGorKykge1xuUmNwcEdTTDo6dmVjdG9yX3ZpZXc8ZG91YmxlPiBjb2x2aWV3ID0gZ3NsX21hdHJpeF9jb2x1bW4gKE0sIGopO1xubltqXSA9IGdzbF9ibGFzX2Rucm0yKGNvbHZpZXcpO1xufVxucmV0dXJuIG47IC8vIHJldHVybiB2ZWN0b3JcbidcbmZvbyA8LSBjeHhmdW5jdGlvbihcbiBzaWduYXR1cmUoc009XCJudW1lcmljXCIpLFxuIGJvZHk9Ym9keXR4dCwgaW5jPWluY3R4dCwgcGx1Z2luPVwiUmNwcEdTTFwiKVxuYGBgIn0= -->
+<pre class="r"><code>inctxt='
+#include &lt;gsl/gsl_matrix.h&gt;
+#include &lt;gsl/gsl_blas.h&gt;
+'
+bodytxt='
+RcppGSL::matrix&lt;double&gt; M = sM; // create data structures from SEXP
+int k = M.ncol();
+Rcpp::NumericVector n(k); // to store results
+for (int j = 0; j &lt; k; j++) {
+RcppGSL::vector_view&lt;double&gt; colview = gsl_matrix_column (M, j);
+n[j] = gsl_blas_dnrm2(colview);
 }
-plus3(array(1, dim = c(3, 4, 3)))</code></pre>
+return n; // return vector
+'
+foo &lt;- cxxfunction(
+ signature(sM=&quot;numeric&quot;),
+ body=bodytxt, inc=inctxt, plugin=&quot;RcppGSL&quot;)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiLCAsIDFcblxuICAgICBbLDFdIFssMl0gWywzXSBbLDRdXG5bMSxdICAgIDIgICAgMiAgICAyICAgIDJcblsyLF0gICAgMiAgICAyICAgIDIgICAgMlxuWzMsXSAgICAyICAgIDIgICAgMiAgICAyXG5cbiwgLCAyXG5cbiAgICAgWywxXSBbLDJdIFssM10gWyw0XVxuWzEsXSAgICAyICAgIDIgICAgMiAgICAyXG5bMixdICAgIDIgICAgMiAgICAyICAgIDJcblszLF0gICAgMiAgICAyICAgIDIgICAgMlxuXG4sICwgM1xuXG4gICAgIFssMV0gWywyXSBbLDNdIFssNF1cblsxLF0gICAgMiAgICAyICAgIDIgICAgMlxuWzIsXSAgICAyICAgIDIgICAgMiAgICAyXG5bMyxdICAgIDIgICAgMiAgICAyICAgIDJcbiJ9 -->
-<pre><code>, , 1
+<!-- rnb-output-begin eyJkYXRhIjoicnVubmluZyBjb21tYW5kICdDOi9QUk9HUkF+MS9SL1ItMzR+MS4xL2Jpbi94NjQvUiBDTUQgU0hMSUIgZmlsZTFiYjA1ODU4NTFkYi5jcHAgMj4gZmlsZTFiYjA1ODU4NTFkYi5jcHAuZXJyLnR4dCcgaGFkIHN0YXR1cyAxXG4ifQ== -->
+<pre><code>running command 'C:/PROGRA~1/R/R-34~1.1/bin/x64/R CMD SHLIB file1bb0585851db.cpp 2&gt; file1bb0585851db.cpp.err.txt' had status 1</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiSW4gZmlsZSBpbmNsdWRlZCBmcm9tIEM6L1VzZXJzL21zZno3NTEvUi93aW4tbGlicmFyeS8zLjQvUmNwcEdTTC9pbmNsdWRlL1JjcHBHU0wuaDoyNTowLFxuICAgICAgICAgICAgICAgICBmcm9tIGZpbGUxYmIwNTg1ODUxZGIuY3BwOjM6XG5DOi9Vc2Vycy9tc2Z6NzUxL1Ivd2luLWxpYnJhcnkvMy40L1JjcHBHU0wvaW5jbHVkZS9SY3BwR1NMRm9yd2FyZC5oOjI2OjI5OiBmYXRhbCBlcnJvcjogZ3NsL2dzbF92ZWN0b3IuaDogTm8gc3VjaCBmaWxlIG9yIGRpcmVjdG9yeVxuICNpbmNsdWRlIDxnc2wvZ3NsX3ZlY3Rvci5oPiBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXlxuY29tcGlsYXRpb24gdGVybWluYXRlZC5cbm1ha2U6ICoqKiBbZmlsZTFiYjA1ODU4NTFkYi5vXSBFcnJvciAxXG5XYXJuaW5nIG1lc3NhZ2U6XG5ydW5uaW5nIGNvbW1hbmQgJ21ha2UgLWYgXCJDOi9QUk9HUkF+MS9SL1ItMzR+MS4xL2V0Yy94NjQvTWFrZWNvbmZcIiAtZiBcIkM6L1BST0dSQX4xL1IvUi0zNH4xLjEvc2hhcmUvbWFrZS93aW5zaGxpYi5ta1wiIFNITElCX0xERkxBR1M9JyQoU0hMSUJfQ1hYTERGTEFHUyknIFNITElCX0xEPSckKFNITElCX0NYWExEKScgU0hMSUI9XCJmaWxlMWJiMDU4NTg1MWRiLmRsbFwiIFdJTj02NCBUQ0xCSU49NjQgT0JKRUNUUz1cImZpbGUxYmIwNTg1ODUxZGIub1wiJyBoYWQgc3RhdHVzIDIgXG5cbkVSUk9SKHMpIGR1cmluZyBjb21waWxhdGlvbjogc291cmNlIGNvZGUgZXJyb3JzIG9yIGNvbXBpbGVyIGNvbmZpZ3VyYXRpb24gZXJyb3JzIVxuXG5Qcm9ncmFtIHNvdXJjZTpcbiAgMTogXG4gIDI6IC8vIGluY2x1ZGVzIGZyb20gdGhlIHBsdWdpblxuICAzOiAjaW5jbHVkZSA8UmNwcEdTTC5oPlxuICA0OiAjaW5jbHVkZSA8UmNwcC5oPlxuICA1OiBcbiAgNjogXG4gIDc6ICNpZm5kZWYgQkVHSU5fUkNQUFxuICA4OiAjZGVmaW5lIEJFR0lOX1JDUFBcbiAgOTogI2VuZGlmXG4gMTA6IFxuIDExOiAjaWZuZGVmIEVORF9SQ1BQXG4gMTI6ICNkZWZpbmUgRU5EX1JDUFBcbiAxMzogI2VuZGlmXG4gMTQ6IFxuIDE1OiB1c2luZyBuYW1lc3BhY2UgUmNwcDtcbiAxNjogXG4gMTc6IC8vIHVzZXIgaW5jbHVkZXNcbiAxODogXG4gMTk6ICNpbmNsdWRlIDxnc2wvZ3NsX21hdHJpeC5oPlxuIDIwOiAjaW5jbHVkZSA8Z3NsL2dzbF9ibGFzLmg+XG4gMjE6IFxuIDIyOiBcbiAyMzogLy8gZGVjbGFyYXRpb25zXG4gMjQ6IGV4dGVybiBcIkNcIiB7XG4gMjU6IFNFWFAgZmlsZTFiYjA1ODU4NTFkYiggU0VYUCBzTSkgO1xuIDI2OiB9XG4gMjc6IFxuIDI4OiAvLyBkZWZpbml0aW9uXG4gMjk6IFxuIDMwOiBTRVhQIGZpbGUxYmIwNTg1ODUxZGIoIFNFWFAgc00gKXtcbiAzMTogQkVHSU5fUkNQUFxuIDMyOiBcbiAzMzogUmNwcEdTTDo6bWF0cml4PGRvdWJsZT4gTSA9IHNNOyAvLyBjcmVhdGUgZGF0YSBzdHJ1Y3R1cmVzIGZyb20gU0VYUFxuIDM0OiBpbnQgayA9IE0ubmNvbCgpO1xuIDM1OiBSY3BwOjpOdW1lcmljVmVjdG9yIG4oayk7IC8vIHRvIHN0b3JlIHJlc3VsdHNcbiAzNjogZm9yIChpbnQgaiA9IDA7IGogPCBrOyBqKyspIHtcbiAzNzogUmNwcEdTTDo6dmVjdG9yX3ZpZXc8ZG91YmxlPiBjb2x2aWV3ID0gZ3NsX21hdHJpeF9jb2x1bW4gKE0sIGopO1xuIDM4OiBuW2pdID0gZ3NsX2JsYXNfZG5ybTIoY29sdmlldyk7XG4gMzk6IH1cbiA0MDogcmV0dXJuIG47IC8vIHJldHVybiB2ZWN0b3JcbiA0MTogXG4gNDI6IEVORF9SQ1BQXG4gNDM6IH1cbiA0NDogXG4gNDU6IFxuIn0= -->
+<pre><code>In file included from C:/Users/msfz751/R/win-library/3.4/RcppGSL/include/RcppGSL.h:25:0,
+                 from file1bb0585851db.cpp:3:
+C:/Users/msfz751/R/win-library/3.4/RcppGSL/include/RcppGSLForward.h:26:29: fatal error: gsl/gsl_vector.h: No such file or directory
+ #include &lt;gsl/gsl_vector.h&gt; 
+                             ^
+compilation terminated.
+make: *** [file1bb0585851db.o] Error 1
+Warning message:
+running command 'make -f &quot;C:/PROGRA~1/R/R-34~1.1/etc/x64/Makeconf&quot; -f &quot;C:/PROGRA~1/R/R-34~1.1/share/make/winshlib.mk&quot; SHLIB_LDFLAGS='$(SHLIB_CXXLDFLAGS)' SHLIB_LD='$(SHLIB_CXXLD)' SHLIB=&quot;file1bb0585851db.dll&quot; WIN=64 TCLBIN=64 OBJECTS=&quot;file1bb0585851db.o&quot;' had status 2 
 
-     [,1] [,2] [,3] [,4]
-[1,]    2    2    2    2
-[2,]    2    2    2    2
-[3,]    2    2    2    2
+ERROR(s) during compilation: source code errors or compiler configuration errors!
 
-, , 2
-
-     [,1] [,2] [,3] [,4]
-[1,]    2    2    2    2
-[2,]    2    2    2    2
-[3,]    2    2    2    2
-
-, , 3
-
-     [,1] [,2] [,3] [,4]
-[1,]    2    2    2    2
-[2,]    2    2    2    2
-[3,]    2    2    2    2</code></pre>
+Program source:
+  1: 
+  2: // includes from the plugin
+  3: #include &lt;RcppGSL.h&gt;
+  4: #include &lt;Rcpp.h&gt;
+  5: 
+  6: 
+  7: #ifndef BEGIN_RCPP
+  8: #define BEGIN_RCPP
+  9: #endif
+ 10: 
+ 11: #ifndef END_RCPP
+ 12: #define END_RCPP
+ 13: #endif
+ 14: 
+ 15: using namespace Rcpp;
+ 16: 
+ 17: // user includes
+ 18: 
+ 19: #include &lt;gsl/gsl_matrix.h&gt;
+ 20: #include &lt;gsl/gsl_blas.h&gt;
+ 21: 
+ 22: 
+ 23: // declarations
+ 24: extern &quot;C&quot; {
+ 25: SEXP file1bb0585851db( SEXP sM) ;
+ 26: }
+ 27: 
+ 28: // definition
+ 29: 
+ 30: SEXP file1bb0585851db( SEXP sM ){
+ 31: BEGIN_RCPP
+ 32: 
+ 33: RcppGSL::matrix&lt;double&gt; M = sM; // create data structures from SEXP
+ 34: int k = M.ncol();
+ 35: Rcpp::NumericVector n(k); // to store results
+ 36: for (int j = 0; j &lt; k; j++) {
+ 37: RcppGSL::vector_view&lt;double&gt; colview = gsl_matrix_column (M, j);
+ 38: n[j] = gsl_blas_dnrm2(colview);
+ 39: }
+ 40: return n; // return vector
+ 41: 
+ 42: END_RCPP
+ 43: }
+ 44: 
+ 45: </code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gY29tcGlsZUNvZGUoZiwgY29kZSwgbGFuZ3VhZ2UgPSBsYW5ndWFnZSwgdmVyYm9zZSA9IHZlcmJvc2UpIDogXG4gIENvbXBpbGF0aW9uIEVSUk9SLCBmdW5jdGlvbihzKS9tZXRob2Qocykgbm90IGNyZWF0ZWQhIEluIGZpbGUgaW5jbHVkZWQgZnJvbSBDOi9Vc2Vycy9tc2Z6NzUxL1Ivd2luLWxpYnJhcnkvMy40L1JjcHBHU0wvaW5jbHVkZS9SY3BwR1NMLmg6MjU6MCxcbiAgICAgICAgICAgICAgICAgZnJvbSBmaWxlMWJiMDU4NTg1MWRiLmNwcDozOlxuQzovVXNlcnMvbXNmejc1MS9SL3dpbi1saWJyYXJ5LzMuNC9SY3BwR1NML2luY2x1ZGUvUmNwcEdTTEZvcndhcmQuaDoyNjoyOTogZmF0YWwgZXJyb3I6IGdzbC9nc2xfdmVjdG9yLmg6IE5vIHN1Y2ggZmlsZSBvciBkaXJlY3RvcnlcbiAjaW5jbHVkZSA8Z3NsL2dzbF92ZWN0b3IuaD4gXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgIF5cbmNvbXBpbGF0aW9uIHRlcm1pbmF0ZWQuXG5tYWtlOiAqKiogW2ZpbGUxYmIwNTg1ODUxZGIub10gRXJyb3IgMVxuV2FybmluZyBtZXNzYWdlOlxucnVubmluZyBjb21tYW5kICdtYWtlIC1mIFwiQzovUFJPR1JBfjEvUi9SLTM0fjEuMS9ldGMveDY0L01ha2Vjb25mXCIgLWYgXCJDOi9QUk9HUkF+MS9SL1ItMzR+MS4xL3NoYXJlL21ha2Uvd2luc2hsaWIubWtcIiBTSExJQl9MREZMQUdTPSckKFNITElCX0NYWExERkxBR1MpJyBTSExJQl9MRD0nJChTSExJQl9DWFhMRCknIFNITElCPVwiZmlsZTFiYjA1ODU4NTFkYi5kbGxcIiBXSU49NjQgVENMQklOPTY0IE9CSkVDVFM9XCJmaWxlMWJiMDU4NTg1MWRiLm9cIicgaGFkIHN0YXR1cyAyIFxuIn0= -->
+<pre><code>Error in compileCode(f, code, language = language, verbose = verbose) : 
+  Compilation ERROR, function(s)/method(s) not created! In file included from C:/Users/msfz751/R/win-library/3.4/RcppGSL/include/RcppGSL.h:25:0,
+                 from file1bb0585851db.cpp:3:
+C:/Users/msfz751/R/win-library/3.4/RcppGSL/include/RcppGSLForward.h:26:29: fatal error: gsl/gsl_vector.h: No such file or directory
+ #include &lt;gsl/gsl_vector.h&gt; 
+                             ^
+compilation terminated.
+make: *** [file1bb0585851db.o] Error 1
+Warning message:
+running command 'make -f &quot;C:/PROGRA~1/R/R-34~1.1/etc/x64/Makeconf&quot; -f &quot;C:/PROGRA~1/R/R-34~1.1/share/make/winshlib.mk&quot; SHLIB_LDFLAGS='$(SHLIB_CXXLDFLAGS)' SHLIB_LD='$(SHLIB_CXXLD)' SHLIB=&quot;file1bb0585851db.dll&quot; WIN=64 TCLBIN=64 OBJECTS=&quot;file1bb0585851db.o&quot;' had status 2 </code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBhcHBseWluZyBvbiBhIHZlY3RvciAzeDF4MVxucGx1czMoYXJyYXkoMSwgZGltID0gYygzLCAxLCAxKSkpXG5gYGAifQ== -->
-<pre class="r"><code># applying on a vector 3x1x1
-plus3(array(1, dim = c(3, 1, 1)))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiLCAsIDFcblxuICAgICBbLDFdXG5bMSxdICAgIDJcblsyLF0gICAgMlxuWzMsXSAgICAyXG4ifQ== -->
-<pre><code>, , 1
 
-     [,1]
-[1,]    2
-[2,]    2
-[3,]    2</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="inverting-the-indices" class="section level2">
-<h2>inverting the indices</h2>
-<p>instead of having <code>i</code> outside we put <code>k</code>. The result is the same.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBodHRwOi8vZWxpLnRoZWdyZWVucGxhY2UubmV0LzIwMTUvbWVtb3J5LWxheW91dC1vZi1tdWx0aS1kaW1lbnNpb25hbC1hcnJheXMvXG5saWJyYXJ5KGlubGluZSlcbnNpZyA8LSBzaWduYXR1cmUoeD1cIm51bWVyaWNcIiwgZGltPVwiaW50ZWdlclwiKVxuYm9keSA8LSBcIlxuICAgICNpbmNsdWRlIDxzdGRpby5oPlxuICAgIGZvciAoaW50IGsgPSAwOyBrIDwgZGltWzBdOyArK2spXG4gICAgICAgIGZvciAoaW50IGogPSAwOyBqIDwgZGltWzFdOyArK2opXG4gICAgICAgICAgICBmb3IgKGludCBpID0gMDsgaSA8IGRpbVsyXTsgKytpKSB7XG4gICAgICAgICAgICAgICAgeFsgayArIGRpbVsyXSooaisgaSpkaW1bMV0pIF0gKz0gMTtcbiAgICAgICAgICAgIH1cbiAgICAgICAgXG5cIlxuY2Z1biA8LSBjZnVuY3Rpb24oc2lnLCBib2R5PWJvZHksIGxhbmd1YWdlPVwiQ1wiLCBjb252ZW50aW9uPVwiLkNcIilcbiMgdXNpbmcgdGhlIEMgZnVuY3Rpb24gaW4gUlxucGx1cyA8LSBmdW5jdGlvbihtKSB7XG4gICAgbVtdID0gY2Z1bihhcy5udW1lcmljKG0pLCBkaW0obSkpJHhcbiAgICBtXG59XG5wbHVzKGFycmF5KDEsIGRpbSA9IGMoMywgNCwgMykpKVxuYGBgIn0= -->
-<pre class="r"><code># http://eli.thegreenplace.net/2015/memory-layout-of-multi-dimensional-arrays/
-library(inline)
-sig &lt;- signature(x=&quot;numeric&quot;, dim=&quot;integer&quot;)
-body &lt;- &quot;
-    #include &lt;stdio.h&gt;
-    for (int k = 0; k &lt; dim[0]; ++k)
-        for (int j = 0; j &lt; dim[1]; ++j)
-            for (int i = 0; i &lt; dim[2]; ++i) {
-                x[ k + dim[2]*(j+ i*dim[1]) ] += 1;
-            }
-        
-&quot;
-cfun &lt;- cfunction(sig, body=body, language=&quot;C&quot;, convention=&quot;.C&quot;)
-# using the C function in R
-plus &lt;- function(m) {
-    m[] = cfun(as.numeric(m), dim(m))$x
-    m
-}
-plus(array(1, dim = c(3, 4, 3)))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiLCAsIDFcblxuICAgICBbLDFdIFssMl0gWywzXSBbLDRdXG5bMSxdICAgIDIgICAgMiAgICAyICAgIDJcblsyLF0gICAgMiAgICAyICAgIDIgICAgMlxuWzMsXSAgICAyICAgIDIgICAgMiAgICAyXG5cbiwgLCAyXG5cbiAgICAgWywxXSBbLDJdIFssM10gWyw0XVxuWzEsXSAgICAyICAgIDIgICAgMiAgICAyXG5bMixdICAgIDIgICAgMiAgICAyICAgIDJcblszLF0gICAgMiAgICAyICAgIDIgICAgMlxuXG4sICwgM1xuXG4gICAgIFssMV0gWywyXSBbLDNdIFssNF1cblsxLF0gICAgMiAgICAyICAgIDIgICAgMlxuWzIsXSAgICAyICAgIDIgICAgMiAgICAyXG5bMyxdICAgIDIgICAgMiAgICAyICAgIDJcbiJ9 -->
-<pre><code>, , 1
-
-     [,1] [,2] [,3] [,4]
-[1,]    2    2    2    2
-[2,]    2    2    2    2
-[3,]    2    2    2    2
-
-, , 2
-
-     [,1] [,2] [,3] [,4]
-[1,]    2    2    2    2
-[2,]    2    2    2    2
-[3,]    2    2    2    2
-
-, , 3
-
-     [,1] [,2] [,3] [,4]
-[1,]    2    2    2    2
-[2,]    2    2    2    2
-[3,]    2    2    2    2</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-</div>
-
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpTb3VyY2U6IGh0dHA6Ly9lbGkudGhlZ3JlZW5wbGFjZS5uZXQvMjAxNS9tZW1vcnktbGF5b3V0LW9mLW11bHRpLWRpbWVuc2lvbmFsLWFycmF5cy8NCg0KDQoNCiMjIGNoYW5naW5nIHRoZSBsb29wIHRvIHRocmVlIGRpbWVuc2lvbnMNCg0KYGBge3J9DQojIGh0dHA6Ly9lbGkudGhlZ3JlZW5wbGFjZS5uZXQvMjAxNS9tZW1vcnktbGF5b3V0LW9mLW11bHRpLWRpbWVuc2lvbmFsLWFycmF5cy8NCg0KbGlicmFyeShpbmxpbmUpDQoNCnNpZyA8LSBzaWduYXR1cmUoeD0ibnVtZXJpYyIsIGRpbT0iaW50ZWdlciIpDQoNCmJvZHkzIDwtICINCiAgICAjaW5jbHVkZSA8c3RkaW8uaD4NCiAgICBmb3IgKGludCBpID0gMDsgaSA8IGRpbVswXTsgKytpKQ0KICAgICAgICBmb3IgKGludCBqID0gMDsgaiA8IGRpbVsxXTsgKytqKQ0KICAgICAgICAgICAgZm9yIChpbnQgayA9IDA7IGsgPCBkaW1bMl07ICsraykgew0KICAgICAgICAgICAgICAgIHhbIGsgKyBkaW1bMl0qKGorIGkqZGltWzFdKSBdICs9IDE7DQogICAgICAgICAgICB9DQogICAgICAgIA0KIg0KDQpjZnVuMyA8LSBjZnVuY3Rpb24oc2lnLCBib2R5PWJvZHkzLCBsYW5ndWFnZT0iQyIsIGNvbnZlbnRpb249Ii5DIikNCg0KIyB1c2luZyB0aGUgQyBmdW5jdGlvbiBpbiBSDQpwbHVzMyA8LSBmdW5jdGlvbihtKSB7DQogICAgbVtdID0gY2Z1bjMoYXMubnVtZXJpYyhtKSwgZGltKG0pKSR4DQogICAgbQ0KfQ0KDQpwbHVzMyhhcnJheSgxLCBkaW0gPSBjKDMsIDQsIDMpKSkNCmBgYA0KDQoNCmBgYHtyfQ0KIyBhcHBseWluZyBvbiBhIHZlY3RvciAzeDF4MQ0KcGx1czMoYXJyYXkoMSwgZGltID0gYygzLCAxLCAxKSkpDQpgYGANCg0KDQojIyBpbnZlcnRpbmcgdGhlIGluZGljZXMNCmluc3RlYWQgb2YgaGF2aW5nIGBpYCBvdXRzaWRlIHdlIHB1dCBga2AuIFRoZSByZXN1bHQgaXMgdGhlIHNhbWUuDQoNCmBgYHtyfQ0KIyBodHRwOi8vZWxpLnRoZWdyZWVucGxhY2UubmV0LzIwMTUvbWVtb3J5LWxheW91dC1vZi1tdWx0aS1kaW1lbnNpb25hbC1hcnJheXMvDQoNCiMgaW5zdGVhZCBvZiBoYXZpbmcgYGlgIG91dHNpZGUgd2UgcHV0IGBrYC4NCiMgVGhlIHJlc3VsdCBpcyB0aGUgc2FtZQ0KDQpsaWJyYXJ5KGlubGluZSkNCg0Kc2lnIDwtIHNpZ25hdHVyZSh4PSJudW1lcmljIiwgZGltPSJpbnRlZ2VyIikNCg0KYm9keSA8LSAiDQogICAgI2luY2x1ZGUgPHN0ZGlvLmg+DQogICAgZm9yIChpbnQgayA9IDA7IGsgPCBkaW1bMF07ICsraykNCiAgICAgICAgZm9yIChpbnQgaiA9IDA7IGogPCBkaW1bMV07ICsraikNCiAgICAgICAgICAgIGZvciAoaW50IGkgPSAwOyBpIDwgZGltWzJdOyArK2kpIHsNCiAgICAgICAgICAgICAgICB4WyBrICsgZGltWzJdKihqKyBpKmRpbVsxXSkgXSArPSAxOw0KICAgICAgICAgICAgfQ0KICAgICAgICANCiINCg0KY2Z1biA8LSBjZnVuY3Rpb24oc2lnLCBib2R5PWJvZHksIGxhbmd1YWdlPSJDIiwgY29udmVudGlvbj0iLkMiKQ0KDQojIHVzaW5nIHRoZSBDIGZ1bmN0aW9uIGluIFINCnBsdXMgPC0gZnVuY3Rpb24obSkgew0KICAgIG1bXSA9IGNmdW4oYXMubnVtZXJpYyhtKSwgZGltKG0pKSR4DQogICAgbQ0KfQ0KDQpwbHVzKGFycmF5KDEsIGRpbSA9IGMoMywgNCwgMykpKQ0KYGBgDQoNCg0KDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpgYGB7cn0NCiMgbGlicmFyeShSY3BwKQ0KcmVxdWlyZShpbmxpbmUpDQpsaWJyYXJ5KFJjcHApDQpsaWJyYXJ5KFJjcHBHU0wpDQoNCnNyYyA8LSAiaW50IHNlZWQgPSBSY3BwOjphczxpbnQ+KHBhcikgOw0KICAgIGdzbF9ybmdfZW52X3NldHVwKCk7DQogICAgZ3NsX3JuZyAqciA9IGdzbF9ybmdfYWxsb2MgKGdzbF9ybmdfZGVmYXVsdCk7DQogICAgZ3NsX3JuZ19zZXQgKHIsICh1bnNpZ25lZCBsb25nKSBzZWVkKTsNCiAgICBkb3VibGUgdiA9IGdzbF9ybmdfZ2V0IChyKTsNCiAgICBnc2xfcm5nX2ZyZWUocik7DQogICAgcmV0dXJuIFJjcHA6OndyYXAodik7ICINCg0KYGBgDQoNCg0KYGBge3J9DQpmdW4gPC0gY2Z1bmN0aW9uKHNpZ25hdHVyZShwYXI9Im51bWVyaWMiKSwgYm9keT1zcmMsIA0KICAgICAgICAgICAgICAgICBpbmNsdWRlcz0iI2luY2x1ZGUgPGdzbC9nc2xfcm5nLmg+IiwgDQogICAgICAgICAgICAgICAgIFJjcHA9RkFMU0UsDQogICAgICAgICAgICAgICAgIGNwcGFyZ3M9Ii1JL3Vzci9pbmNsdWRlIiwgDQogICAgICAgICAgICAgICAgIGxpYmFyZ3M9Ii1sZ3NsIC1sZ3NsY2JsYXMiKQ0KDQojIGZ1big0KQ0KYGBgDQoNCg0KDQpgYGB7cn0NCnJlcXVpcmUoaW5saW5lKQ0KaW5jdHh0PScNCiNpbmNsdWRlIDxnc2wvZ3NsX21hdHJpeC5oPg0KI2luY2x1ZGUgPGdzbC9nc2xfYmxhcy5oPg0KJw0KYm9keXR4dD0nDQpSY3BwR1NMOjptYXRyaXg8ZG91YmxlPiBNID0gc007IC8vIGNyZWF0ZSBkYXRhIHN0cnVjdHVyZXMgZnJvbSBTRVhQDQppbnQgayA9IE0ubmNvbCgpOw0KUmNwcDo6TnVtZXJpY1ZlY3RvciBuKGspOyAvLyB0byBzdG9yZSByZXN1bHRzDQpmb3IgKGludCBqID0gMDsgaiA8IGs7IGorKykgew0KUmNwcEdTTDo6dmVjdG9yX3ZpZXc8ZG91YmxlPiBjb2x2aWV3ID0gZ3NsX21hdHJpeF9jb2x1bW4gKE0sIGopOw0KbltqXSA9IGdzbF9ibGFzX2Rucm0yKGNvbHZpZXcpOw0KfQ0KcmV0dXJuIG47IC8vIHJldHVybiB2ZWN0b3INCicNCg0KZm9vIDwtIGN4eGZ1bmN0aW9uKA0KIHNpZ25hdHVyZShzTT0ibnVtZXJpYyIpLA0KIGJvZHk9Ym9keXR4dCwgaW5jPWluY3R4dCwgcGx1Z2luPSJSY3BwR1NMIikNCg0KTSA8LSBvdXRlcihzaW4oMDo5KSwgcmVwKDEsMTApLCAiKiIpICsgb3V0ZXIocmVwKDEsIDEwKSwgY29zKDA6OSksICIqIikNCmZvbyhNKQ0KDQpgYGANCg0K</div>
 
 
 

@@ -1,0 +1,98 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+# fooblas.c will not compile from within RStudio
+# it has to be compiled from the command line
+# $    R CMD SHLIB fooblas.c
+system("R CMD SHLIB ../src/fooblas.c")
+```
+
+
+```{r}
+# this loads the library in any system, Windows or Linux
+dyn.load(paste("../src/fooblas", .Platform$dynlib.ext, sep = ""))
+```
+
+
+```{r}
+# void foo(int *dimension, double *vect1, double *vect2)
+
+# wrapper
+c.fooblas = function(a, b) {
+   res <- .C('fooblas',
+      as.integer(length(a)),
+      as.double(a),
+      as.double(b))
+   res[c(2,3)]
+}
+```
+
+
+```{r}
+c.fooblas(c(5, 10), c(3,6))
+```
+
+```{r}
+c.fooblas(matrix(5, nrow=3, ncol=2), matrix(2, nrow=3, ncol=2))
+```
+
+## another version of swap using matrices
+
+```{r}
+# void foo(int *dimension, double *vect1, double *vect2)
+# dimension: number of elements in input vector(s)
+
+c.fooblas2 = function(a, b) {
+    sa <- sb <- a
+   res <- .C('fooblas',
+      as.integer(length(a)),
+      as.double(a),
+      as.double(b))
+   sa[] <- res[[2]]
+   sb[] <- res[[3]]
+   list(a, b, sa, sb)  # return original and swapped
+}
+```
+
+
+```{r}
+c.fooblas2(matrix(5, nrow=3, ncol=2), matrix(2, nrow=3, ncol=2))
+```
+
+```{r}
+c.fooblas2(array(4, dim=c(4,3,2)), array(7, dim = c(4,3,2)))
+```
+
+
+```{r}
+# this loads the library in any system, Windows or Linux
+dyn.unload(paste("../src/fooblas", .Platform$dynlib.ext, sep = ""))
+```
+
+## Notes about compilation
+
+* You need a file Makevars in ./src
+* fooblas.c will not compile from within RStudio. It has to be compiled from the command line like this: `R CMD SHLIB fooblas.c`
+*
+
+> after removing Makevars in ./src
+
+    msfz751@HPZBOOK15G2W10 MSYS /i/pub.packages/rBlaster/src
+    $ R CMD SHLIB fooblas.c
+    c:/Rtools/mingw_64/bin/gcc  -I"C:/PROGRA~1/R/R-34~1.1/include" -DNDEBUG     -I"d:/Compiler/gcc-4.9.3/local330/include"     -O2 -Wall  -std=gnu99 -mtune=core2 -c fooblas.c -o fooblas.o
+    c:/Rtools/mingw_64/bin/gcc -shared -s -static-libgcc -o fooblas.dll tmp.def fooblas.o -Ld:/Compiler/gcc-4.9.3/local330/lib/x64 -Ld:/Compiler/gcc-4.9.3/local330/lib -LC:/PROGRA~1/R/R-34~1.1/bin/x64 -lR
+    fooblas.o:fooblas.c:(.text+0x28): undefined reference to `dswap_'
+    collect2.exe: error: ld returned 1 exit status
+
+    
+> after replacing Makevars back to ./src
+
+    msfz751@HPZBOOK15G2W10 MSYS /i/pub.packages/rBlaster/src
+    $ R CMD SHLIB fooblas.c
+    c:/Rtools/mingw_64/bin/gcc -shared -s -static-libgcc -o fooblas.dll tmp.def fooblas.o -fopenmp -LC:/PROGRA~1/R/R-34~1.1/bin/x64 -lRlapack -LC:/PROGRA~1/R/R-34~1.1/bin/x64 -lRblas -lgfortran -lm -lquadmath -Ld:/Compiler/gcc-4.9.3/local330/lib/x64 -Ld:/Compiler/gcc-4.9.3/local330/lib -LC:/PROGRA~1/R/R-34~1.1/bin/x64 -lR
+
+
+

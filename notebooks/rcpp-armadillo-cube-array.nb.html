@@ -142,7 +142,7 @@ $(document).ready(function () {
 </style>
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("c-inline-array-plus-one.Rmd");
+  window.initializeSourceEmbed("rcpp-armadillo-cube-array.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
@@ -172,127 +172,96 @@ $(document).ready(function () {
 
 
 <!-- rnb-text-begin -->
-<p>Source: <a href="http://eli.thegreenplace.net/2015/memory-layout-of-multi-dimensional-arrays/" class="uri">http://eli.thegreenplace.net/2015/memory-layout-of-multi-dimensional-arrays/</a></p>
-<div id="changing-the-loop-to-three-dimensions" class="section level2">
-<h2>changing the loop to three dimensions</h2>
+<p>Source: <a href="http://markovjumps.blogspot.be/2011/12/r-array-to-rcpparmadillo-cube.html" class="uri">http://markovjumps.blogspot.be/2011/12/r-array-to-rcpparmadillo-cube.html</a></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBodHRwOi8vZWxpLnRoZWdyZWVucGxhY2UubmV0LzIwMTUvbWVtb3J5LWxheW91dC1vZi1tdWx0aS1kaW1lbnNpb25hbC1hcnJheXMvXG5saWJyYXJ5KGlubGluZSlcbnNpZyA8LSBzaWduYXR1cmUoeD1cIm51bWVyaWNcIiwgZGltPVwiaW50ZWdlclwiKVxuYm9keTMgPC0gXCJcbiAgICAjaW5jbHVkZSA8c3RkaW8uaD5cbiAgICBmb3IgKGludCBpID0gMDsgaSA8IGRpbVswXTsgKytpKVxuICAgICAgICBmb3IgKGludCBqID0gMDsgaiA8IGRpbVsxXTsgKytqKVxuICAgICAgICAgICAgZm9yIChpbnQgayA9IDA7IGsgPCBkaW1bMl07ICsraykge1xuICAgICAgICAgICAgICAgIHhbIGsgKyBkaW1bMl0qKGorIGkqZGltWzFdKSBdICs9IDE7XG4gICAgICAgICAgICB9XG4gICAgICAgIFxuXCJcbmNmdW4zIDwtIGNmdW5jdGlvbihzaWcsIGJvZHk9Ym9keTMsIGxhbmd1YWdlPVwiQ1wiLCBjb252ZW50aW9uPVwiLkNcIilcbiMgdXNpbmcgdGhlIEMgZnVuY3Rpb24gaW4gUlxucGx1czMgPC0gZnVuY3Rpb24obSkge1xuICAgIG1bXSA9IGNmdW4zKGFzLm51bWVyaWMobSksIGRpbShtKSkkeFxuICAgIG1cbn1cbnBsdXMzKGFycmF5KDEsIGRpbSA9IGMoMywgNCwgMykpKVxuYGBgIn0= -->
-<pre class="r"><code># http://eli.thegreenplace.net/2015/memory-layout-of-multi-dimensional-arrays/
-library(inline)
-sig &lt;- signature(x=&quot;numeric&quot;, dim=&quot;integer&quot;)
-body3 &lt;- &quot;
-    #include &lt;stdio.h&gt;
-    for (int i = 0; i &lt; dim[0]; ++i)
-        for (int j = 0; j &lt; dim[1]; ++j)
-            for (int k = 0; k &lt; dim[2]; ++k) {
-                x[ k + dim[2]*(j+ i*dim[1]) ] += 1;
-            }
-        
-&quot;
-cfun3 &lt;- cfunction(sig, body=body3, language=&quot;C&quot;, convention=&quot;.C&quot;)
-# using the C function in R
-plus3 &lt;- function(m) {
-    m[] = cfun3(as.numeric(m), dim(m))$x
-    m
-}
-plus3(array(1, dim = c(3, 4, 3)))</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVxdWlyZShpbmxpbmUpXG5yZXF1aXJlKFJjcHBBcm1hZGlsbG8pXG5gYGAifQ== -->
+<pre class="r"><code>require(inline)
+require(RcppArmadillo)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiLCAsIDFcblxuICAgICBbLDFdIFssMl0gWywzXSBbLDRdXG5bMSxdICAgIDIgICAgMiAgICAyICAgIDJcblsyLF0gICAgMiAgICAyICAgIDIgICAgMlxuWzMsXSAgICAyICAgIDIgICAgMiAgICAyXG5cbiwgLCAyXG5cbiAgICAgWywxXSBbLDJdIFssM10gWyw0XVxuWzEsXSAgICAyICAgIDIgICAgMiAgICAyXG5bMixdICAgIDIgICAgMiAgICAyICAgIDJcblszLF0gICAgMiAgICAyICAgIDIgICAgMlxuXG4sICwgM1xuXG4gICAgIFssMV0gWywyXSBbLDNdIFssNF1cblsxLF0gICAgMiAgICAyICAgIDIgICAgMlxuWzIsXSAgICAyICAgIDIgICAgMiAgICAyXG5bMyxdICAgIDIgICAgMiAgICAyICAgIDJcbiJ9 -->
+<!-- rnb-output-begin eyJkYXRhIjoiTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBSY3BwQXJtYWRpbGxvXG5cbkF0dGFjaGluZyBwYWNrYWdlOiDjpLzjuLFSY3BwQXJtYWRpbGxv46S847iyXG5cblRoZSBmb2xsb3dpbmcgb2JqZWN0cyBhcmUgbWFza2VkIGZyb20g46S847ixcGFja2FnZTpSY3BwR1NM46S847iyOlxuXG4gICAgZmFzdExtLCBmYXN0TG1QdXJlXG4ifQ== -->
+<pre><code>Loading required package: RcppArmadillo
+
+Attaching package: 㤼㸱RcppArmadillo㤼㸲
+
+The following objects are masked from 㤼㸱package:RcppGSL㤼㸲:
+
+    fastLm, fastLmPure</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIFxuc3JjIDwtICdcbiAgdXNpbmcgbmFtZXNwYWNlIFJjcHA7XG4gXG4gIE51bWVyaWNWZWN0b3IgdmVjQXJyYXkobXlBcnJheSk7XG4gIEludGVnZXJWZWN0b3IgYXJyYXlEaW1zID0gdmVjQXJyYXkuYXR0cihcImRpbVwiKTtcbiBcbiAgYXJtYTo6Y3ViZSBjdWJlQXJyYXkodmVjQXJyYXkuYmVnaW4oKSwgYXJyYXlEaW1zWzBdLCBhcnJheURpbXNbMV0sIGFycmF5RGltc1syXSwgZmFsc2UpO1xuIFxuICAvL2NoYW5nZSBvbmUgZWxlbWVudCBpbiB0aGUgYXJyYXkvY3ViZVxuICBjdWJlQXJyYXkoMCwwLDApID0gNTE4OyAgXG4gXG4gIHJldHVybih3cmFwKGN1YmVBcnJheSkpOyAgXG4nXG5gYGAifQ== -->
+<pre class="r"><code> 
+src &lt;- '
+  using namespace Rcpp;
+ 
+  NumericVector vecArray(myArray);
+  IntegerVector arrayDims = vecArray.attr(&quot;dim&quot;);
+ 
+  arma::cube cubeArray(vecArray.begin(), arrayDims[0], arrayDims[1], arrayDims[2], false);
+ 
+  //change one element in the array/cube
+  cubeArray(0,0,0) = 518;  
+ 
+  return(wrap(cubeArray));  
+'</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVhZEN1YmUgPSBjeHhmdW5jdGlvbihzaWduYXR1cmUobXlBcnJheT1cIm51bWVyaWNcIiksYm9keT1zcmMsIHBsdWdpbj1cIlJjcHBBcm1hZGlsbG9cIilcbmBgYCJ9 -->
+<pre class="r"><code>readCube = cxxfunction(signature(myArray=&quot;numeric&quot;),body=src, plugin=&quot;RcppArmadillo&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2V0LnNlZWQoMzQ1KVxudGVzdEFycmF5ID0gYXJyYXkocm5vcm0oMTgpLCBkaW09YygzLDMsMikpXG5wcmludCh0ZXN0QXJyYXkpXG5gYGAifQ== -->
+<pre class="r"><code>set.seed(345)
+testArray = array(rnorm(18), dim=c(3,3,2))
+print(testArray)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiLCAsIDFcblxuICAgICAgICAgICBbLDFdICAgICAgICBbLDJdICAgICAgWywzXVxuWzEsXSAtMC43ODQ5MDgyIC0wLjI5MDU5NjU2IC0wLjkyNzcyNFxuWzIsXSAtMC4yNzk1MTQ0IC0wLjA2NzUzMTU5ICAxLjcxMDc3MVxuWzMsXSAtMC4xNjE0NTc5IC0wLjYzMzUyMDQxICAxLjY1NDc2OVxuXG4sICwgMlxuXG4gICAgICAgICAgWywxXSAgICAgICBbLDJdICAgICAgIFssM11cblsxLF0gIDEuODEwNDgzIC0wLjg0OTYyOTIgLTEuNDAyOTQyMlxuWzIsXSAgMS44NjY3NzIgIDAuMzE4NDQ5NiAgMC41NjgyOTgyXG5bMyxdIC0xLjM5OTgzMyAgMC45MDM1OTEzICAxLjA0NTc1NjFcbiJ9 -->
 <pre><code>, , 1
 
-     [,1] [,2] [,3] [,4]
-[1,]    2    2    2    2
-[2,]    2    2    2    2
-[3,]    2    2    2    2
+           [,1]        [,2]      [,3]
+[1,] -0.7849082 -0.29059656 -0.927724
+[2,] -0.2795144 -0.06753159  1.710771
+[3,] -0.1614579 -0.63352041  1.654769
 
 , , 2
 
-     [,1] [,2] [,3] [,4]
-[1,]    2    2    2    2
-[2,]    2    2    2    2
-[3,]    2    2    2    2
-
-, , 3
-
-     [,1] [,2] [,3] [,4]
-[1,]    2    2    2    2
-[2,]    2    2    2    2
-[3,]    2    2    2    2</code></pre>
+          [,1]       [,2]       [,3]
+[1,]  1.810483 -0.8496292 -1.4029422
+[2,]  1.866772  0.3184496  0.5682982
+[3,] -1.399833  0.9035913  1.0457561</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBhcHBseWluZyBvbiBhIHZlY3RvciAzeDF4MVxucGx1czMoYXJyYXkoMSwgZGltID0gYygzLCAxLCAxKSkpXG5gYGAifQ== -->
-<pre class="r"><code># applying on a vector 3x1x1
-plus3(array(1, dim = c(3, 1, 1)))</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVhZEN1YmUodGVzdEFycmF5KVxuYGBgIn0= -->
+<pre class="r"><code>readCube(testArray)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiLCAsIDFcblxuICAgICBbLDFdXG5bMSxdICAgIDJcblsyLF0gICAgMlxuWzMsXSAgICAyXG4ifQ== -->
+<!-- rnb-output-begin eyJkYXRhIjoiLCAsIDFcblxuICAgICAgICAgICAgWywxXSAgICAgICAgWywyXSAgICAgIFssM11cblsxLF0gNTE4LjAwMDAwMDAgLTAuMjkwNTk2NTYgLTAuOTI3NzI0XG5bMixdICAtMC4yNzk1MTQ0IC0wLjA2NzUzMTU5ICAxLjcxMDc3MVxuWzMsXSAgLTAuMTYxNDU3OSAtMC42MzM1MjA0MSAgMS42NTQ3NjlcblxuLCAsIDJcblxuICAgICAgICAgIFssMV0gICAgICAgWywyXSAgICAgICBbLDNdXG5bMSxdICAxLjgxMDQ4MyAtMC44NDk2MjkyIC0xLjQwMjk0MjJcblsyLF0gIDEuODY2NzcyICAwLjMxODQ0OTYgIDAuNTY4Mjk4MlxuWzMsXSAtMS4zOTk4MzMgIDAuOTAzNTkxMyAgMS4wNDU3NTYxXG4ifQ== -->
 <pre><code>, , 1
 
-     [,1]
-[1,]    2
-[2,]    2
-[3,]    2</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="inverting-the-indices" class="section level2">
-<h2>inverting the indices</h2>
-<p>instead of having <code>i</code> outside we put <code>k</code>. The result is the same.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBodHRwOi8vZWxpLnRoZWdyZWVucGxhY2UubmV0LzIwMTUvbWVtb3J5LWxheW91dC1vZi1tdWx0aS1kaW1lbnNpb25hbC1hcnJheXMvXG5saWJyYXJ5KGlubGluZSlcbnNpZyA8LSBzaWduYXR1cmUoeD1cIm51bWVyaWNcIiwgZGltPVwiaW50ZWdlclwiKVxuYm9keSA8LSBcIlxuICAgICNpbmNsdWRlIDxzdGRpby5oPlxuICAgIGZvciAoaW50IGsgPSAwOyBrIDwgZGltWzBdOyArK2spXG4gICAgICAgIGZvciAoaW50IGogPSAwOyBqIDwgZGltWzFdOyArK2opXG4gICAgICAgICAgICBmb3IgKGludCBpID0gMDsgaSA8IGRpbVsyXTsgKytpKSB7XG4gICAgICAgICAgICAgICAgeFsgayArIGRpbVsyXSooaisgaSpkaW1bMV0pIF0gKz0gMTtcbiAgICAgICAgICAgIH1cbiAgICAgICAgXG5cIlxuY2Z1biA8LSBjZnVuY3Rpb24oc2lnLCBib2R5PWJvZHksIGxhbmd1YWdlPVwiQ1wiLCBjb252ZW50aW9uPVwiLkNcIilcbiMgdXNpbmcgdGhlIEMgZnVuY3Rpb24gaW4gUlxucGx1cyA8LSBmdW5jdGlvbihtKSB7XG4gICAgbVtdID0gY2Z1bihhcy5udW1lcmljKG0pLCBkaW0obSkpJHhcbiAgICBtXG59XG5wbHVzKGFycmF5KDEsIGRpbSA9IGMoMywgNCwgMykpKVxuYGBgIn0= -->
-<pre class="r"><code># http://eli.thegreenplace.net/2015/memory-layout-of-multi-dimensional-arrays/
-library(inline)
-sig &lt;- signature(x=&quot;numeric&quot;, dim=&quot;integer&quot;)
-body &lt;- &quot;
-    #include &lt;stdio.h&gt;
-    for (int k = 0; k &lt; dim[0]; ++k)
-        for (int j = 0; j &lt; dim[1]; ++j)
-            for (int i = 0; i &lt; dim[2]; ++i) {
-                x[ k + dim[2]*(j+ i*dim[1]) ] += 1;
-            }
-        
-&quot;
-cfun &lt;- cfunction(sig, body=body, language=&quot;C&quot;, convention=&quot;.C&quot;)
-# using the C function in R
-plus &lt;- function(m) {
-    m[] = cfun(as.numeric(m), dim(m))$x
-    m
-}
-plus(array(1, dim = c(3, 4, 3)))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiLCAsIDFcblxuICAgICBbLDFdIFssMl0gWywzXSBbLDRdXG5bMSxdICAgIDIgICAgMiAgICAyICAgIDJcblsyLF0gICAgMiAgICAyICAgIDIgICAgMlxuWzMsXSAgICAyICAgIDIgICAgMiAgICAyXG5cbiwgLCAyXG5cbiAgICAgWywxXSBbLDJdIFssM10gWyw0XVxuWzEsXSAgICAyICAgIDIgICAgMiAgICAyXG5bMixdICAgIDIgICAgMiAgICAyICAgIDJcblszLF0gICAgMiAgICAyICAgIDIgICAgMlxuXG4sICwgM1xuXG4gICAgIFssMV0gWywyXSBbLDNdIFssNF1cblsxLF0gICAgMiAgICAyICAgIDIgICAgMlxuWzIsXSAgICAyICAgIDIgICAgMiAgICAyXG5bMyxdICAgIDIgICAgMiAgICAyICAgIDJcbiJ9 -->
-<pre><code>, , 1
-
-     [,1] [,2] [,3] [,4]
-[1,]    2    2    2    2
-[2,]    2    2    2    2
-[3,]    2    2    2    2
+            [,1]        [,2]      [,3]
+[1,] 518.0000000 -0.29059656 -0.927724
+[2,]  -0.2795144 -0.06753159  1.710771
+[3,]  -0.1614579 -0.63352041  1.654769
 
 , , 2
 
-     [,1] [,2] [,3] [,4]
-[1,]    2    2    2    2
-[2,]    2    2    2    2
-[3,]    2    2    2    2
-
-, , 3
-
-     [,1] [,2] [,3] [,4]
-[1,]    2    2    2    2
-[2,]    2    2    2    2
-[3,]    2    2    2    2</code></pre>
+          [,1]       [,2]       [,3]
+[1,]  1.810483 -0.8496292 -1.4029422
+[2,]  1.866772  0.3184496  0.5682982
+[3,] -1.399833  0.9035913  1.0457561</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
-</div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpTb3VyY2U6IGh0dHA6Ly9lbGkudGhlZ3JlZW5wbGFjZS5uZXQvMjAxNS9tZW1vcnktbGF5b3V0LW9mLW11bHRpLWRpbWVuc2lvbmFsLWFycmF5cy8NCg0KDQoNCiMjIGNoYW5naW5nIHRoZSBsb29wIHRvIHRocmVlIGRpbWVuc2lvbnMNCg0KYGBge3J9DQojIGh0dHA6Ly9lbGkudGhlZ3JlZW5wbGFjZS5uZXQvMjAxNS9tZW1vcnktbGF5b3V0LW9mLW11bHRpLWRpbWVuc2lvbmFsLWFycmF5cy8NCg0KbGlicmFyeShpbmxpbmUpDQoNCnNpZyA8LSBzaWduYXR1cmUoeD0ibnVtZXJpYyIsIGRpbT0iaW50ZWdlciIpDQoNCmJvZHkzIDwtICINCiAgICAjaW5jbHVkZSA8c3RkaW8uaD4NCiAgICBmb3IgKGludCBpID0gMDsgaSA8IGRpbVswXTsgKytpKQ0KICAgICAgICBmb3IgKGludCBqID0gMDsgaiA8IGRpbVsxXTsgKytqKQ0KICAgICAgICAgICAgZm9yIChpbnQgayA9IDA7IGsgPCBkaW1bMl07ICsraykgew0KICAgICAgICAgICAgICAgIHhbIGsgKyBkaW1bMl0qKGorIGkqZGltWzFdKSBdICs9IDE7DQogICAgICAgICAgICB9DQogICAgICAgIA0KIg0KDQpjZnVuMyA8LSBjZnVuY3Rpb24oc2lnLCBib2R5PWJvZHkzLCBsYW5ndWFnZT0iQyIsIGNvbnZlbnRpb249Ii5DIikNCg0KIyB1c2luZyB0aGUgQyBmdW5jdGlvbiBpbiBSDQpwbHVzMyA8LSBmdW5jdGlvbihtKSB7DQogICAgbVtdID0gY2Z1bjMoYXMubnVtZXJpYyhtKSwgZGltKG0pKSR4DQogICAgbQ0KfQ0KDQpwbHVzMyhhcnJheSgxLCBkaW0gPSBjKDMsIDQsIDMpKSkNCmBgYA0KDQoNCmBgYHtyfQ0KIyBhcHBseWluZyBvbiBhIHZlY3RvciAzeDF4MQ0KcGx1czMoYXJyYXkoMSwgZGltID0gYygzLCAxLCAxKSkpDQpgYGANCg0KDQojIyBpbnZlcnRpbmcgdGhlIGluZGljZXMNCmluc3RlYWQgb2YgaGF2aW5nIGBpYCBvdXRzaWRlIHdlIHB1dCBga2AuIFRoZSByZXN1bHQgaXMgdGhlIHNhbWUuDQoNCmBgYHtyfQ0KIyBodHRwOi8vZWxpLnRoZWdyZWVucGxhY2UubmV0LzIwMTUvbWVtb3J5LWxheW91dC1vZi1tdWx0aS1kaW1lbnNpb25hbC1hcnJheXMvDQoNCiMgaW5zdGVhZCBvZiBoYXZpbmcgYGlgIG91dHNpZGUgd2UgcHV0IGBrYC4NCiMgVGhlIHJlc3VsdCBpcyB0aGUgc2FtZQ0KDQpsaWJyYXJ5KGlubGluZSkNCg0Kc2lnIDwtIHNpZ25hdHVyZSh4PSJudW1lcmljIiwgZGltPSJpbnRlZ2VyIikNCg0KYm9keSA8LSAiDQogICAgI2luY2x1ZGUgPHN0ZGlvLmg+DQogICAgZm9yIChpbnQgayA9IDA7IGsgPCBkaW1bMF07ICsraykNCiAgICAgICAgZm9yIChpbnQgaiA9IDA7IGogPCBkaW1bMV07ICsraikNCiAgICAgICAgICAgIGZvciAoaW50IGkgPSAwOyBpIDwgZGltWzJdOyArK2kpIHsNCiAgICAgICAgICAgICAgICB4WyBrICsgZGltWzJdKihqKyBpKmRpbVsxXSkgXSArPSAxOw0KICAgICAgICAgICAgfQ0KICAgICAgICANCiINCg0KY2Z1biA8LSBjZnVuY3Rpb24oc2lnLCBib2R5PWJvZHksIGxhbmd1YWdlPSJDIiwgY29udmVudGlvbj0iLkMiKQ0KDQojIHVzaW5nIHRoZSBDIGZ1bmN0aW9uIGluIFINCnBsdXMgPC0gZnVuY3Rpb24obSkgew0KICAgIG1bXSA9IGNmdW4oYXMubnVtZXJpYyhtKSwgZGltKG0pKSR4DQogICAgbQ0KfQ0KDQpwbHVzKGFycmF5KDEsIGRpbSA9IGMoMywgNCwgMykpKQ0KYGBgDQoNCg0KDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpTb3VyY2U6IGh0dHA6Ly9tYXJrb3ZqdW1wcy5ibG9nc3BvdC5iZS8yMDExLzEyL3ItYXJyYXktdG8tcmNwcGFybWFkaWxsby1jdWJlLmh0bWwNCg0KYGBge3J9DQpyZXF1aXJlKGlubGluZSkNCnJlcXVpcmUoUmNwcEFybWFkaWxsbykNCiANCnNyYyA8LSAnDQogIHVzaW5nIG5hbWVzcGFjZSBSY3BwOw0KIA0KICBOdW1lcmljVmVjdG9yIHZlY0FycmF5KG15QXJyYXkpOw0KICBJbnRlZ2VyVmVjdG9yIGFycmF5RGltcyA9IHZlY0FycmF5LmF0dHIoImRpbSIpOw0KIA0KICBhcm1hOjpjdWJlIGN1YmVBcnJheSh2ZWNBcnJheS5iZWdpbigpLCBhcnJheURpbXNbMF0sIGFycmF5RGltc1sxXSwgYXJyYXlEaW1zWzJdLCBmYWxzZSk7DQogDQogIC8vY2hhbmdlIG9uZSBlbGVtZW50IGluIHRoZSBhcnJheS9jdWJlDQogIGN1YmVBcnJheSgwLDAsMCkgPSA1MTg7ICANCiANCiAgcmV0dXJuKHdyYXAoY3ViZUFycmF5KSk7ICANCicNCmBgYA0KDQoNCmBgYHtyfQ0KcmVhZEN1YmUgPSBjeHhmdW5jdGlvbihzaWduYXR1cmUobXlBcnJheT0ibnVtZXJpYyIpLCANCiAgICAgICAgICAgICAgICAgICAgICAgYm9keT1zcmMsIA0KICAgICAgICAgICAgICAgICAgICAgICBwbHVnaW49IlJjcHBBcm1hZGlsbG8iKQ0KYGBgDQoNCmBgYHtyfQ0Kc2V0LnNlZWQoMzQ1KQ0KdGVzdEFycmF5ID0gYXJyYXkocm5vcm0oMTgpLCBkaW09YygzLDMsMikpDQpwcmludCh0ZXN0QXJyYXkpDQpgYGANCg0KDQpgYGB7cn0NCnJlYWRDdWJlKHRlc3RBcnJheSkNCmBgYA0KDQo=</div>
 
 
 

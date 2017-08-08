@@ -14,14 +14,14 @@ Source: http://eli.thegreenplace.net/2015/memory-layout-of-multi-dimensional-arr
 
 library(inline)
 
-sig <- signature(x="numeric", dim="integer")
+sig <- signature(x="numeric", dim="integer", out="numeric")
 
 body3 <- "
     #include <stdio.h>
     for (int i = 0; i < dim[0]; ++i)
         for (int j = 0; j < dim[1]; ++j)
             for (int k = 0; k < dim[2]; ++k) {
-                x[ k + dim[2]*(j+ i*dim[1]) ] += 1;
+                out[ k + dim[2]*(j+ i*dim[1]) ] += 1;
             }
         
 "
@@ -29,12 +29,15 @@ body3 <- "
 cfun3 <- cfunction(sig, body=body3, language="C", convention=".C")
 
 # using the C function in R
-plus3 <- function(m) {
-    m[] = cfun3(as.numeric(m), dim(m))$x
-    m
+plus3 <- function(x) {
+    out <- x
+    res <- cfun3(as.numeric(x), dim(x), as.numeric(out))
+    #dim(out) <- c(3,4,3)
+    out[] <- res$out
+    out
 }
 
-plus3(array(1, dim = c(3, 4, 3)))
+plus3(array(1, dim = c(5, 4, 3)))
 ```
 
 

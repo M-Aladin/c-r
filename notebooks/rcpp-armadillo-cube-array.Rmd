@@ -1,0 +1,44 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Source: http://markovjumps.blogspot.be/2011/12/r-array-to-rcpparmadillo-cube.html
+
+```{r}
+require(inline)
+require(RcppArmadillo)
+ 
+src <- '
+  using namespace Rcpp;
+ 
+  NumericVector vecArray(myArray);
+  IntegerVector arrayDims = vecArray.attr("dim");
+ 
+  arma::cube cubeArray(vecArray.begin(), arrayDims[0], arrayDims[1], arrayDims[2], false);
+ 
+  //change one element in the array/cube
+  cubeArray(0,0,0) = 518;  
+ 
+  return(wrap(cubeArray));  
+'
+```
+
+
+```{r}
+readCube = cxxfunction(signature(myArray="numeric"), 
+                       body=src, 
+                       plugin="RcppArmadillo")
+```
+
+```{r}
+set.seed(345)
+testArray = array(rnorm(18), dim=c(3,3,2))
+print(testArray)
+```
+
+
+```{r}
+readCube(testArray)
+```
+
