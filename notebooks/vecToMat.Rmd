@@ -3,6 +3,7 @@ title: "R Notebook"
 output: html_notebook
 ---
 
+https://faculty.washington.edu/heagerty/Courses/b572/public/rccp_demo.R
 
 
 ```{r}
@@ -47,6 +48,7 @@ test.scalar = runif(1)
 aux.mat.rcpp(test.vec, test.scalar)
 ```
 
+## same as above but calling cpp file
 
 ```{r}
 library(Rcpp)

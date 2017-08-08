@@ -142,7 +142,7 @@ $(document).ready(function () {
 </style>
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("vecToMat.Rmd");
+  window.initializeSourceEmbed("armaCube.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
@@ -172,81 +172,35 @@ $(document).ready(function () {
 
 
 <!-- rnb-text-begin -->
-<p><a href="https://faculty.washington.edu/heagerty/Courses/b572/public/rccp_demo.R" class="uri">https://faculty.washington.edu/heagerty/Courses/b572/public/rccp_demo.R</a></p>
+<p><a href="http://www.econr.org/BlitzExample.html" class="uri">http://www.econr.org/BlitzExample.html</a></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMgTm93IGxldCdzIGFjY29tcGxpc2ggdGhlIHNhbWUgdGFzayB3aXRoIFJjcHAgYW5kIGlubGluZVxuIyMgTm90ZTogaW5saW5lIHJlcXVpcmVzIFJjcHAgc28gdGhlIGxhdHRlciB3aWxsIGJlIGxvYWRlZCBhdXRvbWF0aWNhbGx5XG5saWJyYXJ5KFJjcHApXG5saWJyYXJ5KGlubGluZSlcbiMgYW5kIGRlZmluZSBvdXIgdmVyc2lvbiBpbiBDKytcbnJjcHAuc3JjIDwtICdcbiAgI2luY2x1ZGUgPGNtYXRoPlxuICBcbiAgTnVtZXJpY1ZlY3RvciB4eCh4KTtcbiAgZG91YmxlIHl5ID0gYXM8ZG91YmxlPih5KTtcbiAgaW50IG5feHggPSB4eC5zaXplKCk7XG4gIE51bWVyaWNNYXRyaXggYW5zKG5feHgsIG5feHgpOyAgICAgIC8vICByZXR1cm4gbWF0cml4XG4gIGZvcihpbnQgaSA9IDA7IGkgPCBuX3h4OyBpKyspIHtcbiAgICBmb3IoaW50IGogPSAwOyBqIDwgbl94eDsgaisrKXtcbiAgICAgIGlmICgoeHhbaV0teHhbal08MTBlLTcpICYmICh4eFtpXS14eFtqXT4tMTBlLTcpKXtcbiAgICAgICAgYW5zKGksaikgPSBleHAoeHhbal0qeXkpKnl5O1xuICAgICAgfWVsc2V7XG5cdCAgICAgIGFucyhpLGopID0gKGV4cCh4eFtpXSp5eSkgLSBleHAoeHhbal0qeXkpKS8oeHhbaV0gLSB4eFtqXSk7XG4gICAgICB9XG4gICAgfVxuICB9XG4gIFxuICByZXR1cm4gd3JhcChhbnMpO1xuJ1xuIFxuYXV4Lm1hdC5yY3BwID0gY3h4ZnVuY3Rpb24oc2lnbmF0dXJlKHg9XCJudW1lcmljXCIsIFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHk9XCJudW1lcmljXCIpLCBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgIGJvZHk9cmNwcC5zcmMsIFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgcGx1Z2luPVwiUmNwcFwiKVxuc2V0LnNlZWQoMTIzNClcbiMgdGVzdC52ZWMgPSBydW5pZig1KVxudGVzdC52ZWMgPSBzZXEoMSw1KVxudGVzdC5zY2FsYXIgPSBydW5pZigxKVxuYXV4Lm1hdC5yY3BwKHRlc3QudmVjLCB0ZXN0LnNjYWxhcilcbmBgYCJ9 -->
-<pre class="r"><code>## Now let's accomplish the same task with Rcpp and inline
-## Note: inline requires Rcpp so the latter will be loaded automatically
-library(Rcpp)
-library(inline)
-# and define our version in C++
-rcpp.src &lt;- '
-  #include &lt;cmath&gt;
-  
-  NumericVector xx(x);
-  double yy = as&lt;double&gt;(y);
-  int n_xx = xx.size();
-  NumericMatrix ans(n_xx, n_xx);      //  return matrix
-  for(int i = 0; i &lt; n_xx; i++) {
-    for(int j = 0; j &lt; n_xx; j++){
-      if ((xx[i]-xx[j]&lt;10e-7) &amp;&amp; (xx[i]-xx[j]&gt;-10e-7)){
-        ans(i,j) = exp(xx[j]*yy)*yy;
-      }else{
-          ans(i,j) = (exp(xx[i]*yy) - exp(xx[j]*yy))/(xx[i] - xx[j]);
-      }
-    }
-  }
-  
-  return wrap(ans);
-'
- 
-aux.mat.rcpp = cxxfunction(signature(x=&quot;numeric&quot;, 
-                                     y=&quot;numeric&quot;), 
-                           body=rcpp.src, 
-                           plugin=&quot;Rcpp&quot;)
-set.seed(1234)
-# test.vec = runif(5)
-test.vec = seq(1,5)
-test.scalar = runif(1)
-aux.mat.rcpp(test.vec, test.scalar)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVxdWlyZShSY3BwKVxuYGBgIn0= -->
+<pre class="r"><code>require(Rcpp)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICAgIFssMV0gICAgICBbLDJdICAgICAgWywzXSAgICAgIFssNF0gICAgICBbLDVdXG5bMSxdIDAuMTI3Mzk1NiAwLjEzNDkyMDcgMC4xNDMwNDQzIDAuMTUxODIwMCAwLjE2MTMwNjdcblsyLF0gMC4xMzQ5MjA3IDAuMTQyNzM2NSAwLjE1MTE2NzggMC4xNjAyNjk2IDAuMTcwMTAyMVxuWzMsXSAwLjE0MzA0NDMgMC4xNTExNjc4IDAuMTU5OTI0OCAwLjE2OTM3MTQgMC4xNzk1NjkyXG5bNCxdIDAuMTUxODIwMCAwLjE2MDI2OTYgMC4xNjkzNzE0IDAuMTc5MTgyOSAwLjE4OTc2NzFcbls1LF0gMC4xNjEzMDY3IDAuMTcwMTAyMSAwLjE3OTU2OTIgMC4xODk3NjcxIDAuMjAwNzYwMVxuIn0= -->
-<pre><code>          [,1]      [,2]      [,3]      [,4]      [,5]
-[1,] 0.1273956 0.1349207 0.1430443 0.1518200 0.1613067
-[2,] 0.1349207 0.1427365 0.1511678 0.1602696 0.1701021
-[3,] 0.1430443 0.1511678 0.1599248 0.1693714 0.1795692
-[4,] 0.1518200 0.1602696 0.1693714 0.1791829 0.1897671
-[5,] 0.1613067 0.1701021 0.1795692 0.1897671 0.2007601</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBSY3BwXG4ifQ== -->
+<pre><code>Loading required package: Rcpp</code></pre>
 <!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<div id="same-as-above-but-calling-cpp-file" class="section level2">
-<h2>same as above but calling cpp file</h2>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShSY3BwKVxuc291cmNlQ3BwKFwiLi4vc3JjL3ZlY1RvTWF0LmNwcFwiKVxuc2V0LnNlZWQoMTIzNClcbnRlc3QudmVjID0gc2VxKDEsNSlcbnRlc3Quc2NhbGFyID0gcnVuaWYoMSlcbnZlY1RvTWF0KHRlc3QudmVjLCB0ZXN0LnNjYWxhcilcbmBgYCJ9 -->
-<pre class="r"><code>library(Rcpp)
-sourceCpp(&quot;../src/vecToMat.cpp&quot;)
-set.seed(1234)
-test.vec = seq(1,5)
-test.scalar = runif(1)
-vecToMat(test.vec, test.scalar)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVxdWlyZShSY3BwQXJtYWRpbGxvKVxuYGBgIn0= -->
+<pre class="r"><code>require(RcppArmadillo)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICAgIFssMV0gICAgICBbLDJdICAgICAgWywzXSAgICAgIFssNF0gICAgICBbLDVdXG5bMSxdIDAuMTI3Mzk1NiAwLjEzNDkyMDcgMC4xNDMwNDQzIDAuMTUxODIwMCAwLjE2MTMwNjdcblsyLF0gMC4xMzQ5MjA3IDAuMTQyNzM2NSAwLjE1MTE2NzggMC4xNjAyNjk2IDAuMTcwMTAyMVxuWzMsXSAwLjE0MzA0NDMgMC4xNTExNjc4IDAuMTU5OTI0OCAwLjE2OTM3MTQgMC4xNzk1NjkyXG5bNCxdIDAuMTUxODIwMCAwLjE2MDI2OTYgMC4xNjkzNzE0IDAuMTc5MTgyOSAwLjE4OTc2NzFcbls1LF0gMC4xNjEzMDY3IDAuMTcwMTAyMSAwLjE3OTU2OTIgMC4xODk3NjcxIDAuMjAwNzYwMVxuIn0= -->
-<pre><code>          [,1]      [,2]      [,3]      [,4]      [,5]
-[1,] 0.1273956 0.1349207 0.1430443 0.1518200 0.1613067
-[2,] 0.1349207 0.1427365 0.1511678 0.1602696 0.1701021
-[3,] 0.1430443 0.1511678 0.1599248 0.1693714 0.1795692
-[4,] 0.1518200 0.1602696 0.1693714 0.1791829 0.1897671
-[5,] 0.1613067 0.1701021 0.1795692 0.1897671 0.2007601</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBSY3BwQXJtYWRpbGxvXG4ifQ== -->
+<pre><code>Loading required package: RcppArmadillo</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc291cmNlQ3BwKFwiLi4vc3JjL2FybWFDdWJlLmNwcFwiKVxuQSA9IGFycmF5KDE6NjAsYygyLDUsNikpXG5BMiA9IGFycmF5KDEyMDo2MCxjKDIsNSw2KSlcbmFsbC5lcXVhbChmKEEsQTIpLEErQTIpXG5gYGAifQ== -->
+<pre class="r"><code>sourceCpp(&quot;../src/armaCube.cpp&quot;)
+A = array(1:60,c(2,5,6))
+A2 = array(120:60,c(2,5,6))
+all.equal(f(A,A2),A+A2)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFRSVUVcbiJ9 -->
+<pre><code>[1] TRUE</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
-</div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpodHRwczovL2ZhY3VsdHkud2FzaGluZ3Rvbi5lZHUvaGVhZ2VydHkvQ291cnNlcy9iNTcyL3B1YmxpYy9yY2NwX2RlbW8uUg0KDQoNCmBgYHtyfQ0KIyMgTm93IGxldCdzIGFjY29tcGxpc2ggdGhlIHNhbWUgdGFzayB3aXRoIFJjcHAgYW5kIGlubGluZQ0KIyMgTm90ZTogaW5saW5lIHJlcXVpcmVzIFJjcHAgc28gdGhlIGxhdHRlciB3aWxsIGJlIGxvYWRlZCBhdXRvbWF0aWNhbGx5DQoNCmxpYnJhcnkoUmNwcCkNCmxpYnJhcnkoaW5saW5lKQ0KDQojIGFuZCBkZWZpbmUgb3VyIHZlcnNpb24gaW4gQysrDQpyY3BwLnNyYyA8LSAnDQogICNpbmNsdWRlIDxjbWF0aD4NCiAgDQogIE51bWVyaWNWZWN0b3IgeHgoeCk7DQogIGRvdWJsZSB5eSA9IGFzPGRvdWJsZT4oeSk7DQogIGludCBuX3h4ID0geHguc2l6ZSgpOw0KDQogIE51bWVyaWNNYXRyaXggYW5zKG5feHgsIG5feHgpOyAgICAgIC8vICByZXR1cm4gbWF0cml4DQoNCiAgZm9yKGludCBpID0gMDsgaSA8IG5feHg7IGkrKykgew0KICAgIGZvcihpbnQgaiA9IDA7IGogPCBuX3h4OyBqKyspew0KICAgICAgaWYgKCh4eFtpXS14eFtqXTwxMGUtNykgJiYgKHh4W2ldLXh4W2pdPi0xMGUtNykpew0KICAgICAgICBhbnMoaSxqKSA9IGV4cCh4eFtqXSp5eSkqeXk7DQogICAgICB9ZWxzZXsNCgkgICAgICBhbnMoaSxqKSA9IChleHAoeHhbaV0qeXkpIC0gZXhwKHh4W2pdKnl5KSkvKHh4W2ldIC0geHhbal0pOw0KICAgICAgfQ0KICAgIH0NCiAgfQ0KICANCiAgcmV0dXJuIHdyYXAoYW5zKTsNCicNCiANCmF1eC5tYXQucmNwcCA9IGN4eGZ1bmN0aW9uKHNpZ25hdHVyZSh4PSJudW1lcmljIiwgDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgeT0ibnVtZXJpYyIpLCANCiAgICAgICAgICAgICAgICAgICAgICAgICAgIGJvZHk9cmNwcC5zcmMsIA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgcGx1Z2luPSJSY3BwIikNCnNldC5zZWVkKDEyMzQpDQojIHRlc3QudmVjID0gcnVuaWYoNSkNCnRlc3QudmVjID0gc2VxKDEsNSkNCnRlc3Quc2NhbGFyID0gcnVuaWYoMSkNCg0KYXV4Lm1hdC5yY3BwKHRlc3QudmVjLCB0ZXN0LnNjYWxhcikNCmBgYA0KDQojIyBzYW1lIGFzIGFib3ZlIGJ1dCBjYWxsaW5nIGNwcCBmaWxlDQoNCmBgYHtyfQ0KbGlicmFyeShSY3BwKQ0Kc291cmNlQ3BwKCIuLi9zcmMvdmVjVG9NYXQuY3BwIikNCg0Kc2V0LnNlZWQoMTIzNCkNCnRlc3QudmVjID0gc2VxKDEsNSkNCnRlc3Quc2NhbGFyID0gcnVuaWYoMSkNCg0KdmVjVG9NYXQodGVzdC52ZWMsIHRlc3Quc2NhbGFyKQ0KYGBgDQoNCg==</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpodHRwOi8vd3d3LmVjb25yLm9yZy9CbGl0ekV4YW1wbGUuaHRtbA0KDQoNCmBgYHtyfQ0KcmVxdWlyZShSY3BwKQ0KcmVxdWlyZShSY3BwQXJtYWRpbGxvKQ0KDQpzb3VyY2VDcHAoIi4uL3NyYy9hcm1hQ3ViZS5jcHAiKQ0KDQpBID0gYXJyYXkoMTo2MCwgYygyLDUsNikpDQpBMiA9IGFycmF5KDEyMDo2MCwgYygyLDUsNikpDQphbGwuZXF1YWwoZihBLCBBMiksIEErQTIpDQpgYGANCg0K</div>
 
 
 
