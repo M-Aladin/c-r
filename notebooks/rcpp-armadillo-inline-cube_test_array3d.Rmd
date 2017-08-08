@@ -3,6 +3,9 @@ title: "R Notebook"
 output: html_notebook
 ---
 
+http://lists.r-forge.r-project.org/pipermail/rcpp-devel/2013-March/005441.html
+
+
 ## Embedded code with cxxfunction
 
 ```{r}

@@ -142,7 +142,7 @@ $(document).ready(function () {
 </style>
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("rcpp-armadillo-inline-cube_test_array3d.Rmd");
+  window.initializeSourceEmbed("rcpp-armadillo-sourceCpp-loop_cube.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
@@ -172,100 +172,170 @@ $(document).ready(function () {
 
 
 <!-- rnb-text-begin -->
-<p><a href="http://lists.r-forge.r-project.org/pipermail/rcpp-devel/2013-March/005441.html" class="uri">http://lists.r-forge.r-project.org/pipermail/rcpp-devel/2013-March/005441.html</a></p>
-<div id="embedded-code-with-cxxfunction" class="section level2">
-<h2>Embedded code with cxxfunction</h2>
+<p><a href="http://lists.r-forge.r-project.org/pipermail/rcpp-devel/2016-September/009375.html" class="uri">http://lists.r-forge.r-project.org/pipermail/rcpp-devel/2016-September/009375.html</a></p>
+<div id="looping-a-cube" class="section level2">
+<h2>Looping a cube</h2>
+<p>It is much, much, much easier to deal with small, simplified, examples, as Dirk and others have explained before. Changing your code to make n = 4 and the values seq(1, 12), we can see the pattern. For each slice, you are taking the product down the rows of “slice” number of entries. So the first slice is the 1-element product of the entries, or just a copy of the original matrix.</p>
+<p>Now, putting the index names back in familiar context (M rows and N columns), for the second slice, C(2, 1, 2) = A(1, 1) * A(2, 1). C(3, 1, 2) = A(2, 1) * A(3, 1), etc. For the third slice, we have 3-element products So C(1, , 3) and C(2, , 3) are 0. C(3, 1, 3) = A(1, 1) * A(2, 1) * A(3, 1), etc. In the last slice there is only one entry in the last row and it is the product of each column in its entirety.</p>
+<p>That being said, the way I would approach it is to use Armadillo’s subsetting to get the needed vector and use Armadillo’s product function to get their product.</p>
+<pre><code>#include &lt;RcppArmadillo.h&gt;
+using namespace Rcpp;
+using namespace RcppArmadillo;
+using namespace arma;
+//[[Rcpp::depends(RcppArmadillo)]]
+
+//[[Rcpp::export]]
+cube up_C(mat a){
+    int m = a.n_rows;
+    int n = a.n_cols;
+    
+    cube C = cube(m, n, m, fill::zeros);
+    
+    C.slice(0) = a;
+    for (int slices = 1; slices &lt; m; ++slices){
+        for (int j = 0; j &lt; n; ++j) {
+            for (int i = slices; i &lt; m; ++i) {
+                vec S = C.subcube(i - slices, j, 0, i, j, 0);
+                C(i, j, slices) = prod(S);
+            }
+        }
+    }
+    return(C);
+}</code></pre>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShSY3BwQXJtYWRpbGxvKVxubGlicmFyeShpbmxpbmUpXG5cbmlmKCByZXF1aXJlKCBSY3BwQXJtYWRpbGxvICkgKSB7XG5cdGZ4IDwtIGN4eGZ1bmN0aW9uKCBzaWduYXR1cmUoeCA9IFwidmVjdG9yXCIsIG4gPSBcImludGVnZXJcIikgLCAnXG5cdFx0UmNwcDo6TnVtZXJpY1ZlY3RvciBYWCh4KTtcblx0XHRSY3BwOjpJbnRlZ2VyVmVjdG9yIGRpbShuKTtcblx0XHRhcm1hOjpjdWJlIEFZKFhYLmJlZ2luKCksIGRpbVswXSwgZGltWzFdLCBkaW1bMl0pO1xuXHRcdHJldHVybih3cmFwKEFZKSk7XG5cdCcsIHBsdWdpbiA9IFwiUmNwcEFybWFkaWxsb1wiIClcbn1cblxuc2V0LnNlZWQoMTApXG54ID0gYXJyYXkocm5vcm0oMjUqMjUqMTApLCBkaW09YygyNSwyNSwxMCkpICAgIyBSIGFycmF5XG55ID0gZngoeCwgYygyNSwyNSwxMCkpICAgICAgICAgICAgICAgICAgICAgICAgIyBBcm1hZGlsbG8gYXJyYXlcbmFsbC5lcXVhbCh4LHkpXG5gYGAifQ== -->
-<pre class="r"><code>library(RcppArmadillo)
-library(inline)
-
-if( require( RcppArmadillo ) ) {
-    fx &lt;- cxxfunction( signature(x = &quot;vector&quot;, n = &quot;integer&quot;) , '
-        Rcpp::NumericVector XX(x);
-        Rcpp::IntegerVector dim(n);
-        arma::cube AY(XX.begin(), dim[0], dim[1], dim[2]);
-        return(wrap(AY));
-    ', plugin = &quot;RcppArmadillo&quot; )
-}
-
-set.seed(10)
-x = array(rnorm(25*25*10), dim=c(25,25,10))   # R array
-y = fx(x, c(25,25,10))                        # Armadillo array
-all.equal(x,y)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShSY3BwKVxuc291cmNlQ3BwKFwiLi4vc3JjL2FybWFMb29wLmNwcFwiKVxubXggPC0gbWF0cml4KDEwLCBucm93PTUsIG5jb2w9MikgICAgIyBSIGFycmF5IHRvIHNlbmRcbnVwX0MobXgpXG5gYGAifQ== -->
+<pre class="r"><code>library(Rcpp)
+sourceCpp(&quot;../src/armaLoop.cpp&quot;)
+mx &lt;- matrix(10, nrow=5, ncol=2)    # R array to send
+up_C(mx)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="separated-code-with-cxxfunction" class="section level2">
-<h2>Separated code with cxxfunction</h2>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShSY3BwQXJtYWRpbGxvKVxubGlicmFyeShpbmxpbmUpXG5ib2R5IDwtICdcbiAgICAgICAgUmNwcDo6TnVtZXJpY1ZlY3RvciBYWCh4KTtcblx0XHRSY3BwOjpJbnRlZ2VyVmVjdG9yIGRpbShuKTtcblx0XHRhcm1hOjpjdWJlIEFZKFhYLmJlZ2luKCksIGRpbVswXSwgZGltWzFdLCBkaW1bMl0pO1xuXHRcdHJldHVybih3cmFwKEFZKSk7XG4nXG5pZiggcmVxdWlyZSggUmNwcEFybWFkaWxsbyApICkge1xuXHRmeCA8LSBjeHhmdW5jdGlvbiggc2lnbmF0dXJlKHggPSBcInZlY3RvclwiLCBuID0gXCJpbnRlZ2VyXCIpICwgXG5cdCAgICAgICAgICAgICAgICAgICBib2R5ID0gYm9keSwgXG5cdCAgICAgICAgICAgICAgICAgICBwbHVnaW4gPSBcIlJjcHBBcm1hZGlsbG9cIiApXG59XG5zZXQuc2VlZCgxMClcbnggPSBhcnJheShybm9ybSgyNSoyNSoxMCksIGRpbT1jKDI1LDI1LDEwKSkgICAjIFIgYXJyYXlcbnkgPSBmeCh4LCBjKDI1LDI1LDEwKSkgICAgICAgICAgICAgICAgICAgICAgICAjIEFybWFkaWxsbyBhcnJheVxuYWxsLmVxdWFsKHgseSlcbmBgYCJ9 -->
-<pre class="r"><code>library(RcppArmadillo)
-library(inline)
-body &lt;- '
-        Rcpp::NumericVector XX(x);
-        Rcpp::IntegerVector dim(n);
-        arma::cube AY(XX.begin(), dim[0], dim[1], dim[2]);
-        return(wrap(AY));
-'
-if( require( RcppArmadillo ) ) {
-    fx &lt;- cxxfunction( signature(x = &quot;vector&quot;, n = &quot;integer&quot;) , 
-                       body = body, 
-                       plugin = &quot;RcppArmadillo&quot; )
-}
-set.seed(10)
-x = array(rnorm(25*25*10), dim=c(25,25,10))   # R array
-y = fx(x, c(25,25,10))                        # Armadillo array
-all.equal(x,y)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFRSVUVcbiJ9 -->
-<pre><code>[1] TRUE</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiLCAsIDFcblxuICAgICBbLDFdIFssMl1cblsxLF0gICAxMCAgIDEwXG5bMixdICAgMTAgICAxMFxuWzMsXSAgIDEwICAgMTBcbls0LF0gICAxMCAgIDEwXG5bNSxdICAgMTAgICAxMFxuXG4sICwgMlxuXG4gICAgIFssMV0gWywyXVxuWzEsXSAgICAwICAgIDBcblsyLF0gIDEwMCAgMTAwXG5bMyxdICAxMDAgIDEwMFxuWzQsXSAgMTAwICAxMDBcbls1LF0gIDEwMCAgMTAwXG5cbiwgLCAzXG5cbiAgICAgWywxXSBbLDJdXG5bMSxdICAgIDAgICAgMFxuWzIsXSAgICAwICAgIDBcblszLF0gMTAwMCAxMDAwXG5bNCxdIDEwMDAgMTAwMFxuWzUsXSAxMDAwIDEwMDBcblxuLCAsIDRcblxuICAgICAgWywxXSAgWywyXVxuWzEsXSAgICAgMCAgICAgMFxuWzIsXSAgICAgMCAgICAgMFxuWzMsXSAgICAgMCAgICAgMFxuWzQsXSAxMDAwMCAxMDAwMFxuWzUsXSAxMDAwMCAxMDAwMFxuXG4sICwgNVxuXG4gICAgICBbLDFdICBbLDJdXG5bMSxdIDBlKzAwIDBlKzAwXG5bMixdIDBlKzAwIDBlKzAwXG5bMyxdIDBlKzAwIDBlKzAwXG5bNCxdIDBlKzAwIDBlKzAwXG5bNSxdIDFlKzA1IDFlKzA1XG4ifQ== -->
+<pre><code>, , 1
+
+     [,1] [,2]
+[1,]   10   10
+[2,]   10   10
+[3,]   10   10
+[4,]   10   10
+[5,]   10   10
+
+, , 2
+
+     [,1] [,2]
+[1,]    0    0
+[2,]  100  100
+[3,]  100  100
+[4,]  100  100
+[5,]  100  100
+
+, , 3
+
+     [,1] [,2]
+[1,]    0    0
+[2,]    0    0
+[3,] 1000 1000
+[4,] 1000 1000
+[5,] 1000 1000
+
+, , 4
+
+      [,1]  [,2]
+[1,]     0     0
+[2,]     0     0
+[3,]     0     0
+[4,] 10000 10000
+[5,] 10000 10000
+
+, , 5
+
+      [,1]  [,2]
+[1,] 0e+00 0e+00
+[2,] 0e+00 0e+00
+[3,] 0e+00 0e+00
+[4,] 0e+00 0e+00
+[5,] 1e+05 1e+05</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-</div>
-<div id="separate-code-using-a-direct-function-with-cppfunction" class="section level2">
-<h2>Separate code using a direct function with cppFunction</h2>
+<p>This pulls the “slices” length subset of the jth column starting at slices and ending at i from the 0th slice (which is the original matrix) and puts the product in to the C(i, j, slices) entry.</p>
+<p>You can test the two are identical through identical(up_C(a), up_R(a)) for any a, and the C version is, of course, much faster especially for large matrices.</p>
+<p>It often pays to start with something simpler, and see if there is a pattern you can identify which would help you conceptually, even if not completely optimized.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShSY3BwKVxuYGBgIn0= -->
-<pre class="r"><code>library(Rcpp)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG5BdHRhY2hpbmcgcGFja2FnZTog46S847ixUmNwcOOkvOO4slxuXG5UaGUgZm9sbG93aW5nIG9iamVjdCBpcyBtYXNrZWQgZnJvbSDjpLzjuLFwYWNrYWdlOmlubGluZeOkvOO4sjpcblxuICAgIHJlZ2lzdGVyUGx1Z2luXG4ifQ== -->
-<pre><code>
-Attaching package: 㤼㸱Rcpp㤼㸲
-
-The following object is masked from 㤼㸱package:inline㤼㸲:
-
-    registerPlugin</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShSY3BwQXJtYWRpbGxvKVxubGlicmFyeShpbmxpbmUpXG5jb2RlIDwtICdcbiAgICAgICAgYXJtYTo6Y3ViZSBmeChSY3BwOjpOdW1lcmljVmVjdG9yIHgsIFJjcHA6OkludGVnZXJWZWN0b3Igbikge1xuICAgICAgICBSY3BwOjpOdW1lcmljVmVjdG9yIFhYKHgpO1xuXHRcdFJjcHA6OkludGVnZXJWZWN0b3IgZGltKG4pO1xuXHRcdGFybWE6OmN1YmUgQVkoWFguYmVnaW4oKSwgZGltWzBdLCBkaW1bMV0sIGRpbVsyXSk7XG5cdFx0cmV0dXJuKEFZKTtcbn1cbidcbmNwcEZ1bmN0aW9uKGNvZGUgPSBjb2RlLCBkZXBlbmRzID0gXCJSY3BwQXJtYWRpbGxvXCIpXG5zZXQuc2VlZCgxMClcbnggPSBhcnJheShybm9ybSgyNSoyNSoxMCksIGRpbT1jKDI1LDI1LDEwKSkgICAjIFIgYXJyYXlcbnkgPSBmeCh4LCBjKDI1LDI1LDEwKSkgICAgICAgICAgICAgICAgICAgICAgICAjIEFybWFkaWxsbyBhcnJheVxuYWxsLmVxdWFsKHgseSlcbmBgYCJ9 -->
-<pre class="r"><code>library(RcppArmadillo)
-library(inline)
-code &lt;- '
-        arma::cube fx(Rcpp::NumericVector x, Rcpp::IntegerVector n) {
-        Rcpp::NumericVector XX(x);
-        Rcpp::IntegerVector dim(n);
-        arma::cube AY(XX.begin(), dim[0], dim[1], dim[2]);
-        return(AY);
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudXBfUiA8LSBmdW5jdGlvbihhKXtcbiAgbSA9IGRpbShhKVtbMV1dXG4gIG4gPSBkaW0oYSlbWzJdXVxuICBiID0gYXJyYXkoYXMuZG91YmxlKDApLCBkaW0gPSBjKG0sIG4sIG0pKVxuICBmb3IoaSBpbiAxOm0pe1xuICAgIGZvcihqIGluIDE6bil7XG4gICAgICBmb3IocSBpbiAxOmkpe1xuICAgICAgICBpZihxPT0xKXtcbiAgICAgICAgICBiW2ksIGosIHFdID0gYVtpLCBqXTtcbiAgICAgICAgfVxuICAgICAgICBlbHNle1xuICAgICAgICAgIGJbaSwgaiwgcV0gPSBiW2ktMSwgaiwgcS0xXSAqIGFbaSwgal07XG4gICAgICAgIH1cbiAgICAgIH1cbiAgICB9XG4gIH1cbiAgcmV0dXJuKGIpXG59XG51cF9SKG14KVxuYGBgIn0= -->
+<pre class="r"><code>up_R &lt;- function(a){
+  m = dim(a)[[1]]
+  n = dim(a)[[2]]
+  b = array(as.double(0), dim = c(m, n, m))
+  for(i in 1:m){
+    for(j in 1:n){
+      for(q in 1:i){
+        if(q==1){
+          b[i, j, q] = a[i, j];
+        }
+        else{
+          b[i, j, q] = b[i-1, j, q-1] * a[i, j];
+        }
+      }
+    }
+  }
+  return(b)
 }
-'
-cppFunction(code = code, depends = &quot;RcppArmadillo&quot;)
-set.seed(10)
-x = array(rnorm(25*25*10), dim=c(25,25,10))   # R array
-y = fx(x, c(25,25,10))                        # Armadillo array
-all.equal(x,y)</code></pre>
+up_R(mx)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFRSVUVcbiJ9 -->
-<pre><code>[1] TRUE</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiLCAsIDFcblxuICAgICBbLDFdIFssMl1cblsxLF0gICAxMCAgIDEwXG5bMixdICAgMTAgICAxMFxuWzMsXSAgIDEwICAgMTBcbls0LF0gICAxMCAgIDEwXG5bNSxdICAgMTAgICAxMFxuXG4sICwgMlxuXG4gICAgIFssMV0gWywyXVxuWzEsXSAgICAwICAgIDBcblsyLF0gIDEwMCAgMTAwXG5bMyxdICAxMDAgIDEwMFxuWzQsXSAgMTAwICAxMDBcbls1LF0gIDEwMCAgMTAwXG5cbiwgLCAzXG5cbiAgICAgWywxXSBbLDJdXG5bMSxdICAgIDAgICAgMFxuWzIsXSAgICAwICAgIDBcblszLF0gMTAwMCAxMDAwXG5bNCxdIDEwMDAgMTAwMFxuWzUsXSAxMDAwIDEwMDBcblxuLCAsIDRcblxuICAgICAgWywxXSAgWywyXVxuWzEsXSAgICAgMCAgICAgMFxuWzIsXSAgICAgMCAgICAgMFxuWzMsXSAgICAgMCAgICAgMFxuWzQsXSAxMDAwMCAxMDAwMFxuWzUsXSAxMDAwMCAxMDAwMFxuXG4sICwgNVxuXG4gICAgICBbLDFdICBbLDJdXG5bMSxdIDBlKzAwIDBlKzAwXG5bMixdIDBlKzAwIDBlKzAwXG5bMyxdIDBlKzAwIDBlKzAwXG5bNCxdIDBlKzAwIDBlKzAwXG5bNSxdIDFlKzA1IDFlKzA1XG4ifQ== -->
+<pre><code>, , 1
+
+     [,1] [,2]
+[1,]   10   10
+[2,]   10   10
+[3,]   10   10
+[4,]   10   10
+[5,]   10   10
+
+, , 2
+
+     [,1] [,2]
+[1,]    0    0
+[2,]  100  100
+[3,]  100  100
+[4,]  100  100
+[5,]  100  100
+
+, , 3
+
+     [,1] [,2]
+[1,]    0    0
+[2,]    0    0
+[3,] 1000 1000
+[4,] 1000 1000
+[5,] 1000 1000
+
+, , 4
+
+      [,1]  [,2]
+[1,]     0     0
+[2,]     0     0
+[3,]     0     0
+[4,] 10000 10000
+[5,] 10000 10000
+
+, , 5
+
+      [,1]  [,2]
+[1,] 0e+00 0e+00
+[2,] 0e+00 0e+00
+[3,] 0e+00 0e+00
+[4,] 0e+00 0e+00
+[5,] 1e+05 1e+05</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpodHRwOi8vbGlzdHMuci1mb3JnZS5yLXByb2plY3Qub3JnL3BpcGVybWFpbC9yY3BwLWRldmVsLzIwMTMtTWFyY2gvMDA1NDQxLmh0bWwNCg0KDQojIyBFbWJlZGRlZCBjb2RlIHdpdGggY3h4ZnVuY3Rpb24NCg0KYGBge3J9DQpsaWJyYXJ5KFJjcHBBcm1hZGlsbG8pDQpsaWJyYXJ5KGlubGluZSkNCg0KaWYoIHJlcXVpcmUoIFJjcHBBcm1hZGlsbG8gKSApIHsNCglmeCA8LSBjeHhmdW5jdGlvbiggc2lnbmF0dXJlKHggPSAidmVjdG9yIiwgbiA9ICJpbnRlZ2VyIikgLCAnDQoJCVJjcHA6Ok51bWVyaWNWZWN0b3IgWFgoeCk7DQoJCVJjcHA6OkludGVnZXJWZWN0b3IgZGltKG4pOw0KCQlhcm1hOjpjdWJlIEFZKFhYLmJlZ2luKCksIGRpbVswXSwgZGltWzFdLCBkaW1bMl0pOw0KCQlyZXR1cm4od3JhcChBWSkpOw0KCScsIHBsdWdpbiA9ICJSY3BwQXJtYWRpbGxvIiApDQp9DQoNCnNldC5zZWVkKDEwKQ0KeCA9IGFycmF5KHJub3JtKDI1KjI1KjEwKSwgZGltPWMoMjUsMjUsMTApKSAgICMgUiBhcnJheQ0KeSA9IGZ4KHgsIGMoMjUsMjUsMTApKSAgICAgICAgICAgICAgICAgICAgICAgICMgQXJtYWRpbGxvIGFycmF5DQphbGwuZXF1YWwoeCx5KQ0KYGBgDQoNCg0KIyMgU2VwYXJhdGVkIGNvZGUgd2l0aCBjeHhmdW5jdGlvbg0KDQpgYGB7cn0NCmxpYnJhcnkoUmNwcEFybWFkaWxsbykNCmxpYnJhcnkoaW5saW5lKQ0KDQpib2R5IDwtICcNCiAgICAgICAgUmNwcDo6TnVtZXJpY1ZlY3RvciBYWCh4KTsNCgkJUmNwcDo6SW50ZWdlclZlY3RvciBkaW0obik7DQoJCWFybWE6OmN1YmUgQVkoWFguYmVnaW4oKSwgZGltWzBdLCBkaW1bMV0sIGRpbVsyXSk7DQoJCXJldHVybih3cmFwKEFZKSk7DQonDQoNCmlmKCByZXF1aXJlKCBSY3BwQXJtYWRpbGxvICkgKSB7DQoJZnggPC0gY3h4ZnVuY3Rpb24oIHNpZ25hdHVyZSh4ID0gInZlY3RvciIsIG4gPSAiaW50ZWdlciIpICwgDQoJICAgICAgICAgICAgICAgICAgIGJvZHkgPSBib2R5LCANCgkgICAgICAgICAgICAgICAgICAgcGx1Z2luID0gIlJjcHBBcm1hZGlsbG8iICkNCn0NCg0Kc2V0LnNlZWQoMTApDQp4ID0gYXJyYXkocm5vcm0oMjUqMjUqMTApLCBkaW09YygyNSwyNSwxMCkpICAgIyBSIGFycmF5DQp5ID0gZngoeCwgYygyNSwyNSwxMCkpICAgICAgICAgICAgICAgICAgICAgICAgIyBBcm1hZGlsbG8gYXJyYXkNCmFsbC5lcXVhbCh4LHkpDQpgYGANCg0KIyMgU2VwYXJhdGUgY29kZSB1c2luZyBhIGRpcmVjdCBmdW5jdGlvbiB3aXRoIGNwcEZ1bmN0aW9uDQoNCmBgYHtyfQ0KbGlicmFyeShSY3BwKQ0KbGlicmFyeShSY3BwQXJtYWRpbGxvKQ0KbGlicmFyeShpbmxpbmUpDQoNCmNvZGUgPC0gJw0KICAgICAgICBhcm1hOjpjdWJlIGZ4KFJjcHA6Ok51bWVyaWNWZWN0b3IgeCwgUmNwcDo6SW50ZWdlclZlY3RvciBuKSB7DQogICAgICAgIFJjcHA6Ok51bWVyaWNWZWN0b3IgWFgoeCk7DQoJCVJjcHA6OkludGVnZXJWZWN0b3IgZGltKG4pOw0KCQlhcm1hOjpjdWJlIEFZKFhYLmJlZ2luKCksIGRpbVswXSwgZGltWzFdLCBkaW1bMl0pOw0KCQlyZXR1cm4oQVkpOw0KfQ0KJw0KDQpjcHBGdW5jdGlvbihjb2RlID0gY29kZSwgZGVwZW5kcyA9ICJSY3BwQXJtYWRpbGxvIikNCg0Kc2V0LnNlZWQoMTApDQp4ID0gYXJyYXkocm5vcm0oMjUqMjUqMTApLCBkaW09YygyNSwyNSwxMCkpICAgIyBSIGFycmF5DQp5ID0gZngoeCwgYygyNSwyNSwxMCkpICAgICAgICAgICAgICAgICAgICAgICAgIyBBcm1hZGlsbG8gYXJyYXkNCmFsbC5lcXVhbCh4LHkpDQpgYGANCg==</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpodHRwOi8vbGlzdHMuci1mb3JnZS5yLXByb2plY3Qub3JnL3BpcGVybWFpbC9yY3BwLWRldmVsLzIwMTYtU2VwdGVtYmVyLzAwOTM3NS5odG1sDQoNCiMjIExvb3BpbmcgYSBjdWJlDQoNCkl0IGlzIG11Y2gsIG11Y2gsIG11Y2ggZWFzaWVyIHRvIGRlYWwgd2l0aCBzbWFsbCwgc2ltcGxpZmllZCwNCmV4YW1wbGVzLCBhcyBEaXJrIGFuZCBvdGhlcnMgaGF2ZSBleHBsYWluZWQgYmVmb3JlLiBDaGFuZ2luZyB5b3VyIGNvZGUNCnRvIG1ha2UgbiA9IDQgYW5kIHRoZSB2YWx1ZXMgc2VxKDEsIDEyKSwgd2UgY2FuIHNlZSB0aGUgcGF0dGVybi4gRm9yDQplYWNoIHNsaWNlLCB5b3UgYXJlIHRha2luZyB0aGUgcHJvZHVjdCBkb3duIHRoZSByb3dzIG9mICJzbGljZSIgbnVtYmVyDQpvZiBlbnRyaWVzLiBTbyB0aGUgZmlyc3Qgc2xpY2UgaXMgdGhlIDEtZWxlbWVudCBwcm9kdWN0IG9mIHRoZQ0KZW50cmllcywgb3IganVzdCBhIGNvcHkgb2YgdGhlIG9yaWdpbmFsIG1hdHJpeC4gDQoNCk5vdywgcHV0dGluZyB0aGUgaW5kZXgNCm5hbWVzIGJhY2sgaW4gZmFtaWxpYXIgY29udGV4dCAoTSByb3dzIGFuZCBOIGNvbHVtbnMpLCBmb3IgdGhlIHNlY29uZA0Kc2xpY2UsIEMoMiwgMSwgMikgPSBBKDEsIDEpICogQSgyLCAxKS4gQygzLCAxLCAyKSA9IEEoMiwgMSkgKiBBKDMsIDEpLA0KZXRjLiBGb3IgdGhlIHRoaXJkIHNsaWNlLCB3ZSBoYXZlIDMtZWxlbWVudCBwcm9kdWN0cyBTbyBDKDEsICwgMykgYW5kDQpDKDIsICwgMykgYXJlIDAuIEMoMywgMSwgMykgPSBBKDEsIDEpICogQSgyLCAxKSAqIEEoMywgMSksIGV0Yy4gSW4gdGhlDQpsYXN0IHNsaWNlIHRoZXJlIGlzIG9ubHkgb25lIGVudHJ5IGluIHRoZSBsYXN0IHJvdyBhbmQgaXQgaXMgdGhlDQpwcm9kdWN0IG9mIGVhY2ggY29sdW1uIGluIGl0cyBlbnRpcmV0eS4NCg0KVGhhdCBiZWluZyBzYWlkLCB0aGUgd2F5IEkgd291bGQgYXBwcm9hY2ggaXQgaXMgdG8gdXNlIEFybWFkaWxsbydzDQpzdWJzZXR0aW5nIHRvIGdldCB0aGUgbmVlZGVkIHZlY3RvciBhbmQgdXNlIEFybWFkaWxsbydzIHByb2R1Y3QNCmZ1bmN0aW9uIHRvIGdldCB0aGVpciBwcm9kdWN0Lg0KDQogICAgI2luY2x1ZGUgPFJjcHBBcm1hZGlsbG8uaD4NCiAgICB1c2luZyBuYW1lc3BhY2UgUmNwcDsNCiAgICB1c2luZyBuYW1lc3BhY2UgUmNwcEFybWFkaWxsbzsNCiAgICB1c2luZyBuYW1lc3BhY2UgYXJtYTsNCiAgICAvL1tbUmNwcDo6ZGVwZW5kcyhSY3BwQXJtYWRpbGxvKV1dDQogICAgDQogICAgLy9bW1JjcHA6OmV4cG9ydF1dDQogICAgY3ViZSB1cF9DKG1hdCBhKXsNCiAgICAgICAgaW50IG0gPSBhLm5fcm93czsNCiAgICAgICAgaW50IG4gPSBhLm5fY29sczsNCiAgICAgICAgDQogICAgICAgIGN1YmUgQyA9IGN1YmUobSwgbiwgbSwgZmlsbDo6emVyb3MpOw0KICAgICAgICANCiAgICAgICAgQy5zbGljZSgwKSA9IGE7DQogICAgICAgIGZvciAoaW50IHNsaWNlcyA9IDE7IHNsaWNlcyA8IG07ICsrc2xpY2VzKXsNCiAgICAgICAgICAgIGZvciAoaW50IGogPSAwOyBqIDwgbjsgKytqKSB7DQogICAgICAgICAgICAgICAgZm9yIChpbnQgaSA9IHNsaWNlczsgaSA8IG07ICsraSkgew0KICAgICAgICAgICAgICAgICAgICB2ZWMgUyA9IEMuc3ViY3ViZShpIC0gc2xpY2VzLCBqLCAwLCBpLCBqLCAwKTsNCiAgICAgICAgICAgICAgICAgICAgQyhpLCBqLCBzbGljZXMpID0gcHJvZChTKTsNCiAgICAgICAgICAgICAgICB9DQogICAgICAgICAgICB9DQogICAgICAgIH0NCiAgICAgICAgcmV0dXJuKEMpOw0KICAgIH0NCg0KYGBge3J9DQpsaWJyYXJ5KFJjcHApDQoNCnNvdXJjZUNwcCgiLi4vc3JjL2FybWFMb29wLmNwcCIpDQoNCm14IDwtIG1hdHJpeCgxMCwgbnJvdz01LCBuY29sPTIpICAgICMgUiBhcnJheSB0byBzZW5kDQp1cF9DKG14KQ0KYGBgDQoNClRoaXMgcHVsbHMgdGhlICJzbGljZXMiIGxlbmd0aCBzdWJzZXQgb2YgdGhlIGp0aCBjb2x1bW4gc3RhcnRpbmcgYXQNCnNsaWNlcyBhbmQgZW5kaW5nIGF0IGkgZnJvbSB0aGUgMHRoIHNsaWNlICh3aGljaCBpcyB0aGUgb3JpZ2luYWwNCm1hdHJpeCkgYW5kIHB1dHMgdGhlIHByb2R1Y3QgaW4gdG8gdGhlIEMoaSwgaiwgc2xpY2VzKSBlbnRyeS4NCg0KWW91IGNhbiB0ZXN0IHRoZSB0d28gYXJlIGlkZW50aWNhbCB0aHJvdWdoIGlkZW50aWNhbCh1cF9DKGEpLCB1cF9SKGEpKQ0KZm9yIGFueSBhLCBhbmQgdGhlIEMgdmVyc2lvbiBpcywgb2YgY291cnNlLCBtdWNoIGZhc3RlciBlc3BlY2lhbGx5IGZvcg0KbGFyZ2UgbWF0cmljZXMuDQoNCkl0IG9mdGVuIHBheXMgdG8gc3RhcnQgd2l0aCBzb21ldGhpbmcgc2ltcGxlciwgYW5kIHNlZSBpZiB0aGVyZSBpcyBhDQpwYXR0ZXJuIHlvdSBjYW4gaWRlbnRpZnkgd2hpY2ggd291bGQgaGVscCB5b3UgY29uY2VwdHVhbGx5LCBldmVuIGlmDQpub3QgY29tcGxldGVseSBvcHRpbWl6ZWQuDQoNCg0KYGBge3J9DQojIHRoZSBSIGVxdWl2YWxlbnQgYWJvdmUNCg0KdXBfUiA8LSBmdW5jdGlvbihhKXsNCiAgbSA9IGRpbShhKVtbMV1dDQogIG4gPSBkaW0oYSlbWzJdXQ0KICANCiAgYiA9IGFycmF5KGFzLmRvdWJsZSgwKSwgZGltID0gYyhtLCBuLCBtKSkNCiAgDQogIGZvcihpIGluIDE6bSl7DQogICAgZm9yKGogaW4gMTpuKXsNCiAgICAgIGZvcihxIGluIDE6aSl7DQogICAgICAgIGlmKHE9PTEpew0KICAgICAgICAgIGJbaSwgaiwgcV0gPSBhW2ksIGpdOw0KICAgICAgICB9DQogICAgICAgIGVsc2V7DQogICAgICAgICAgYltpLCBqLCBxXSA9IGJbaS0xLCBqLCBxLTFdICogYVtpLCBqXTsNCiAgICAgICAgfQ0KICAgICAgfQ0KICAgIH0NCiAgfQ0KICByZXR1cm4oYikNCn0NCg0KdXBfUihteCkNCmBgYA0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg0K</div>
 
 
 
