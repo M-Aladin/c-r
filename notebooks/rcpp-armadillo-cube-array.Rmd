@@ -4,23 +4,27 @@ output: html_notebook
 ---
 
 Source: http://markovjumps.blogspot.be/2011/12/r-array-to-rcpparmadillo-cube.html
+    https://stackoverflow.com/a/12570932/5270873
+    
+RcppArmadillo has a proper 'Cube' type generalizing matrices to 3-d.  
+RcppArmadillo has `Cube` as a first class object.
 
 ```{r}
 require(inline)
 require(RcppArmadillo)
  
 src <- '
-  using namespace Rcpp;
+    using namespace Rcpp;
+     
+    NumericVector vecArray(myArray);
+        IntegerVector arrayDims = vecArray.attr("dim");
+        arma::cube cubeArray(vecArray.begin(), 
+                             arrayDims[0], arrayDims[1], arrayDims[2], false);
  
-  NumericVector vecArray(myArray);
-  IntegerVector arrayDims = vecArray.attr("dim");
+        //change one element in the array/cube
+        cubeArray(0,0,0) = 518;  
  
-  arma::cube cubeArray(vecArray.begin(), arrayDims[0], arrayDims[1], arrayDims[2], false);
- 
-  //change one element in the array/cube
-  cubeArray(0,0,0) = 518;  
- 
-  return(wrap(cubeArray));  
+    return(wrap(cubeArray));  
 '
 ```
 

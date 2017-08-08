@@ -3,10 +3,13 @@ title: "R Notebook"
 output: html_notebook
 ---
 
+https://stackoverflow.com/questions/12569992/constructing-3d-array-in-rcpp
+
 ```{r}
 library(inline)
+
 fx <- cxxfunction(signature(vs="numeric", ds="integer"), plugin="Rcpp", 
-body='
+body = '
     Rcpp::NumericVector v(vs);                 // get the data
     Rcpp::Dimension d(ds);                     // get the dim object
     Rcpp::NumericVector r(d);                  // create vec. with correct dims

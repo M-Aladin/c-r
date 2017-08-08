@@ -11,16 +11,16 @@ This 1D convolution works the same as in Matlab and other examples.
 library(inline)
 
 src <- '
-  Rcpp::NumericVector xa(a);
-  Rcpp::NumericVector xb(b);
-
-  int n_xa = xa.size(), n_xb = xb.size();
-  Rcpp::NumericVector xab(n_xa + n_xb - 1);
-
-for (int i = 0; i < n_xa; i++)
-  for (int j = 0; j < n_xb; j++)
-    xab[i + j] += xa[i] * xb[j];
- return xab;'
+    Rcpp::NumericVector xa(a);
+    Rcpp::NumericVector xb(b);
+    
+    int n_xa = xa.size(), n_xb = xb.size();
+    Rcpp::NumericVector xab(n_xa + n_xb - 1);
+    
+    for (int i = 0; i < n_xa; i++)
+        for (int j = 0; j < n_xb; j++)
+            xab[i + j] += xa[i] * xb[j];
+    return xab;'
 ```
 
 
