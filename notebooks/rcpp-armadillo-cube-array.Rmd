@@ -33,9 +33,7 @@ src <- '
 readCube = cxxfunction(signature(myArray="numeric"), 
                        body=src, 
                        plugin="RcppArmadillo")
-```
 
-```{r}
 set.seed(345)
 testArray = array(rnorm(18), dim=c(3,3,2))
 print(testArray)
@@ -201,33 +199,6 @@ src <- '
     return(wrap(cubeArray));  
 '
 
-```{r}
-require(inline)
-require(RcppArmadillo)
- 
-src <- '
-#include <RcppArmadillo.h>
-// [[Rcpp::depends(RcppArmadillo)]]
-    using namespace Rcpp;
-     
-        // [[Rcpp::export]]
-        arma::cube array2cube( SEXP myArray );
-        
-        Rcpp::NumericVector vecArray(myArray);
-        Rcpp::IntegerVector arrayDims = vecArray.attr("dim");
-        
-        arma::cube cubeArray(vecArray.begin(), arrayDims[0], arrayDims[1], arrayDims[2], false);
-        
-        return(wrap( cubeArray ));
-'
-```
-
-
-```{r}
-cubeArg = cxxfunction(signature(myArray="numeric"), 
-                       body=src, 
-                       plugin="RcppArmadillo")
-```
 
 
 
@@ -235,16 +206,8 @@ cubeArg = cxxfunction(signature(myArray="numeric"),
 
 
 
-##
 
-Source: https://github.com/RcppCore/RcppArmadillo/issues/42
 
-```{r}
- library(Rcpp)
- cppFunction("arma::cube doubleCube(arma::cube cb) { return 2*cb; }", 
-                        depends="RcppArmadillo")
-doubleCube(array(1:8, dim=c(2,2,2)))
-```
 
 
 

@@ -3,6 +3,45 @@ title: "R Notebook"
 output: html_notebook
 ---
 
+
+```{r}
+require(Rcpp)
+#require(inline)
+
+
+src <- '
+#include <RcppArmadillo.h>
+
+// [[Rcpp::depends(RcppArmadillo)]]
+using namespace Rcpp; 
+using namespace arma;
+
+// [[Rcpp::export]]
+arma::mat cubeMeans(arma::cube X) {
+   int nSlice = X.n_slices;
+   int nCol = X.n_cols;
+   int nRow = X.n_rows;
+   arma::vec Vtmp(nCol);
+   arma::mat Mtmp(nRow, nCol);
+   arma::mat Means(nCol, nSlice);
+   for (int i = 0; i < nSlice; i++){
+      Mtmp = X.slice(i);
+      for(int j = 0; j < nCol; j++){
+         Vtmp(j) = sum(Mtmp.col(j))/nRow; 
+      }
+      Means.col(i) = Vtmp;
+   }
+  return(Means);
+}
+'
+cppFunction(code=src, depends="RcppArmadillo")
+
+xl <- array(1:10e4, c(20, 10 ,10))
+cubeMeans(xl)
+
+```
+
+
 ## arma::cube object as function argument
 
 Source: https://github.com/RcppCore/RcppArmadillo/issues/42
@@ -37,8 +76,8 @@ doubleCube(array(1:8, dim=c(2,2,2)))
 ## Another example of passing a cube as argument
 
 ```{r}
-require(inline)
 require(RcppArmadillo)
+require(inline)
  
 src <- '
     using namespace Rcpp;
@@ -61,5 +100,38 @@ cubeArg = cxxfunction(signature(myArray="numeric"),
 
 # run
 cubeArg(array(1:8, dim=c(2,2,2)))
+```
+
+## not working
+https://stackoverflow.com/questions/29821737/error-when-passing-armacubeargument-to-function-using-rcpparmadillo
+
+
+```{r}
+require(inline)
+require(RcppArmadillo)
+
+src <- '
+    using namespace arma;
+    
+    arma::cube ssmooth(arma::mat A, arma::cube B);
+    
+    int ns = A.n_rows;    
+    int nk = A.n_cols;    
+    int np = B.n_rows;    
+    
+    arma::mat C = arma::zeros<mat>(nk, ns);
+    arma::cube D = arma::zeros<cube>(nk, nk, ns);
+    
+    return(wrap(D));
+'
+
+# cppFunction(code = src, depends="RcppArmadillo")
+
+# R function
+cubeSmooth = cxxfunction(signature(A="numeric", B="numeric"), 
+                       body=src, 
+                       plugin="RcppArmadillo")
+
+# doubleCube(array(1:8, dim=c(2,2,2)))
 ```
 

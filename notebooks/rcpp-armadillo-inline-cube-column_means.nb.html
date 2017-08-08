@@ -142,7 +142,7 @@ $(document).ready(function () {
 </style>
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("rcpp-armadillo-inline-cube_object_as_argument.Rmd");
+  window.initializeSourceEmbed("rcpp-armadillo-inline-cube-column_means.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
@@ -174,20 +174,16 @@ $(document).ready(function () {
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVxdWlyZShSY3BwKVxuYGBgIn0= -->
-<pre class="r"><code>require(Rcpp)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBSY3BwXG4ifQ== -->
-<pre><code>Loading required package: Rcpp</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI3JlcXVpcmUoaW5saW5lKVxuc3JjIDwtICdcbiNpbmNsdWRlIDxSY3BwQXJtYWRpbGxvLmg+XG4vLyBbW1JjcHA6OmRlcGVuZHMoUmNwcEFybWFkaWxsbyldXVxudXNpbmcgbmFtZXNwYWNlIFJjcHA7IFxuLy8gW1tSY3BwOjpleHBvcnRdXVxuYXJtYTo6bWF0IGN1YmVNZWFucyhhcm1hOjpjdWJlIFgpIHtcbiAgIGludCBuU2xpY2UgPSBYLm5fc2xpY2VzO1xuICAgaW50IG5Db2wgPSBYLm5fY29scztcbiAgIGludCBuUm93ID0gWC5uX3Jvd3M7XG4gICBhcm1hOjp2ZWMgVnRtcChuQ29sKTtcbiAgIGFybWE6Om1hdCBNdG1wKG5Sb3csIG5Db2wpO1xuICAgYXJtYTo6bWF0IE1lYW5zKG5Db2wsIG5TbGljZSk7XG4gICBmb3IgKGludCBpID0gMDsgaSA8IG5TbGljZTsgaSsrKXtcbiAgICAgIE10bXAgPSBYLnNsaWNlKGkpO1xuICAgICAgZm9yKGludCBqID0gMDsgaiA8IG5Db2w7IGorKyl7XG4gICAgICAgICBWdG1wKGopID0gc3VtKE10bXAuY29sKGopKS9uUm93OyBcbiAgICAgIH1cbiAgICAgIE1lYW5zLmNvbChpKSA9IFZ0bXA7XG4gICB9XG4gIHJldHVybihNZWFucyk7XG59XG4nXG5jcHBGdW5jdGlvbihjb2RlPXNyYywgZGVwZW5kcz1cIlJjcHBBcm1hZGlsbG9cIilcbmBgYCJ9 -->
-<pre class="r"><code>#require(inline)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVxdWlyZShSY3BwKVxucmVxdWlyZShpbmxpbmUpXG5zcmMgPC0gJ1xuI2luY2x1ZGUgPFJjcHBBcm1hZGlsbG8uaD5cbi8vIFtbUmNwcDo6ZGVwZW5kcyhSY3BwQXJtYWRpbGxvKV1dXG51c2luZyBuYW1lc3BhY2UgUmNwcDsgXG51c2luZyBuYW1lc3BhY2UgYXJtYTtcbi8vIFtbUmNwcDo6ZXhwb3J0XV1cbm1hdCBjdWJlTWVhbnMoYXJtYTo6Y3ViZSBYKXtcbiAgIGludCBuU2xpY2UgPSBYLm5fc2xpY2VzO1xuICAgaW50IG5Db2wgPSBYLm5fY29scztcbiAgIGludCBuUm93ID0gWC5uX3Jvd3M7XG4gICBhcm1hOjp2ZWMgVnRtcChuQ29sKTtcbiAgIGFybWE6Om1hdCBNdG1wKG5Sb3csIG5Db2wpO1xuICAgYXJtYTo6bWF0IE1lYW5zKG5Db2wsIG5TbGljZSk7XG4gICBmb3IgKGludCBpID0gMDsgaSA8IG5TbGljZTsgaSsrKXtcbiAgICAgIE10bXAgPSBYLnNsaWNlKGkpO1xuICAgICAgZm9yKGludCBqID0gMDsgaiA8IG5Db2w7IGorKyl7XG4gICAgICAgICBWdG1wKGopID0gc3VtKE10bXAuY29sKGopKSAvIG5Sb3c7IFxuICAgICAgfVxuICAgICAgTWVhbnMuY29sKGkpID0gVnRtcDtcbiAgIH1cbiAgcmV0dXJuKE1lYW5zKTtcbn1cbidcbmNwcEZ1bmN0aW9uKGNvZGU9c3JjLCBkZXBlbmRzPVwiUmNwcEFybWFkaWxsb1wiKVxuYGBgIn0= -->
+<pre class="r"><code>require(Rcpp)
+require(inline)
 src &lt;- '
 #include &lt;RcppArmadillo.h&gt;
 // [[Rcpp::depends(RcppArmadillo)]]
 using namespace Rcpp; 
+using namespace arma;
 // [[Rcpp::export]]
-arma::mat cubeMeans(arma::cube X) {
+mat cubeMeans(arma::cube X){
    int nSlice = X.n_slices;
    int nCol = X.n_cols;
    int nRow = X.n_rows;
@@ -197,7 +193,7 @@ arma::mat cubeMeans(arma::cube X) {
    for (int i = 0; i &lt; nSlice; i++){
       Mtmp = X.slice(i);
       for(int j = 0; j &lt; nCol; j++){
-         Vtmp(j) = sum(Mtmp.col(j))/nRow; 
+         Vtmp(j) = sum(Mtmp.col(j)) / nRow; 
       }
       Means.col(i) = Vtmp;
    }
@@ -206,8 +202,8 @@ arma::mat cubeMeans(arma::cube X) {
 '
 cppFunction(code=src, depends=&quot;RcppArmadillo&quot;)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiSW52YWxpZCBwYXJhbWV0ZXI6ICdSY3BwQXJtYWRpbGxvJyBmb3IgUmNwcDo6ZXhwb3J0IGF0dHJpYnV0ZSBhdCBmaWxlNDRjNDE5OTI2ZDlmLmNwcDo4XG4ifQ== -->
-<pre><code>Invalid parameter: 'RcppArmadillo' for Rcpp::export attribute at file44c419926d9f.cpp:8</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiSW52YWxpZCBwYXJhbWV0ZXI6ICdSY3BwQXJtYWRpbGxvJyBmb3IgUmNwcDo6ZXhwb3J0IGF0dHJpYnV0ZSBhdCBmaWxlMTY4YzcwNjU0MjQ4LmNwcDo4XG4ifQ== -->
+<pre><code>Invalid parameter: 'RcppArmadillo' for Rcpp::export attribute at file168c70654248.cpp:8</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxueGwgPC0gYXJyYXkoMToxMGU0LCBjKDIwLCAxMCAsMTApKVxuY3ViZU1lYW5zKHhsKVxuYGBgIn0= -->
 <pre class="r"><code>xl &lt;- array(1:10e4, c(20, 10 ,10))
@@ -228,114 +224,54 @@ cubeMeans(xl)</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<div id="armacube-object-as-function-argument" class="section level2">
-<h2>arma::cube object as function argument</h2>
-<p>Source: <a href="https://github.com/RcppCore/RcppArmadillo/issues/42" class="uri">https://github.com/RcppCore/RcppArmadillo/issues/42</a></p>
+<div id="column-means-of-a-cube" class="section level2">
+<h2>column means of a cube</h2>
+<p>Source: <a href="https://stackoverflow.com/a/30981930/5270873" class="uri">https://stackoverflow.com/a/30981930/5270873</a></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShSY3BwKVxuY3BwRnVuY3Rpb24oXCJhcm1hOjpjdWJlIGRvdWJsZUN1YmUoYXJtYTo6Y3ViZSBjYikgeyByZXR1cm4gMipjYjsgfVwiLCBcbiAgICAgICAgICAgICAgICAgICAgICAgIGRlcGVuZHM9XCJSY3BwQXJtYWRpbGxvXCIpXG5cbmRvdWJsZUN1YmUoYXJyYXkoMTo4LCBkaW09YygyLDIsMikpKVxuYGBgIn0= -->
-<pre class="r"><code>library(Rcpp)
-cppFunction(&quot;arma::cube doubleCube(arma::cube cb) { return 2*cb; }&quot;, 
-                        depends=&quot;RcppArmadillo&quot;)
-
-doubleCube(array(1:8, dim=c(2,2,2)))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="same-as-above-but-with-code-separated" class="section level2">
-<h2>Same as above but with code separated</h2>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShSY3BwKVxuXG5zcmMgPC0gJ1xuICAgIGFybWE6OmN1YmUgZG91YmxlQ3ViZShhcm1hOjpjdWJlIGNiKSBcbnsgXG4gICAgcmV0dXJuIDIqY2I7IFxufVxuJ1xuXG5jcHBGdW5jdGlvbihjb2RlID0gc3JjLCBkZXBlbmRzPVwiUmNwcEFybWFkaWxsb1wiKVxuXG5kb3VibGVDdWJlKGFycmF5KDE6OCwgZGltPWMoMiwyLDIpKSlcbmBgYCJ9 -->
-<pre class="r"><code>library(Rcpp)
-
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVxdWlyZShSY3BwKVxucmVxdWlyZShpbmxpbmUpXG5zcmMgPC0gJ1xuYXJtYTo6bWF0IGN1YmVfbWVhbnMoUmNwcDo6TnVtZXJpY1ZlY3RvciB2eCkge1xuICBSY3BwOjpJbnRlZ2VyVmVjdG9yIHhfZGltcyA9IHZ4LmF0dHIoXCJkaW1cIik7XG4gIGFybWE6OmN1YmUgeCh2eC5iZWdpbigpLCB4X2RpbXNbMF0sIHhfZGltc1sxXSwgeF9kaW1zWzJdLCBmYWxzZSk7XG4gIGFybWE6Om1hdCByZXN1bHQoeC5uX2NvbHMsIHgubl9zbGljZXMpO1xuICBmb3IgKHVuc2lnbmVkIGludCBpID0gMDsgaSA8IHgubl9zbGljZXM7IGkrKykge1xuICAgIHJlc3VsdC5jb2woaSkgPSBhcm1hOjpjb252X3RvPGFybWE6OmNvbHZlYz46OmZyb20oYXJtYTo6bWVhbih4LnNsaWNlKGkpKSk7ICBcbiAgfVxuICByZXR1cm4gcmVzdWx0O1xufVxuJ1xuIy8qKiogUlxuY3BwRnVuY3Rpb24oY29kZT1zcmMsIGRlcGVuZHM9XCJSY3BwQXJtYWRpbGxvXCIpXG4jIFIgZXF1aXZhbGVudCBmdW5jdGlvblxucmN1YmVfbWVhbnMgPC0gZnVuY3Rpb24oeCkgdChhcHBseSh4LCAyLCBjb2xNZWFucykpXG54bCA8LSBhcnJheSgxOjEwZTUsIGMoMTAwLCAxMDAgLDEwKSlcbmFsbC5lcXVhbChyY3ViZV9tZWFucyh4bCksIGN1YmVfbWVhbnMoeGwpKVxuYGBgIn0= -->
+<pre class="r"><code>require(Rcpp)
+require(inline)
 src &lt;- '
-    arma::cube doubleCube(arma::cube cb) 
-{ 
-    return 2*cb; 
+arma::mat cube_means(Rcpp::NumericVector vx) {
+  Rcpp::IntegerVector x_dims = vx.attr(&quot;dim&quot;);
+  arma::cube x(vx.begin(), x_dims[0], x_dims[1], x_dims[2], false);
+  arma::mat result(x.n_cols, x.n_slices);
+  for (unsigned int i = 0; i &lt; x.n_slices; i++) {
+    result.col(i) = arma::conv_to&lt;arma::colvec&gt;::from(arma::mean(x.slice(i)));  
+  }
+  return result;
 }
 '
-
-cppFunction(code = src, depends=&quot;RcppArmadillo&quot;)
-
-doubleCube(array(1:8, dim=c(2,2,2)))</code></pre>
+#/*** R
+cppFunction(code=src, depends=&quot;RcppArmadillo&quot;)
+# R equivalent function
+rcube_means &lt;- function(x) t(apply(x, 2, colMeans))
+xl &lt;- array(1:10e5, c(100, 100 ,10))
+all.equal(rcube_means(xl), cube_means(xl))</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="another-example-of-passing-a-cube-as-argument" class="section level2">
-<h2>Another example of passing a cube as argument</h2>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVxdWlyZShSY3BwQXJtYWRpbGxvKVxucmVxdWlyZShpbmxpbmUpXG4gXG5zcmMgPC0gJ1xuICAgIHVzaW5nIG5hbWVzcGFjZSBSY3BwO1xuICAgICBcbiAgICBhcm1hOjpjdWJlIGFycmF5MmN1YmUoYXJtYTo6Y3ViZSBteUFycmF5ICk7XG4gICAgICAgIFxuICAgIFJjcHA6Ok51bWVyaWNWZWN0b3IgdmVjQXJyYXkobXlBcnJheSk7XG4gICAgUmNwcDo6SW50ZWdlclZlY3RvciBhcnJheURpbXMgPSB2ZWNBcnJheS5hdHRyKFwiZGltXCIpO1xuICAgICAgICBcbiAgICBhcm1hOjpjdWJlIGN1YmVBcnJheSh2ZWNBcnJheS5iZWdpbigpLCBcbiAgICAgICAgICAgICAgICAgICAgICAgIGFycmF5RGltc1swXSwgYXJyYXlEaW1zWzFdLCBhcnJheURpbXNbMl0sIGZhbHNlKTtcbiAgICAgICAgXG4gICAgcmV0dXJuKHdyYXAoIGN1YmVBcnJheSApKTtcbidcblxuIyBSIGZ1bmN0aW9uXG5jdWJlQXJnID0gY3h4ZnVuY3Rpb24oc2lnbmF0dXJlKG15QXJyYXk9XCJudW1lcmljXCIpLCBcbiAgICAgICAgICAgICAgICAgICAgICAgYm9keT1zcmMsIFxuICAgICAgICAgICAgICAgICAgICAgICBwbHVnaW49XCJSY3BwQXJtYWRpbGxvXCIpXG5cbiMgcnVuXG5jdWJlQXJnKGFycmF5KDE6OCwgZGltPWMoMiwyLDIpKSlcbmBgYCJ9 -->
-<pre class="r"><code>require(RcppArmadillo)
-require(inline)
- 
-src &lt;- '
-    using namespace Rcpp;
-     
-    arma::cube array2cube(arma::cube myArray );
-        
-    Rcpp::NumericVector vecArray(myArray);
-    Rcpp::IntegerVector arrayDims = vecArray.attr(&quot;dim&quot;);
-        
-    arma::cube cubeArray(vecArray.begin(), 
-                        arrayDims[0], arrayDims[1], arrayDims[2], false);
-        
-    return(wrap( cubeArray ));
-'
-
-# R function
-cubeArg = cxxfunction(signature(myArray=&quot;numeric&quot;), 
-                       body=src, 
-                       plugin=&quot;RcppArmadillo&quot;)
-
-# run
-cubeArg(array(1:8, dim=c(2,2,2)))</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFRSVUVcbiJ9 -->
+<pre><code>[1] TRUE</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBiZW5jaG1hcmtpbmdcbm1pY3JvYmVuY2htYXJrOjptaWNyb2JlbmNobWFyayhcbiAgICBcIlIgQ3ViZSBNZWFuc1wiID0gcmN1YmVfbWVhbnMoeGwpLFxuICAgIFwiQXJtYSBDdWJlIE1lYW5zXCIgPSBjdWJlX21lYW5zKHhsKSxcbiAgICB0aW1lcyA9IDIwMEwpXG5gYGAifQ== -->
+<pre class="r"><code># benchmarking
+microbenchmark::microbenchmark(
+    &quot;R Cube Means&quot; = rcube_means(xl),
+    &quot;Arma Cube Means&quot; = cube_means(xl),
+    times = 200L)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="not-working" class="section level2">
-<h2>not working</h2>
-<p><a href="https://stackoverflow.com/questions/29821737/error-when-passing-armacubeargument-to-function-using-rcpparmadillo" class="uri">https://stackoverflow.com/questions/29821737/error-when-passing-armacubeargument-to-function-using-rcpparmadillo</a></p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVxdWlyZShpbmxpbmUpXG5yZXF1aXJlKFJjcHBBcm1hZGlsbG8pXG5cbnNyYyA8LSAnXG4gICAgdXNpbmcgbmFtZXNwYWNlIGFybWE7XG4gICAgXG4gICAgYXJtYTo6Y3ViZSBzc21vb3RoKGFybWE6Om1hdCBBLCBhcm1hOjpjdWJlIEIpO1xuICAgIFxuICAgIGludCBucyA9IEEubl9yb3dzOyAgICBcbiAgICBpbnQgbmsgPSBBLm5fY29sczsgICAgXG4gICAgaW50IG5wID0gQi5uX3Jvd3M7ICAgIFxuICAgIFxuICAgIGFybWE6Om1hdCBDID0gYXJtYTo6emVyb3M8bWF0PihuaywgbnMpO1xuICAgIGFybWE6OmN1YmUgRCA9IGFybWE6Onplcm9zPGN1YmU+KG5rLCBuaywgbnMpO1xuICAgIFxuICAgIHJldHVybih3cmFwKEQpKTtcbidcblxuIyBjcHBGdW5jdGlvbihjb2RlID0gc3JjLCBkZXBlbmRzPVwiUmNwcEFybWFkaWxsb1wiKVxuXG4jIFIgZnVuY3Rpb25cbmN1YmVTbW9vdGggPSBjeHhmdW5jdGlvbihzaWduYXR1cmUoQT1cIm51bWVyaWNcIiwgQj1cIm51bWVyaWNcIiksIFxuICAgICAgICAgICAgICAgICAgICAgICBib2R5PXNyYywgXG4gICAgICAgICAgICAgICAgICAgICAgIHBsdWdpbj1cIlJjcHBBcm1hZGlsbG9cIilcblxuIyBkb3VibGVDdWJlKGFycmF5KDE6OCwgZGltPWMoMiwyLDIpKSlcbmBgYCJ9 -->
-<pre class="r"><code>require(inline)
-require(RcppArmadillo)
-
-src &lt;- '
-    using namespace arma;
-    
-    arma::cube ssmooth(arma::mat A, arma::cube B);
-    
-    int ns = A.n_rows;    
-    int nk = A.n_cols;    
-    int np = B.n_rows;    
-    
-    arma::mat C = arma::zeros&lt;mat&gt;(nk, ns);
-    arma::cube D = arma::zeros&lt;cube&gt;(nk, nk, ns);
-    
-    return(wrap(D));
-'
-
-# cppFunction(code = src, depends=&quot;RcppArmadillo&quot;)
-
-# R function
-cubeSmooth = cxxfunction(signature(A=&quot;numeric&quot;, B=&quot;numeric&quot;), 
-                       body=src, 
-                       plugin=&quot;RcppArmadillo&quot;)
-
-# doubleCube(array(1:8, dim=c(2,2,2)))</code></pre>
-<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiVW5pdDogbWljcm9zZWNvbmRzXG4gICAgICAgICAgICBleHByICAgICAgbWluICAgICAgIGxxICAgICAgbWVhbiAgICBtZWRpYW4gICAgICAgIHVxICAgICAgIG1heCBuZXZhbFxuICAgIFIgQ3ViZSBNZWFucyAxNDI2LjY1NiAxNTA4Ljc2NSAyMDExLjc0MDUgMTU1NC40MjE1IDIzMDAuMzA5NSAgNDgxNC4wMzQgICAyMDBcbiBBcm1hIEN1YmUgTWVhbnMgIDEzMS4zMDYgIDIzOC41NDQgIDcyMi41ODM2ICAyNTIuMTY5NSAgMjc0LjgyMDUgNTc3MDguOTI5ICAgMjAwXG4ifQ== -->
+<pre><code>Unit: microseconds
+            expr      min       lq      mean    median        uq       max neval
+    R Cube Means 1426.656 1508.765 2011.7405 1554.4215 2300.3095  4814.034   200
+ Arma Cube Means  131.306  238.544  722.5836  252.1695  274.8205 57708.929   200</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQoNCmBgYHtyfQ0KcmVxdWlyZShSY3BwKQ0KI3JlcXVpcmUoaW5saW5lKQ0KDQoNCnNyYyA8LSAnDQojaW5jbHVkZSA8UmNwcEFybWFkaWxsby5oPg0KDQovLyBbW1JjcHA6OmRlcGVuZHMoUmNwcEFybWFkaWxsbyldXQ0KdXNpbmcgbmFtZXNwYWNlIFJjcHA7IA0KdXNpbmcgbmFtZXNwYWNlIGFybWE7DQoNCi8vIFtbUmNwcDo6ZXhwb3J0XV0NCmFybWE6Om1hdCBjdWJlTWVhbnMoYXJtYTo6Y3ViZSBYKSB7DQogICBpbnQgblNsaWNlID0gWC5uX3NsaWNlczsNCiAgIGludCBuQ29sID0gWC5uX2NvbHM7DQogICBpbnQgblJvdyA9IFgubl9yb3dzOw0KICAgYXJtYTo6dmVjIFZ0bXAobkNvbCk7DQogICBhcm1hOjptYXQgTXRtcChuUm93LCBuQ29sKTsNCiAgIGFybWE6Om1hdCBNZWFucyhuQ29sLCBuU2xpY2UpOw0KICAgZm9yIChpbnQgaSA9IDA7IGkgPCBuU2xpY2U7IGkrKyl7DQogICAgICBNdG1wID0gWC5zbGljZShpKTsNCiAgICAgIGZvcihpbnQgaiA9IDA7IGogPCBuQ29sOyBqKyspew0KICAgICAgICAgVnRtcChqKSA9IHN1bShNdG1wLmNvbChqKSkvblJvdzsgDQogICAgICB9DQogICAgICBNZWFucy5jb2woaSkgPSBWdG1wOw0KICAgfQ0KICByZXR1cm4oTWVhbnMpOw0KfQ0KJw0KY3BwRnVuY3Rpb24oY29kZT1zcmMsIGRlcGVuZHM9IlJjcHBBcm1hZGlsbG8iKQ0KDQp4bCA8LSBhcnJheSgxOjEwZTQsIGMoMjAsIDEwICwxMCkpDQpjdWJlTWVhbnMoeGwpDQoNCmBgYA0KDQoNCiMjIGFybWE6OmN1YmUgb2JqZWN0IGFzIGZ1bmN0aW9uIGFyZ3VtZW50DQoNClNvdXJjZTogaHR0cHM6Ly9naXRodWIuY29tL1JjcHBDb3JlL1JjcHBBcm1hZGlsbG8vaXNzdWVzLzQyDQoNCmBgYHtyfQ0KbGlicmFyeShSY3BwKQ0KY3BwRnVuY3Rpb24oImFybWE6OmN1YmUgZG91YmxlQ3ViZShhcm1hOjpjdWJlIGNiKSB7IHJldHVybiAyKmNiOyB9IiwgDQogICAgICAgICAgICAgICAgICAgICAgICBkZXBlbmRzPSJSY3BwQXJtYWRpbGxvIikNCg0KZG91YmxlQ3ViZShhcnJheSgxOjgsIGRpbT1jKDIsMiwyKSkpDQpgYGANCg0KDQojIyBTYW1lIGFzIGFib3ZlIGJ1dCB3aXRoIGNvZGUgc2VwYXJhdGVkDQoNCmBgYHtyfQ0KbGlicmFyeShSY3BwKQ0KDQpzcmMgPC0gJw0KICAgIGFybWE6OmN1YmUgZG91YmxlQ3ViZShhcm1hOjpjdWJlIGNiKSANCnsgDQogICAgcmV0dXJuIDIqY2I7IA0KfQ0KJw0KDQpjcHBGdW5jdGlvbihjb2RlID0gc3JjLCBkZXBlbmRzPSJSY3BwQXJtYWRpbGxvIikNCg0KZG91YmxlQ3ViZShhcnJheSgxOjgsIGRpbT1jKDIsMiwyKSkpDQpgYGANCg0KDQojIyBBbm90aGVyIGV4YW1wbGUgb2YgcGFzc2luZyBhIGN1YmUgYXMgYXJndW1lbnQNCg0KYGBge3J9DQpyZXF1aXJlKFJjcHBBcm1hZGlsbG8pDQpyZXF1aXJlKGlubGluZSkNCiANCnNyYyA8LSAnDQogICAgdXNpbmcgbmFtZXNwYWNlIFJjcHA7DQogICAgIA0KICAgIGFybWE6OmN1YmUgYXJyYXkyY3ViZShhcm1hOjpjdWJlIG15QXJyYXkgKTsNCiAgICAgICAgDQogICAgUmNwcDo6TnVtZXJpY1ZlY3RvciB2ZWNBcnJheShteUFycmF5KTsNCiAgICBSY3BwOjpJbnRlZ2VyVmVjdG9yIGFycmF5RGltcyA9IHZlY0FycmF5LmF0dHIoImRpbSIpOw0KICAgICAgICANCiAgICBhcm1hOjpjdWJlIGN1YmVBcnJheSh2ZWNBcnJheS5iZWdpbigpLCANCiAgICAgICAgICAgICAgICAgICAgICAgIGFycmF5RGltc1swXSwgYXJyYXlEaW1zWzFdLCBhcnJheURpbXNbMl0sIGZhbHNlKTsNCiAgICAgICAgDQogICAgcmV0dXJuKHdyYXAoIGN1YmVBcnJheSApKTsNCicNCg0KIyBSIGZ1bmN0aW9uDQpjdWJlQXJnID0gY3h4ZnVuY3Rpb24oc2lnbmF0dXJlKG15QXJyYXk9Im51bWVyaWMiKSwgDQogICAgICAgICAgICAgICAgICAgICAgIGJvZHk9c3JjLCANCiAgICAgICAgICAgICAgICAgICAgICAgcGx1Z2luPSJSY3BwQXJtYWRpbGxvIikNCg0KIyBydW4NCmN1YmVBcmcoYXJyYXkoMTo4LCBkaW09YygyLDIsMikpKQ0KYGBgDQoNCiMjIG5vdCB3b3JraW5nDQpodHRwczovL3N0YWNrb3ZlcmZsb3cuY29tL3F1ZXN0aW9ucy8yOTgyMTczNy9lcnJvci13aGVuLXBhc3NpbmctYXJtYWN1YmVhcmd1bWVudC10by1mdW5jdGlvbi11c2luZy1yY3BwYXJtYWRpbGxvDQoNCg0KYGBge3J9DQpyZXF1aXJlKGlubGluZSkNCnJlcXVpcmUoUmNwcEFybWFkaWxsbykNCg0Kc3JjIDwtICcNCiAgICB1c2luZyBuYW1lc3BhY2UgYXJtYTsNCiAgICANCiAgICBhcm1hOjpjdWJlIHNzbW9vdGgoYXJtYTo6bWF0IEEsIGFybWE6OmN1YmUgQik7DQogICAgDQogICAgaW50IG5zID0gQS5uX3Jvd3M7ICAgIA0KICAgIGludCBuayA9IEEubl9jb2xzOyAgICANCiAgICBpbnQgbnAgPSBCLm5fcm93czsgICAgDQogICAgDQogICAgYXJtYTo6bWF0IEMgPSBhcm1hOjp6ZXJvczxtYXQ+KG5rLCBucyk7DQogICAgYXJtYTo6Y3ViZSBEID0gYXJtYTo6emVyb3M8Y3ViZT4obmssIG5rLCBucyk7DQogICAgDQogICAgcmV0dXJuKHdyYXAoRCkpOw0KJw0KDQojIGNwcEZ1bmN0aW9uKGNvZGUgPSBzcmMsIGRlcGVuZHM9IlJjcHBBcm1hZGlsbG8iKQ0KDQojIFIgZnVuY3Rpb24NCmN1YmVTbW9vdGggPSBjeHhmdW5jdGlvbihzaWduYXR1cmUoQT0ibnVtZXJpYyIsIEI9Im51bWVyaWMiKSwgDQogICAgICAgICAgICAgICAgICAgICAgIGJvZHk9c3JjLCANCiAgICAgICAgICAgICAgICAgICAgICAgcGx1Z2luPSJSY3BwQXJtYWRpbGxvIikNCg0KIyBkb3VibGVDdWJlKGFycmF5KDE6OCwgZGltPWMoMiwyLDIpKSkNCmBgYA0KDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQoNCmBgYHtyfQ0KcmVxdWlyZShSY3BwKQ0KcmVxdWlyZShpbmxpbmUpDQoNCg0Kc3JjIDwtICcNCiNpbmNsdWRlIDxSY3BwQXJtYWRpbGxvLmg+DQoNCi8vIFtbUmNwcDo6ZGVwZW5kcyhSY3BwQXJtYWRpbGxvKV1dDQp1c2luZyBuYW1lc3BhY2UgUmNwcDsgDQp1c2luZyBuYW1lc3BhY2UgYXJtYTsNCg0KLy8gW1tSY3BwOjpleHBvcnRdXQ0KbWF0IGN1YmVNZWFucyhhcm1hOjpjdWJlIFgpew0KICAgaW50IG5TbGljZSA9IFgubl9zbGljZXM7DQogICBpbnQgbkNvbCA9IFgubl9jb2xzOw0KICAgaW50IG5Sb3cgPSBYLm5fcm93czsNCg0KICAgYXJtYTo6dmVjIFZ0bXAobkNvbCk7DQogICBhcm1hOjptYXQgTXRtcChuUm93LCBuQ29sKTsNCiAgIGFybWE6Om1hdCBNZWFucyhuQ29sLCBuU2xpY2UpOw0KICAgZm9yIChpbnQgaSA9IDA7IGkgPCBuU2xpY2U7IGkrKyl7DQogICAgICBNdG1wID0gWC5zbGljZShpKTsNCiAgICAgIGZvcihpbnQgaiA9IDA7IGogPCBuQ29sOyBqKyspew0KICAgICAgICAgVnRtcChqKSA9IHN1bShNdG1wLmNvbChqKSkgLyBuUm93OyANCiAgICAgIH0NCiAgICAgIE1lYW5zLmNvbChpKSA9IFZ0bXA7DQogICB9DQogIHJldHVybihNZWFucyk7DQp9DQonDQpjcHBGdW5jdGlvbihjb2RlPXNyYywgZGVwZW5kcz0iUmNwcEFybWFkaWxsbyIpDQoNCnhsIDwtIGFycmF5KDE6MTBlNCwgYygyMCwgMTAgLDEwKSkNCmN1YmVNZWFucyh4bCkNCmBgYA0KDQoNCiMjIGNvbHVtbiBtZWFucyBvZiBhIGN1YmUNCg0KU291cmNlOiBodHRwczovL3N0YWNrb3ZlcmZsb3cuY29tL2EvMzA5ODE5MzAvNTI3MDg3Mw0KDQpgYGB7cn0NCiMgaHR0cHM6Ly9zdGFja292ZXJmbG93LmNvbS9hLzMwOTgxOTMwLzUyNzA4NzMNCnJlcXVpcmUoUmNwcCkNCnJlcXVpcmUoaW5saW5lKQ0KDQpzcmMgPC0gJw0KDQphcm1hOjptYXQgY3ViZV9tZWFucyhSY3BwOjpOdW1lcmljVmVjdG9yIHZ4KSB7DQoNCiAgUmNwcDo6SW50ZWdlclZlY3RvciB4X2RpbXMgPSB2eC5hdHRyKCJkaW0iKTsNCiAgYXJtYTo6Y3ViZSB4KHZ4LmJlZ2luKCksIHhfZGltc1swXSwgeF9kaW1zWzFdLCB4X2RpbXNbMl0sIGZhbHNlKTsNCg0KICBhcm1hOjptYXQgcmVzdWx0KHgubl9jb2xzLCB4Lm5fc2xpY2VzKTsNCiAgZm9yICh1bnNpZ25lZCBpbnQgaSA9IDA7IGkgPCB4Lm5fc2xpY2VzOyBpKyspIHsNCiAgICByZXN1bHQuY29sKGkpID0gYXJtYTo6Y29udl90bzxhcm1hOjpjb2x2ZWM+Ojpmcm9tKGFybWE6Om1lYW4oeC5zbGljZShpKSkpOyAgDQogIH0NCg0KICByZXR1cm4gcmVzdWx0Ow0KfQ0KJw0KDQojLyoqKiBSDQoNCmNwcEZ1bmN0aW9uKGNvZGU9c3JjLCBkZXBlbmRzPSJSY3BwQXJtYWRpbGxvIikNCg0KIyBSIGVxdWl2YWxlbnQgZnVuY3Rpb24NCnJjdWJlX21lYW5zIDwtIGZ1bmN0aW9uKHgpIHQoYXBwbHkoeCwgMiwgY29sTWVhbnMpKQ0KDQp4bCA8LSBhcnJheSgxOjEwZTUsIGMoMTAwLCAxMDAgLDEwKSkNCmFsbC5lcXVhbChyY3ViZV9tZWFucyh4bCksIGN1YmVfbWVhbnMoeGwpKQ0KDQojIGJlbmNobWFya2luZw0KbWljcm9iZW5jaG1hcms6Om1pY3JvYmVuY2htYXJrKA0KICAgICJSIEN1YmUgTWVhbnMiID0gcmN1YmVfbWVhbnMoeGwpLA0KICAgICJBcm1hIEN1YmUgTWVhbnMiID0gY3ViZV9tZWFucyh4bCksDQogICAgdGltZXMgPSAyMDBMKQ0KYGBgDQoNCg==</div>
 
 
 
