@@ -142,7 +142,7 @@ $(document).ready(function () {
 </style>
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("rcpp-armadillo-inline-3d-vector.Rmd");
+  window.initializeSourceEmbed("seamless-create_plugin.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
@@ -172,46 +172,103 @@ $(document).ready(function () {
 
 
 <!-- rnb-text-begin -->
-<p><a href="https://stackoverflow.com/questions/12569992/constructing-3d-array-in-rcpp" class="uri">https://stackoverflow.com/questions/12569992/constructing-3d-array-in-rcpp</a></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShpbmxpbmUpXG5meCA8LSBjeHhmdW5jdGlvbihzaWduYXR1cmUodnM9XCJudW1lcmljXCIsIGRzPVwiaW50ZWdlclwiKSwgcGx1Z2luPVwiUmNwcFwiLCBcbmJvZHk9J1xuICAgIFJjcHA6Ok51bWVyaWNWZWN0b3Igdih2cyk7ICAgICAgICAgICAgLy8gZ2V0IHRoZSBkYXRhXG4gICAgUmNwcDo6RGltZW5zaW9uIGQoZHMpOyAgICAgICAgICAgICAgICAvLyBnZXQgdGhlIGRpbSBvYmplY3RcbiAgICBSY3BwOjpOdW1lcmljVmVjdG9yIHIoZCk7ICAgICAgICAgICAgIC8vIGNyZWF0ZSB2ZWMuIHdpdGggY29ycmVjdCBkaW1zXG4gICAgc3RkOjpjb3B5KHYuYmVnaW4oKSwgdi5lbmQoKSwgci5iZWdpbigpKTsgIC8vIGFuZCBjb3B5XG4gICAgcmV0dXJuIFJjcHA6Okxpc3Q6OmNyZWF0ZSh2LCBkLCByKTtcbiAgICAnKVxuZngoMTo4LCBjKDIsMiwyKSlcbmBgYCJ9 -->
-<pre class="r"><code>library(inline)
-fx &lt;- cxxfunction(signature(vs=&quot;numeric&quot;, ds=&quot;integer&quot;), plugin=&quot;Rcpp&quot;, 
-body='
-    Rcpp::NumericVector v(vs);            // get the data
-    Rcpp::Dimension d(ds);                // get the dim object
-    Rcpp::NumericVector r(d);             // create vec. with correct dims
-    std::copy(v.begin(), v.end(), r.begin());  // and copy
-    return Rcpp::List::create(v, d, r);
-    ')
-fx(1:8, c(2,2,2))</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShSY3BwR1NMKVxubGlicmFyeShpbmxpbmUpXG4jIFJ1bnMgaW4gTGludXhcbiBnc2xybmcgPC0gJ1xuICAgIGludCBzZWVkID0gUmNwcDo6YXM8aW50PihwYXIpIDtcbiAgICBnc2xfcm5nX2Vudl9zZXR1cCgpO1xuICAgIGdzbF9ybmcgKnIgPSBnc2xfcm5nX2FsbG9jIChnc2xfcm5nX2RlZmF1bHQpO1xuICAgIGdzbF9ybmdfc2V0IChyLCAodW5zaWduZWQgbG9uZykgc2VlZCk7XG4gICAgZG91YmxlIHYgPSBnc2xfcm5nX2dldCAocik7XG4gICAgZ3NsX3JuZ19mcmVlKHIpO1xuICAgIHJldHVybiBSY3BwOjp3cmFwKHYpO1xuJ1xuIHBsdWcgPC0gUmNwcDo6OlJjcHAucGx1Z2luLm1ha2VyKFxuICAgICBpbmNsdWRlLmJlZm9yZSA9IFwiI2luY2x1ZGUgPGdzbC9nc2xfcm5nLmg+XCIsIFxuICAgICBsaWJzID0gcGFzdGUoXCItTC91c3IvbG9jYWwvbGliL1Ivc2l0ZS1saWJyYXJ5L1JjcHAvbGliIFwiLFxuICAgICAgICAgICAgXCItbFJjcHAgLVdsLC1ycGF0aCwgXCIsXG4gICAgICAgICAgICBcIi91c3IvbG9jYWwvbGliL1Ivc2l0ZS1saWJyYXJ5L1JjcHAvbGliIFwiLFxuICAgICAgICAgICAgXCItTC91c3IvbGliIC1sZ3NsIC1sZ3NsY2JsYXMgLWxtXCIsIHNlcD1cIlwiKSlcbiBcbnJlZ2lzdGVyUGx1Z2luKFwiZ3NsRGVtb1wiLCBwbHVnIClcbmZ1biA8LSBjeHhmdW5jdGlvbihzaWduYXR1cmUocGFyPVwibnVtZXJpY1wiKSwgZ3Nscm5nLCBwbHVnaW49XCJnc2xEZW1vXCIpXG5gYGAifQ== -->
+<pre class="r"><code>library(RcppGSL)
+library(inline)
+# Runs in Linux
+ gslrng &lt;- '
+    int seed = Rcpp::as&lt;int&gt;(par) ;
+    gsl_rng_env_setup();
+    gsl_rng *r = gsl_rng_alloc (gsl_rng_default);
+    gsl_rng_set (r, (unsigned long) seed);
+    double v = gsl_rng_get (r);
+    gsl_rng_free(r);
+    return Rcpp::wrap(v);
+'
+ plug &lt;- Rcpp:::Rcpp.plugin.maker(
+     include.before = &quot;#include &lt;gsl/gsl_rng.h&gt;&quot;, 
+     libs = paste(&quot;-L/usr/local/lib/R/site-library/Rcpp/lib &quot;,
+            &quot;-lRcpp -Wl,-rpath, &quot;,
+            &quot;/usr/local/lib/R/site-library/Rcpp/lib &quot;,
+            &quot;-L/usr/lib -lgsl -lgslcblas -lm&quot;, sep=&quot;&quot;))
+ 
+registerPlugin(&quot;gslDemo&quot;, plug )
+fun &lt;- cxxfunction(signature(par=&quot;numeric&quot;), gslrng, plugin=&quot;gslDemo&quot;)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiW1sxXV1cblsxXSAxIDIgMyA0IDUgNiA3IDhcblxuW1syXV1cblsxXSAyIDIgMlxuXG5bWzNdXVxuLCAsIDFcblxuICAgICBbLDFdIFssMl1cblsxLF0gICAgMSAgICAzXG5bMixdICAgIDIgICAgNFxuXG4sICwgMlxuXG4gICAgIFssMV0gWywyXVxuWzEsXSAgICA1ICAgIDdcblsyLF0gICAgNiAgICA4XG4ifQ== -->
-<pre><code>[[1]]
-[1] 1 2 3 4 5 6 7 8
+<!-- rnb-output-begin eyJkYXRhIjoicnVubmluZyBjb21tYW5kICdDOi9QUk9HUkF+MS9SL1ItMzR+MS4xL2Jpbi94NjQvUiBDTUQgU0hMSUIgZmlsZTEwZWM1ZThjNzM3Mi5jcHAgMj4gZmlsZTEwZWM1ZThjNzM3Mi5jcHAuZXJyLnR4dCcgaGFkIHN0YXR1cyAxXG4ifQ== -->
+<pre><code>running command 'C:/PROGRA~1/R/R-34~1.1/bin/x64/R CMD SHLIB file10ec5e8c7372.cpp 2&gt; file10ec5e8c7372.cpp.err.txt' had status 1</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiZmlsZTEwZWM1ZThjNzM3Mi5jcHA6MzoyNTogZmF0YWwgZXJyb3I6IGdzbC9nc2xfcm5nLmg6IE5vIHN1Y2ggZmlsZSBvciBkaXJlY3RvcnlcbiAjaW5jbHVkZSA8Z3NsL2dzbF9ybmcuaD5cbiAgICAgICAgICAgICAgICAgICAgICAgICBeXG5jb21waWxhdGlvbiB0ZXJtaW5hdGVkLlxubWFrZTogKioqIFtmaWxlMTBlYzVlOGM3MzcyLm9dIEVycm9yIDFcbldhcm5pbmcgbWVzc2FnZTpcbnJ1bm5pbmcgY29tbWFuZCAnbWFrZSAtZiBcIkM6L1BST0dSQX4xL1IvUi0zNH4xLjEvZXRjL3g2NC9NYWtlY29uZlwiIC1mIFwiQzovUFJPR1JBfjEvUi9SLTM0fjEuMS9zaGFyZS9tYWtlL3dpbnNobGliLm1rXCIgU0hMSUJfTERGTEFHUz0nJChTSExJQl9DWFhMREZMQUdTKScgU0hMSUJfTEQ9JyQoU0hMSUJfQ1hYTEQpJyBTSExJQj1cImZpbGUxMGVjNWU4YzczNzIuZGxsXCIgV0lOPTY0IFRDTEJJTj02NCBPQkpFQ1RTPVwiZmlsZTEwZWM1ZThjNzM3Mi5vXCInIGhhZCBzdGF0dXMgMiBcblxuRVJST1IocykgZHVyaW5nIGNvbXBpbGF0aW9uOiBzb3VyY2UgY29kZSBlcnJvcnMgb3IgY29tcGlsZXIgY29uZmlndXJhdGlvbiBlcnJvcnMhXG5cblByb2dyYW0gc291cmNlOlxuICAxOiBcbiAgMjogLy8gaW5jbHVkZXMgZnJvbSB0aGUgcGx1Z2luXG4gIDM6ICNpbmNsdWRlIDxnc2wvZ3NsX3JuZy5oPlxuICA0OiAjaW5jbHVkZSA8UmNwcC5oPlxuICA1OiBcbiAgNjogXG4gIDc6ICNpZm5kZWYgQkVHSU5fUkNQUFxuICA4OiAjZGVmaW5lIEJFR0lOX1JDUFBcbiAgOTogI2VuZGlmXG4gMTA6IFxuIDExOiAjaWZuZGVmIEVORF9SQ1BQXG4gMTI6ICNkZWZpbmUgRU5EX1JDUFBcbiAxMzogI2VuZGlmXG4gMTQ6IFxuIDE1OiB1c2luZyBuYW1lc3BhY2UgUmNwcDtcbiAxNjogXG4gMTc6IC8vIHVzZXIgaW5jbHVkZXNcbiAxODogXG4gMTk6IFxuIDIwOiAvLyBkZWNsYXJhdGlvbnNcbiAyMTogZXh0ZXJuIFwiQ1wiIHtcbiAyMjogU0VYUCBmaWxlMTBlYzVlOGM3MzcyKCBTRVhQIHBhcikgO1xuIDIzOiB9XG4gMjQ6IFxuIDI1OiAvLyBkZWZpbml0aW9uXG4gMjY6IFxuIDI3OiBTRVhQIGZpbGUxMGVjNWU4YzczNzIoIFNFWFAgcGFyICl7XG4gMjg6IEJFR0lOX1JDUFBcbiAyOTogXG4gMzA6ICAgICBpbnQgc2VlZCA9IFJjcHA6OmFzPGludD4ocGFyKSA7XG4gMzE6ICAgICBnc2xfcm5nX2Vudl9zZXR1cCgpO1xuIDMyOiAgICAgZ3NsX3JuZyAqciA9IGdzbF9ybmdfYWxsb2MgKGdzbF9ybmdfZGVmYXVsdCk7XG4gMzM6ICAgICBnc2xfcm5nX3NldCAociwgKHVuc2lnbmVkIGxvbmcpIHNlZWQpO1xuIDM0OiAgICAgZG91YmxlIHYgPSBnc2xfcm5nX2dldCAocik7XG4gMzU6ICAgICBnc2xfcm5nX2ZyZWUocik7XG4gMzY6ICAgICByZXR1cm4gUmNwcDo6d3JhcCh2KTtcbiAzNzogXG4gMzg6IEVORF9SQ1BQXG4gMzk6IH1cbiA0MDogXG4gNDE6IFxuIn0= -->
+<pre><code>file10ec5e8c7372.cpp:3:25: fatal error: gsl/gsl_rng.h: No such file or directory
+ #include &lt;gsl/gsl_rng.h&gt;
+                         ^
+compilation terminated.
+make: *** [file10ec5e8c7372.o] Error 1
+Warning message:
+running command 'make -f &quot;C:/PROGRA~1/R/R-34~1.1/etc/x64/Makeconf&quot; -f &quot;C:/PROGRA~1/R/R-34~1.1/share/make/winshlib.mk&quot; SHLIB_LDFLAGS='$(SHLIB_CXXLDFLAGS)' SHLIB_LD='$(SHLIB_CXXLD)' SHLIB=&quot;file10ec5e8c7372.dll&quot; WIN=64 TCLBIN=64 OBJECTS=&quot;file10ec5e8c7372.o&quot;' had status 2 
 
-[[2]]
-[1] 2 2 2
+ERROR(s) during compilation: source code errors or compiler configuration errors!
 
-[[3]]
-, , 1
-
-     [,1] [,2]
-[1,]    1    3
-[2,]    2    4
-
-, , 2
-
-     [,1] [,2]
-[1,]    5    7
-[2,]    6    8</code></pre>
+Program source:
+  1: 
+  2: // includes from the plugin
+  3: #include &lt;gsl/gsl_rng.h&gt;
+  4: #include &lt;Rcpp.h&gt;
+  5: 
+  6: 
+  7: #ifndef BEGIN_RCPP
+  8: #define BEGIN_RCPP
+  9: #endif
+ 10: 
+ 11: #ifndef END_RCPP
+ 12: #define END_RCPP
+ 13: #endif
+ 14: 
+ 15: using namespace Rcpp;
+ 16: 
+ 17: // user includes
+ 18: 
+ 19: 
+ 20: // declarations
+ 21: extern &quot;C&quot; {
+ 22: SEXP file10ec5e8c7372( SEXP par) ;
+ 23: }
+ 24: 
+ 25: // definition
+ 26: 
+ 27: SEXP file10ec5e8c7372( SEXP par ){
+ 28: BEGIN_RCPP
+ 29: 
+ 30:     int seed = Rcpp::as&lt;int&gt;(par) ;
+ 31:     gsl_rng_env_setup();
+ 32:     gsl_rng *r = gsl_rng_alloc (gsl_rng_default);
+ 33:     gsl_rng_set (r, (unsigned long) seed);
+ 34:     double v = gsl_rng_get (r);
+ 35:     gsl_rng_free(r);
+ 36:     return Rcpp::wrap(v);
+ 37: 
+ 38: END_RCPP
+ 39: }
+ 40: 
+ 41: </code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gY29tcGlsZUNvZGUoZiwgY29kZSwgbGFuZ3VhZ2UgPSBsYW5ndWFnZSwgdmVyYm9zZSA9IHZlcmJvc2UpIDogXG4gIENvbXBpbGF0aW9uIEVSUk9SLCBmdW5jdGlvbihzKS9tZXRob2Qocykgbm90IGNyZWF0ZWQhIGZpbGUxMGVjNWU4YzczNzIuY3BwOjM6MjU6IGZhdGFsIGVycm9yOiBnc2wvZ3NsX3JuZy5oOiBObyBzdWNoIGZpbGUgb3IgZGlyZWN0b3J5XG4gI2luY2x1ZGUgPGdzbC9nc2xfcm5nLmg+XG4gICAgICAgICAgICAgICAgICAgICAgICAgXlxuY29tcGlsYXRpb24gdGVybWluYXRlZC5cbm1ha2U6ICoqKiBbZmlsZTEwZWM1ZThjNzM3Mi5vXSBFcnJvciAxXG5XYXJuaW5nIG1lc3NhZ2U6XG5ydW5uaW5nIGNvbW1hbmQgJ21ha2UgLWYgXCJDOi9QUk9HUkF+MS9SL1ItMzR+MS4xL2V0Yy94NjQvTWFrZWNvbmZcIiAtZiBcIkM6L1BST0dSQX4xL1IvUi0zNH4xLjEvc2hhcmUvbWFrZS93aW5zaGxpYi5ta1wiIFNITElCX0xERkxBR1M9JyQoU0hMSUJfQ1hYTERGTEFHUyknIFNITElCX0xEPSckKFNITElCX0NYWExEKScgU0hMSUI9XCJmaWxlMTBlYzVlOGM3MzcyLmRsbFwiIFdJTj02NCBUQ0xCSU49NjQgT0JKRUNUUz1cImZpbGUxMGVjNWU4YzczNzIub1wiJyBoYWQgc3RhdHVzIDIgXG4ifQ== -->
+<pre><code>Error in compileCode(f, code, language = language, verbose = verbose) : 
+  Compilation ERROR, function(s)/method(s) not created! file10ec5e8c7372.cpp:3:25: fatal error: gsl/gsl_rng.h: No such file or directory
+ #include &lt;gsl/gsl_rng.h&gt;
+                         ^
+compilation terminated.
+make: *** [file10ec5e8c7372.o] Error 1
+Warning message:
+running command 'make -f &quot;C:/PROGRA~1/R/R-34~1.1/etc/x64/Makeconf&quot; -f &quot;C:/PROGRA~1/R/R-34~1.1/share/make/winshlib.mk&quot; SHLIB_LDFLAGS='$(SHLIB_CXXLDFLAGS)' SHLIB_LD='$(SHLIB_CXXLD)' SHLIB=&quot;file10ec5e8c7372.dll&quot; WIN=64 TCLBIN=64 OBJECTS=&quot;file10ec5e8c7372.o&quot;' had status 2 </code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpodHRwczovL3N0YWNrb3ZlcmZsb3cuY29tL3F1ZXN0aW9ucy8xMjU2OTk5Mi9jb25zdHJ1Y3RpbmctM2QtYXJyYXktaW4tcmNwcA0KDQpgYGB7cn0NCmxpYnJhcnkoaW5saW5lKQ0KDQpmeCA8LSBjeHhmdW5jdGlvbihzaWduYXR1cmUodnM9Im51bWVyaWMiLCBkcz0iaW50ZWdlciIpLCBwbHVnaW49IlJjcHAiLCANCmJvZHkgPSAnDQogICAgUmNwcDo6TnVtZXJpY1ZlY3RvciB2KHZzKTsgICAgICAgICAgICAgICAgIC8vIGdldCB0aGUgZGF0YQ0KICAgIFJjcHA6OkRpbWVuc2lvbiBkKGRzKTsgICAgICAgICAgICAgICAgICAgICAvLyBnZXQgdGhlIGRpbSBvYmplY3QNCiAgICBSY3BwOjpOdW1lcmljVmVjdG9yIHIoZCk7ICAgICAgICAgICAgICAgICAgLy8gY3JlYXRlIHZlYy4gd2l0aCBjb3JyZWN0IGRpbXMNCiAgICBzdGQ6OmNvcHkodi5iZWdpbigpLCB2LmVuZCgpLCByLmJlZ2luKCkpOyAgLy8gYW5kIGNvcHkNCiAgICByZXR1cm4gUmNwcDo6TGlzdDo6Y3JlYXRlKHYsIGQsIHIpOw0KICAgICcpDQoNCmZ4KDE6OCwgYygyLDIsMikpDQpgYGANCg0K</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpgYGB7cn0NCmxpYnJhcnkoUmNwcEdTTCkNCmxpYnJhcnkoaW5saW5lKQ0KDQojIFJ1bnMgaW4gTGludXgNCiBnc2xybmcgPC0gJw0KICAgIGludCBzZWVkID0gUmNwcDo6YXM8aW50PihwYXIpIDsNCiAgICBnc2xfcm5nX2Vudl9zZXR1cCgpOw0KICAgIGdzbF9ybmcgKnIgPSBnc2xfcm5nX2FsbG9jIChnc2xfcm5nX2RlZmF1bHQpOw0KICAgIGdzbF9ybmdfc2V0IChyLCAodW5zaWduZWQgbG9uZykgc2VlZCk7DQogICAgZG91YmxlIHYgPSBnc2xfcm5nX2dldCAocik7DQogICAgZ3NsX3JuZ19mcmVlKHIpOw0KICAgIHJldHVybiBSY3BwOjp3cmFwKHYpOw0KJw0KIHBsdWcgPC0gUmNwcDo6OlJjcHAucGx1Z2luLm1ha2VyKA0KICAgICBpbmNsdWRlLmJlZm9yZSA9ICIjaW5jbHVkZSA8Z3NsL2dzbF9ybmcuaD4iLCANCiAgICAgbGlicyA9IHBhc3RlKCItTC91c3IvbG9jYWwvbGliL1Ivc2l0ZS1saWJyYXJ5L1JjcHAvbGliICIsDQogICAgICAgICAgICAiLWxSY3BwIC1XbCwtcnBhdGgsICIsDQogICAgICAgICAgICAiL3Vzci9sb2NhbC9saWIvUi9zaXRlLWxpYnJhcnkvUmNwcC9saWIgIiwNCiAgICAgICAgICAgICItTC91c3IvbGliIC1sZ3NsIC1sZ3NsY2JsYXMgLWxtIiwgc2VwPSIiKSkNCiANCnJlZ2lzdGVyUGx1Z2luKCJnc2xEZW1vIiwgcGx1ZyApDQoNCmZ1biA8LSBjeHhmdW5jdGlvbihzaWduYXR1cmUocGFyPSJudW1lcmljIiksIGdzbHJuZywgcGx1Z2luPSJnc2xEZW1vIikNCmZ1bigwKQ0KDQpgYGANCg0K</div>
 
 
 
