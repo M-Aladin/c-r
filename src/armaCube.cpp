@@ -28,3 +28,16 @@ SEXP f(SEXP A_, SEXP A2_){
     return wrap(A);
 } 
 
+
+
+// You can include R code blocks in C++ files processed with sourceCpp
+// (useful for testing and development). The R code will be automatically 
+// run after the compilation.
+//
+
+/*** R
+A = array(1:60, c(2,5,6))
+A2 = array(120:60, c(2,5,6))
+all.equal(f(A, A2), A+A2)
+*/
+

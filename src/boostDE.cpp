@@ -28,7 +28,10 @@ int computeLCM(int a, int b) {
 a <- 6
 b <- 15
 cat( c(computeGCD(a,b), computeLCM(a,b)), "\n")
+*/
 
+
+/*** R
 a <- 96
 b <- 484
 cat( c(computeGCD(a,b), computeLCM(a,b)), "\n")
