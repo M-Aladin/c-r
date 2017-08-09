@@ -5,7 +5,7 @@ output: html_notebook
 
 
 ## Using a Cpp file
-ANother way to run this is by placing the Cpp code in a separate file.
+Another way to run this is by placing the Cpp code in a separate file.
 Here is the code
 
     #include <Rcpp.h> 
@@ -35,6 +35,7 @@ convolveCpp(1:3, 1:4)
 
 
 ```{r}
+# simple example that gives this response in Matlab
 x = c(3, 4, 5, 0, 0)
 y = c(2, 1)
 
@@ -45,6 +46,7 @@ convolveCpp(x, y)
 
 
 ```{r}
+# simple example that gives this response in Matlab
 x = c(3, 4, 5)
 y = c(2, 1)
 

@@ -1,0 +1,20 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+src <- '
+    Rcpp::NumericMatrix x(2,2);
+    x.fill(42);                     // or more interesting values
+    Rcpp::List dimnms =            // two vec. with static names
+    Rcpp::List::create(Rcpp::CharacterVector::create("cc", "dd"),
+                       Rcpp::CharacterVector::create("ee", "ff"));
+    // and assign it
+    x.attr("dimnames") = dimnms;
+    return(x);
+'
+fun <- cxxfunction(signature(), body=src, plugin="Rcpp")
+fun()
+```
+

@@ -1,0 +1,22 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Source: https://www.r-bloggers.com/three-ways-to-call-cc-from-r/
+
+```{r}
+# compile the C code
+system("R CMD SHLIB ../src/doubler.c")
+```
+
+```{r}
+# this loads the library in any system, Windows or Linux
+dyn.load(paste("../src/doubler", .Platform$dynlib.ext, sep = ""))
+```
+
+```{r}
+
+.C("double_me", x = as.integer(5))
+```
+

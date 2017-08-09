@@ -142,7 +142,7 @@ $(document).ready(function () {
 </style>
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("rcpp-cxxfunction-convolve1d.Rmd");
+  window.initializeSourceEmbed("seamless-plugin.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
@@ -172,151 +172,74 @@ $(document).ready(function () {
 
 
 <!-- rnb-text-begin -->
-<div id="inline-cpp-code" class="section level2">
-<h2>Inline Cpp code</h2>
-<p>This 1D convolution works the same as in Matlab and other examples.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShpbmxpbmUpXG5zcmMgPC0gJ1xuICBSY3BwOjpOdW1lcmljVmVjdG9yIHhhKGEpO1xuICBSY3BwOjpOdW1lcmljVmVjdG9yIHhiKGIpO1xuICBpbnQgbl94YSA9IHhhLnNpemUoKSwgbl94YiA9IHhiLnNpemUoKTtcbiAgUmNwcDo6TnVtZXJpY1ZlY3RvciB4YWIobl94YSArIG5feGIgLSAxKTtcbmZvciAoaW50IGkgPSAwOyBpIDwgbl94YTsgaSsrKVxuICBmb3IgKGludCBqID0gMDsgaiA8IG5feGI7IGorKylcbiAgICB4YWJbaSArIGpdICs9IHhhW2ldICogeGJbal07XG4gcmV0dXJuIHhhYjsnXG5gYGAifQ== -->
-<pre class="r"><code>library(inline)
-src &lt;- '
-  Rcpp::NumericVector xa(a);
-  Rcpp::NumericVector xb(b);
-  int n_xa = xa.size(), n_xb = xb.size();
-  Rcpp::NumericVector xab(n_xa + n_xb - 1);
-for (int i = 0; i &lt; n_xa; i++)
-  for (int j = 0; j &lt; n_xb; j++)
-    xab[i + j] += xa[i] * xb[j];
- return xab;'</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBjcmVhdGUgdGhlIFIgZnVuY3Rpb25cbmNvbnZvbHZlMWQgPC0gY3h4ZnVuY3Rpb24oc2lnbmF0dXJlKGEgPSBcIm51bWVyaWNcIiwgYiA9IFwibnVtZXJpY1wiKSwgXG4gICAgICAgICAgICAgICAgICAgc3JjLCBcbiAgICAgICAgICAgICAgICAgICBwbHVnaW4gPSBcIlJjcHBcIilcbmBgYCJ9 -->
-<pre class="r"><code># create the R function
-convolve1d &lt;- cxxfunction(signature(a = &quot;numeric&quot;, b = &quot;numeric&quot;), 
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3JjIDwtICdcbiAgICBSY3BwOjpOdW1lcmljVmVjdG9yIHlyKHlzKTtcbiAgICBSY3BwOjpOdW1lcmljTWF0cml4IFhyKFhzKTtcbiAgICBpbnQgbiA9IFhyLm5yb3coKSwgayA9IFhyLm5jb2woKTtcbiAgICBcbiAgICBhcm1hOjptYXQgWChYci5iZWdpbigpLCBuLCBrLCBmYWxzZSk7XG4gICAgYXJtYTo6Y29sdmVjIHkoeXIuYmVnaW4oKSwgeXIuc2l6ZSgpLCBmYWxzZSk7XG4gICAgXG4gICAgYXJtYTo6Y29sdmVjIGNvZWYgPSBhcm1hOjpzb2x2ZShYLCB5KTsgICAgICAgICAgICAgIC8vIGZpdCB5IMucIFhcbiAgICBhcm1hOjpjb2x2ZWMgcmVzID0geSAtIFgqY29lZjsgLy8gcmVzaWR1YWxzXG4gICAgXG4gICAgZG91YmxlIHMyID0gc3RkOjppbm5lcl9wcm9kdWN0KHJlcy5iZWdpbigpLCByZXMuZW5kKCksXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcmVzLmJlZ2luKCksZG91YmxlKCkpXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC8gKG4gLSBrKTtcbiAgICBhcm1hOjpjb2x2ZWMgc2UgPSBhcm1hOjpzcXJ0KHMyICpcbiAgICAgICAgICAgICAgICAgICAgICAgIGFybWE6OmRpYWd2ZWMoYXJtYTo6aW52KGFybWE6OnRyYW5zKFgpKlgpKSk7XG4gICAgXG4gICAgcmV0dXJuIFJjcHA6Okxpc3Q6OmNyZWF0ZShSY3BwOjpOYW1lZChcImNvZWZcIik9IGNvZWYsXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICBSY3BwOjpOYW1lZChcInNlXCIpID0gc2UsXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICBSY3BwOjpOYW1lZChcImRmXCIpID0gbi1rKTtcbidcbmZ1biA8LSBjeHhmdW5jdGlvbihzaWduYXR1cmUoeXM9XCJudW1lcmljXCIsIFhzPVwibnVtZXJpY1wiKSwgXG4gICAgICAgICAgICAgICAgICAgc3JjLCBcbiAgICAgICAgICAgICAgICAgICBwbHVnaW49XCJSY3BwQXJtYWRpbGxvXCIpXG4jIyBjb3VsZCBub3cgcnVuIGZ1bih5LCBYKSB0byByZWdyZXNzIHkgy5wgWCAgIFxuYGBgIn0= -->
+<pre class="r"><code>src &lt;- '
+    Rcpp::NumericVector yr(ys);
+    Rcpp::NumericMatrix Xr(Xs);
+    int n = Xr.nrow(), k = Xr.ncol();
+    
+    arma::mat X(Xr.begin(), n, k, false);
+    arma::colvec y(yr.begin(), yr.size(), false);
+    
+    arma::colvec coef = arma::solve(X, y);              // fit y ˜ X
+    arma::colvec res = y - X*coef; // residuals
+    
+    double s2 = std::inner_product(res.begin(), res.end(),
+                                        res.begin(),double())
+                                         / (n - k);
+    arma::colvec se = arma::sqrt(s2 *
+                        arma::diagvec(arma::inv(arma::trans(X)*X)));
+    
+    return Rcpp::List::create(Rcpp::Named(&quot;coef&quot;)= coef,
+                              Rcpp::Named(&quot;se&quot;) = se,
+                              Rcpp::Named(&quot;df&quot;) = n-k);
+'
+fun &lt;- cxxfunction(signature(ys=&quot;numeric&quot;, Xs=&quot;numeric&quot;), 
                    src, 
-                   plugin = &quot;Rcpp&quot;)</code></pre>
+                   plugin=&quot;RcppArmadillo&quot;)
+## could now run fun(y, X) to regress y ˜ X   </code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuY29udm9sdmUxZCgxOjMsIDE6NClcbmBgYFxuYGBgIn0= -->
-<p><code>r</code>r convolve1d(1:3, 1:4)</p>
-<pre><code></code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubG0ucGx1Z2luIDwtIGZ1bihncm91cCwgd2VpZ2h0KVxuYGBgIn0= -->
+<pre class="r"><code>lm.plugin &lt;- fun(group, weight)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxueCA8LSBtYXRyaXgocm5vcm0oMTApKVxueSA8LSBtYXRyaXgocm5vcm0oMTApKVxuY29udm9sdmUxZCh4LCB5KVxuYGBgIn0= -->
-<pre class="r"><code>x &lt;- matrix(rnorm(10))
-y &lt;- matrix(rnorm(10))
-convolve1d(x, y)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSAgMC4zNzI3MzY3IC0xLjA4MjU0NDIgLTAuMjA5ODcwNSAgMS40MjQ3MzA3IC0wLjY0NzQ4MTcgIDMuNzEyNzA5MyAtMC4yMzg4MzMxXG4gWzhdIC0yLjAwNDQ0NzggLTQuNDEwODEyOSAtOS4xMjk2Mjg5IC0xLjQwMTI1NDggIDMuOTEwNDgzNSAgOC4xMjYwNTUwIDExLjYzMTQ5NDdcblsxNV0gIDIuMzM2MDI1OSAgMS4yNDQ1NjgyIC0yLjIxODkwMzIgLTAuNTg2MjE0MCAtMC4zOTkxOTQyXG4ifQ== -->
-<pre><code> [1]  0.3727367 -1.0825442 -0.2098705  1.4247307 -0.6474817  3.7127093 -0.2388331
- [8] -2.0044478 -4.4108129 -9.1296289 -1.4012548  3.9104835  8.1260550 11.6314947
-[15]  2.3360259  1.2445682 -2.2189032 -0.5862140 -0.3991942</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gZnVuKGdyb3VwLCB3ZWlnaHQpIDogTm90IGEgbWF0cml4LlxuIn0= -->
+<pre><code>Error in fun(group, weight) : Not a matrix.</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxueCA9IGMoMywgNCwgNSwgMCwgMClcbnkgPSBjKDIsIDEpXG5jb252b2x2ZTFkKHgsIHkpXG5gYGAifQ== -->
-<pre class="r"><code>x = c(3, 4, 5, 0, 0)
-y = c(2, 1)
-convolve1d(x, y)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMgQW5uZXR0ZSBEb2Jzb24gKDE5OTApIFwiQW4gSW50cm9kdWN0aW9uIHRvIEdlbmVyYWxpemVkIExpbmVhciBNb2RlbHNcIi5cbiMjIFBhZ2UgOTogUGxhbnQgV2VpZ2h0IERhdGEuXG5jdGwgPC0gYyg0LjE3LDUuNTgsNS4xOCw2LjExLDQuNTAsNC42MSw1LjE3LDQuNTMsNS4zMyw1LjE0KVxudHJ0IDwtIGMoNC44MSw0LjE3LDQuNDEsMy41OSw1Ljg3LDMuODMsNi4wMyw0Ljg5LDQuMzIsNC42OSlcbmdyb3VwIDwtIGdsKDIsIDEwLCAyMCwgbGFiZWxzID0gYyhcIkN0bFwiLFwiVHJ0XCIpKVxud2VpZ2h0IDwtIGMoY3RsLCB0cnQpXG5sbS5EOSA8LSBsbSh3ZWlnaHQgfiBncm91cClcbmxtLkQ5MCA8LSBsbSh3ZWlnaHQgfiBncm91cCAtIDEpICMgb21pdHRpbmcgaW50ZXJjZXB0XG5sbS5EOVxuYGBgIn0= -->
+<pre class="r"><code>## Annette Dobson (1990) &quot;An Introduction to Generalized Linear Models&quot;.
+## Page 9: Plant Weight Data.
+ctl &lt;- c(4.17,5.58,5.18,6.11,4.50,4.61,5.17,4.53,5.33,5.14)
+trt &lt;- c(4.81,4.17,4.41,3.59,5.87,3.83,6.03,4.89,4.32,4.69)
+group &lt;- gl(2, 10, 20, labels = c(&quot;Ctl&quot;,&quot;Trt&quot;))
+weight &lt;- c(ctl, trt)
+lm.D9 &lt;- lm(weight ~ group)
+lm.D90 &lt;- lm(weight ~ group - 1) # omitting intercept
+lm.D9</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdICA2IDExIDE0ICA1ICAwICAwXG4ifQ== -->
-<pre><code>[1]  6 11 14  5  0  0</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyA2IDExIDE0ICA1ICAwICAwICAgICAgc2FtZSBhcyBpbiBNYXRsYWJcbmBgYCJ9 -->
-<pre class="r"><code># 6 11 14  5  0  0      same as in Matlab</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxueCA9IGMoMywgNCwgNSlcbnkgPSBjKDIsIDEpXG5jb252b2x2ZTFkKHgsIHkpXG5gYGBcbmBgYCJ9 -->
-<p><code>r</code>r x = c(3, 4, 5) y = c(2, 1) convolve1d(x, y)</p>
-<pre><code></code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdICA2IDExIDE0ICA1XG4ifQ== -->
-<pre><code>[1]  6 11 14  5</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyA2IDExIDE0ICA1ICAwICAwICAgICAgc2FtZSBhcyBpbiBNYXRsYWJcbmBgYFxuYGBgIn0= -->
-<p><code>r</code>r # 6 11 14 5 0 0 same as in Matlab</p>
-<pre><code></code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB0aGlzIGV4YW1wbGUgb24gYXBwbHlpbmcgMUQgY29udm9sdXRpb24gdG8gYSBtYXRyaXggd2lsbCBub3Qgd29yay5cbiMgU2VlIHRoZSBvdXRwdXQgZnJvbSBNYXRsYWIgYW5kIHRoZSByZXN1bHRzIGJlbG93LiBUaGUgMUQgY29udm9sdXRpb24gcmVzcG9uc2UgaXNcbiMgYSB2ZWN0b3Igbm90IGEgbWF0cml4LlxuQSA9IG1hdHJpeCgxLCBucm93PTMsIG5jb2w9MylcbmNvbnZvbHZlMWQoQSwgQSlcbmBgYCJ9 -->
-<pre class="r"><code># this example on applying 1D convolution to a matrix will not work.
-# See the output from Matlab and the results below. The 1D convolution response is
-# a vector not a matrix.
-A = matrix(1, nrow=3, ncol=3)
-convolve1d(A, A)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSAxIDIgMyA0IDUgNiA3IDggOSA4IDcgNiA1IDQgMyAyIDFcbiJ9 -->
-<pre><code> [1] 1 2 3 4 5 6 7 8 9 8 7 6 5 4 3 2 1</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyAxIDIgMyA0IDUgNiA3IDggOSA4IDcgNiA1IDQgMyAyIDFcbiMgSW4gTWF0bGFiIHRoZSBjb252b2x1dGlvbiBvZiAoQSwgQSkgaXMgYSA1eDUgbWF0cml4OlxuICAgICAjIDEgICAgIDIgICAgIDMgICAgIDIgICAgIDFcbiAgICAgIyAyICAgICA0ICAgICA2ICAgICA0ICAgICAyXG4gICAgICMgMyAgICAgNiAgICAgOSAgICAgNiAgICAgM1xuICAgICAjIDIgICAgIDQgICAgIDYgICAgIDQgICAgIDJcbiAgICAgIyAxICAgICAyICAgICAzICAgICAyICAgICAxXG4jIGlmIHdlIGNvbnZlcnQgQSB0byBhIHZlY3RvciB2MSBhZCBmaWYgdGhlIGNvbnZvbHV0aW9uIHVzaW5nIHRoaXMgZnVuY3Rpb25cbiMgdGhlIHJlc3VsdCBpcyBhbm90aGVyIHZlY3RvciBvZiAxNyBlbGVtZW50cy5cbnYxID0gYXMudmVjdG9yKEEpXG5sZW5ndGgodjEpXG5gYGAifQ== -->
-<pre class="r"><code># 1 2 3 4 5 6 7 8 9 8 7 6 5 4 3 2 1
-# In Matlab the convolution of (A, A) is a 5x5 matrix:
-     # 1     2     3     2     1
-     # 2     4     6     4     2
-     # 3     6     9     6     3
-     # 2     4     6     4     2
-     # 1     2     3     2     1
-# if we convert A to a vector v1 ad fif the convolution using this function
-# the result is another vector of 17 elements.
-v1 = as.vector(A)
-length(v1)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDlcbiJ9 -->
-<pre><code>[1] 9</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY29udm9sdmUxZCh2MSwgdjEpXG5gYGAifQ== -->
-<pre class="r"><code>convolve1d(v1, v1)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSAxIDIgMyA0IDUgNiA3IDggOSA4IDcgNiA1IDQgMyAyIDFcbiJ9 -->
-<pre><code> [1] 1 2 3 4 5 6 7 8 9 8 7 6 5 4 3 2 1</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGVuZ3RoKGNvbnZvbHZlMWQodjEsIHYxKSlcbmBgYCJ9 -->
-<pre class="r"><code>length(convolve1d(v1, v1))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDE3XG4ifQ== -->
-<pre><code>[1] 17</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxudjEgPSBhcy52ZWN0b3IoQSlcbnYxXG5gYGBcbmBgYCJ9 -->
-<p><code>r</code>r v1 = as.vector(A) v1</p>
-<pre><code></code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDEgMSAxIDEgMSAxIDEgMSAxXG4ifQ== -->
-<pre><code>[1] 1 1 1 1 1 1 1 1 1</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuY29udm9sdmUxZCh2MSwgdjEpXG5gYGBcbmBgYCJ9 -->
-<p><code>r</code>r convolve1d(v1, v1)</p>
-<pre><code></code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSAxIDIgMyA0IDUgNiA3IDggOSA4IDcgNiA1IDQgMyAyIDFcbiJ9 -->
-<pre><code> [1] 1 2 3 4 5 6 7 8 9 8 7 6 5 4 3 2 1</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-</div>
+<!-- rnb-output-begin eyJkYXRhIjoiXG5DYWxsOlxubG0oZm9ybXVsYSA9IHdlaWdodCB+IGdyb3VwKVxuXG5Db2VmZmljaWVudHM6XG4oSW50ZXJjZXB0KSAgICAgZ3JvdXBUcnQgIFxuICAgICAgNS4wMzIgICAgICAgLTAuMzcxICBcbiJ9 -->
+<pre><code>
+Call:
+lm(formula = weight ~ group)
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQoNCiMjIElubGluZSBDcHAgY29kZQ0KVGhpcyAxRCBjb252b2x1dGlvbiB3b3JrcyB0aGUgc2FtZSBhcyBpbiBNYXRsYWIgYW5kIG90aGVyIGV4YW1wbGVzLg0KDQpgYGB7cn0NCmxpYnJhcnkoaW5saW5lKQ0KDQpzcmMgPC0gJw0KICAgIFJjcHA6Ok51bWVyaWNWZWN0b3IgeGEoYSk7DQogICAgUmNwcDo6TnVtZXJpY1ZlY3RvciB4YihiKTsNCiAgICANCiAgICBpbnQgbl94YSA9IHhhLnNpemUoKSwgbl94YiA9IHhiLnNpemUoKTsNCiAgICBSY3BwOjpOdW1lcmljVmVjdG9yIHhhYihuX3hhICsgbl94YiAtIDEpOw0KICAgIA0KICAgIGZvciAoaW50IGkgPSAwOyBpIDwgbl94YTsgaSsrKQ0KICAgICAgICBmb3IgKGludCBqID0gMDsgaiA8IG5feGI7IGorKykNCiAgICAgICAgICAgIHhhYltpICsgal0gKz0geGFbaV0gKiB4YltqXTsNCiAgICByZXR1cm4geGFiOycNCmBgYA0KDQoNCmBgYHtyfQ0KIyBjcmVhdGUgdGhlIFIgZnVuY3Rpb24NCmNvbnZvbHZlMWQgPC0gY3h4ZnVuY3Rpb24oc2lnbmF0dXJlKGEgPSAibnVtZXJpYyIsIGIgPSAibnVtZXJpYyIpLCANCiAgICAgICAgICAgICAgICAgICBzcmMsIA0KICAgICAgICAgICAgICAgICAgIHBsdWdpbiA9ICJSY3BwIikNCmBgYA0KDQpgYGB7cn0NCmNvbnZvbHZlMWQoMTozLCAxOjQpDQpgYGANCg0KYGBge3J9DQoNCnggPC0gbWF0cml4KHJub3JtKDEwKSkNCnkgPC0gbWF0cml4KHJub3JtKDEwKSkNCg0KY29udm9sdmUxZCh4LCB5KQ0KYGBgDQoNCg0KYGBge3J9DQp4ID0gYygzLCA0LCA1LCAwLCAwKQ0KeSA9IGMoMiwgMSkNCg0KY29udm9sdmUxZCh4LCB5KQ0KIyA2IDExIDE0ICA1ICAwICAwICAgICAgc2FtZSBhcyBpbiBNYXRsYWINCmBgYA0KDQoNCmBgYHtyfQ0KeCA9IGMoMywgNCwgNSkNCnkgPSBjKDIsIDEpDQoNCmNvbnZvbHZlMWQoeCwgeSkNCiMgNiAxMSAxNCAgNSAgMCAgMCAgICAgIHNhbWUgYXMgaW4gTWF0bGFiDQpgYGANCg0KDQpgYGB7cn0NCiMgdGhpcyBleGFtcGxlIG9uIGFwcGx5aW5nIDFEIGNvbnZvbHV0aW9uIHRvIGEgbWF0cml4IHdpbGwgbm90IHdvcmsuDQojIFNlZSB0aGUgb3V0cHV0IGZyb20gTWF0bGFiIGFuZCB0aGUgcmVzdWx0cyBiZWxvdy4gVGhlIDFEIGNvbnZvbHV0aW9uIHJlc3BvbnNlIGlzDQojIGEgdmVjdG9yIG5vdCBhIG1hdHJpeC4NCkEgPSBtYXRyaXgoMSwgbnJvdz0zLCBuY29sPTMpDQpjb252b2x2ZTFkKEEsIEEpDQojIDEgMiAzIDQgNSA2IDcgOCA5IDggNyA2IDUgNCAzIDIgMQ0KDQojIEluIE1hdGxhYiB0aGUgY29udm9sdXRpb24gb2YgKEEsIEEpIGlzIGEgNXg1IG1hdHJpeDoNCiAgICAgIyAxICAgICAyICAgICAzICAgICAyICAgICAxDQogICAgICMgMiAgICAgNCAgICAgNiAgICAgNCAgICAgMg0KICAgICAjIDMgICAgIDYgICAgIDkgICAgIDYgICAgIDMNCiAgICAgIyAyICAgICA0ICAgICA2ICAgICA0ICAgICAyDQogICAgICMgMSAgICAgMiAgICAgMyAgICAgMiAgICAgMQ0KDQojIGlmIHdlIGNvbnZlcnQgQSB0byBhIHZlY3RvciB2MSBhZCBmaWYgdGhlIGNvbnZvbHV0aW9uIHVzaW5nIHRoaXMgZnVuY3Rpb24NCiMgdGhlIHJlc3VsdCBpcyBhbm90aGVyIHZlY3RvciBvZiAxNyBlbGVtZW50cy4NCnYxID0gYXMudmVjdG9yKEEpDQpsZW5ndGgodjEpDQpjb252b2x2ZTFkKHYxLCB2MSkNCmxlbmd0aChjb252b2x2ZTFkKHYxLCB2MSkpDQpgYGANCg0KYGBge3J9DQp2MSA9IGFzLnZlY3RvcihBKQ0KdjENCmNvbnZvbHZlMWQodjEsIHYxKQ0KYGBgDQoNCg==</div>
+Coefficients:
+(Intercept)     groupTrt  
+      5.032       -0.371  </code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQoNCmBgYHtyfQ0KDQpzcmMgPC0gJw0KICAgIFJjcHA6Ok51bWVyaWNWZWN0b3IgeXIoeXMpOw0KICAgIFJjcHA6Ok51bWVyaWNNYXRyaXggWHIoWHMpOw0KICAgIGludCBuID0gWHIubnJvdygpLCBrID0gWHIubmNvbCgpOw0KICAgIA0KICAgIGFybWE6Om1hdCBYKFhyLmJlZ2luKCksIG4sIGssIGZhbHNlKTsNCiAgICBhcm1hOjpjb2x2ZWMgeSh5ci5iZWdpbigpLCB5ci5zaXplKCksIGZhbHNlKTsNCiAgICANCiAgICBhcm1hOjpjb2x2ZWMgY29lZiA9IGFybWE6OnNvbHZlKFgsIHkpOyAgICAgICAgICAgICAgLy8gZml0IHkgy5wgWA0KICAgIGFybWE6OmNvbHZlYyByZXMgPSB5IC0gWCpjb2VmOyAvLyByZXNpZHVhbHMNCiAgICANCiAgICBkb3VibGUgczIgPSBzdGQ6OmlubmVyX3Byb2R1Y3QocmVzLmJlZ2luKCksIHJlcy5lbmQoKSwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICByZXMuYmVnaW4oKSxkb3VibGUoKSkNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgLyAobiAtIGspOw0KICAgIGFybWE6OmNvbHZlYyBzZSA9IGFybWE6OnNxcnQoczIgKg0KICAgICAgICAgICAgICAgICAgICAgICAgYXJtYTo6ZGlhZ3ZlYyhhcm1hOjppbnYoYXJtYTo6dHJhbnMoWCkqWCkpKTsNCiAgICANCiAgICByZXR1cm4gUmNwcDo6TGlzdDo6Y3JlYXRlKFJjcHA6Ok5hbWVkKCJjb2VmIik9IGNvZWYsDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICBSY3BwOjpOYW1lZCgic2UiKSA9IHNlLA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgUmNwcDo6TmFtZWQoImRmIikgPSBuLWspOw0KJw0KDQpmdW4gPC0gY3h4ZnVuY3Rpb24oc2lnbmF0dXJlKHlzPSJudW1lcmljIiwgWHM9Im51bWVyaWMiKSwgDQogICAgICAgICAgICAgICAgICAgc3JjLCANCiAgICAgICAgICAgICAgICAgICBwbHVnaW49IlJjcHBBcm1hZGlsbG8iKQ0KDQojIyBjb3VsZCBub3cgcnVuIGZ1bih5LCBYKSB0byByZWdyZXNzIHkgy5wgWCAgIA0KDQoNCmBgYA0KDQpgYGB7cn0NCiMgcHJvdmlkZSBhIG1hdHJpeCBmb3IgZ3JvdXANCmxtLnBsdWdpbiA8LSBmdW4od2VpZ2h0LCBncm91cCkNCmxtLnBsdWdpbg0KYGBgDQoNCg0KDQpgYGB7cn0NCiMjIEFubmV0dGUgRG9ic29uICgxOTkwKSAiQW4gSW50cm9kdWN0aW9uIHRvIEdlbmVyYWxpemVkIExpbmVhciBNb2RlbHMiLg0KIyMgUGFnZSA5OiBQbGFudCBXZWlnaHQgRGF0YS4NCmN0bCA8LSBjKDQuMTcsNS41OCw1LjE4LDYuMTEsNC41MCw0LjYxLDUuMTcsNC41Myw1LjMzLDUuMTQpDQp0cnQgPC0gYyg0LjgxLDQuMTcsNC40MSwzLjU5LDUuODcsMy44Myw2LjAzLDQuODksNC4zMiw0LjY5KQ0KZ3JvdXAgPC0gZ2woMiwgMTAsIDIwLCBsYWJlbHMgPSBjKCJDdGwiLCJUcnQiKSkNCndlaWdodCA8LSBjKGN0bCwgdHJ0KQ0KbG0uRDkgPC0gbG0od2VpZ2h0IH4gZ3JvdXApDQpsbS5EOTAgPC0gbG0od2VpZ2h0IH4gZ3JvdXAgLSAxKSAjIG9taXR0aW5nIGludGVyY2VwdA0KbG0uRDkNCmBgYA0KDQo=</div>
 
 
 

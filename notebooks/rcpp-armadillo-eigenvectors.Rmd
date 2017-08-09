@@ -1,0 +1,58 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+https://faculty.washington.edu/heagerty/Courses/b572/public/rccp_demo.R
+
+
+
+```{r}
+library(inline)
+## OK, now suppose we want to use some linear algebra within Rcpp code
+## There are three options: RcppArmadillo, RcppEigen, and RcppGSL. 
+## We will use the former.
+## Learn more about armadillo at http://arma.sourceforge.net/
+
+## Supppose we want to exponentiate a matrix A given its eigen decomposition A = UDV
+
+library(RcppArmadillo)
+
+## Let's create an example matrix and compute its eigen decomposition
+A = matrix(runif(100),100,100)
+## Make it symmetric for stability of eigen decomposition
+A = A + t(A)
+
+A.eigen = eigen(A)
+
+## Here is an R function to compute the matrix exponential
+
+matexp.eigen = function(eigen.list){
+   return(eigen.list$vectors%*%
+    diag(exp(eigen.list$values))%*%solve(eigen.list$vectors))
+}
+
+test.matexp1 = matexp.eigen(A.eigen)
+
+## Now in Rccp using RccpArmadillo
+## Note: You will need to install GNU Fortran (available from CRAN; look under tools) 
+
+matexp.code  = '
+    Rcpp::List reigen(eigenlist);  
+    
+    arma::colvec eigen_values	= Rcpp::as<arma::colvec>(reigen["values"]); 
+    arma::mat eigen_vectors	= Rcpp::as<arma::mat>(reigen["vectors"]);
+    
+    return Rcpp::wrap(eigen_vectors*(arma::diagmat(arma::exp(eigen_values)))*(arma::inv(eigen_vectors)));'
+
+matexp.eigen.rcpp = cxxfunction(signature(eigenlist="list"), body=matexp.code,plugin="RcppArmadillo")
+
+test.matexp2 = matexp.eigen.rcpp(A.eigen)
+
+system.time(for (i in 1:1000) test.matexp1=matexp.eigen(A.eigen))
+system.time(for (i in 1:1000) test.matexp2=matexp.eigen.rcpp(A.eigen))
+
+```
+
+
+

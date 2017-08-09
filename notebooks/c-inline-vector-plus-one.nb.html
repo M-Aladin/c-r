@@ -142,7 +142,7 @@ $(document).ready(function () {
 </style>
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("03-shlib-convolution_in_C.Rmd");
+  window.initializeSourceEmbed("c-inline-vector-plus-one.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
@@ -172,152 +172,40 @@ $(document).ready(function () {
 
 
 <!-- rnb-text-begin -->
-<pre><code>// cconv.c
-void cconv(int *l, double *x, int *n, double *s)
-{
-   double *y = x + (*n - *l), *z = x + *l, *u = x;
-
-   while (u &lt; y)
-      *s += *u++ * *z++;
-}</code></pre>
+<p>Source: <a href="https://stackoverflow.com/a/13004562/5270873" class="uri">https://stackoverflow.com/a/13004562/5270873</a></p>
+<div id="add-1-to-vectors" class="section level2">
+<h2>add 1 to vectors</h2>
+<p>This C function receives a vector, converts it to a column-matrix if the user specifies with <code>byrow=FALSE</code> and returns a matrix a vector if <code>asmatrix=FALSE</code>.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyByZW1vdmUgdGhlIG9sZGVyIGNvbXBpbGVkIGZpbGVcbm5hbWUgPC0gXCJjY29udlwiXG5jbmFtZSA8LSBwYXN0ZTAobmFtZSwgXCIuY1wiKVxud2tkaXIgPC0gIFwiLi4vc3JjXCJcbmZpbGVuYW1lICA8LSBwYXN0ZSh3a2RpciwgbmFtZSwgc2VwID0gXCIvXCIpXG5jZmlsZW5hbWUgPC0gcGFzdGUod2tkaXIsIGNuYW1lLCBzZXAgPSBcIi9cIilcbmBgYCJ9 -->
-<pre class="r"><code># remove the older compiled file
-name &lt;- &quot;cconv&quot;
-cname &lt;- paste0(name, &quot;.c&quot;)
-wkdir &lt;-  &quot;../src&quot;
-filename  &lt;- paste(wkdir, name, sep = &quot;/&quot;)
-cfilename &lt;- paste(wkdir, cname, sep = &quot;/&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZmlsZS5yZW1vdmUocGFzdGUoZmlsZW5hbWUsIC5QbGF0Zm9ybSRkeW5saWIuZXh0LCBzZXAgPSBcIlwiKSlcbmBgYCJ9 -->
-<pre class="r"><code>file.remove(paste(filename, .Platform$dynlib.ext, sep = &quot;&quot;))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBjb21waWxlIHRoZSBDIGNvZGVcbnN5c3RlbShcIlIgQ01EIFNITElCIC4uL3NyYy9jY29udi5jXCIpXG5gYGAifQ== -->
-<pre class="r"><code># compile the C code
-system(&quot;R CMD SHLIB ../src/cconv.c&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiYzovUnRvb2xzL21pbmd3XzY0L2Jpbi9nY2MgIC1JXCJDOi9QUk9HUkF+MS9SL1ItMzR+MS4xL2luY2x1ZGVcIiAtRE5ERUJVRyAgLUlcIkM6L1VzZXJzL21zZno3NTEvUi93aW4tbGlicmFyeS8zLjQvUmNwcC9pbmNsdWRlXCIgICAtSVwiZDovQ29tcGlsZXIvZ2NjLTQuOS4zL2xvY2FsMzMwL2luY2x1ZGVcIiAgICAgLU8yIC1XYWxsICAtc3RkPWdudTk5IC1tdHVuZT1jb3JlMiAtYyAuLi9zcmMvY2NvbnYuYyAtbyAuLi9zcmMvY2NvbnYub1xuYzovUnRvb2xzL21pbmd3XzY0L2Jpbi9nY2MgLXNoYXJlZCAtcyAtc3RhdGljLWxpYmdjYyAtbyAuLi9zcmMvY2NvbnYuZGxsIHRtcC5kZWYgLi4vc3JjL2Njb252Lm8gLUxkOi9Db21waWxlci9nY2MtNC45LjMvbG9jYWwzMzAvbGliL3g2NCAtTGQ6L0NvbXBpbGVyL2djYy00LjkuMy9sb2NhbDMzMC9saWIgLUxDOi9QUk9HUkF+MS9SL1ItMzR+MS4xL2Jpbi94NjQgLWxSXG4ifQ== -->
-<pre><code>c:/Rtools/mingw_64/bin/gcc  -I&quot;C:/PROGRA~1/R/R-34~1.1/include&quot; -DNDEBUG  -I&quot;C:/Users/msfz751/R/win-library/3.4/Rcpp/include&quot;   -I&quot;d:/Compiler/gcc-4.9.3/local330/include&quot;     -O2 -Wall  -std=gnu99 -mtune=core2 -c ../src/cconv.c -o ../src/cconv.o
-c:/Rtools/mingw_64/bin/gcc -shared -s -static-libgcc -o ../src/cconv.dll tmp.def ../src/cconv.o -Ld:/Compiler/gcc-4.9.3/local330/lib/x64 -Ld:/Compiler/gcc-4.9.3/local330/lib -LC:/PROGRA~1/R/R-34~1.1/bin/x64 -lR</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB0aGlzIGxvYWRzIHRoZSBsaWJyYXJ5IGluIGFueSBzeXN0ZW0sIFdpbmRvd3Mgb3IgTGludXhcbmR5bi5sb2FkKHBhc3RlKGZpbGVuYW1lLCAuUGxhdGZvcm0kZHlubGliLmV4dCwgc2VwID0gXCJcIikpXG5gYGAifQ== -->
-<pre class="r"><code># this loads the library in any system, Windows or Linux
-dyn.load(paste(filename, .Platform$dynlib.ext, sep = &quot;&quot;))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB3cmFwcGVyIGZ1bmN0aW9uIHRvIGludm9rZSBjY29udiBcbnJjb252IDwtIGZ1bmN0aW9uKGxhZywgeCkge1xuICAgICAgICAuQyhcImNjb252XCIsIFxuICAgICAgICAgICBhcy5pbnRlZ2VyKGxhZyksXG4gICAgICAgICAgIGFzLmRvdWJsZSh4KSxcbiAgICAgICAgICAgYXMuaW50ZWdlcihsZW5ndGgoeCkpLFxuICAgICAgICAgICBhcy5kb3VibGUoMC4wKSlbWzRdXVxuYGBgIn0= -->
-<pre class="r"><code># wrapper function to invoke cconv 
-rconv &lt;- function(lag, x) {
-        .C(&quot;cconv&quot;, 
-           as.integer(lag),
-           as.double(x),
-           as.integer(length(x)),
-           as.double(0.0))[[4]]</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>“Observe that we convert all arguments to the approriate type (just to be sure). The .C function returns a list with all its arguments, we only need the last (fourth) argument. In this case we did not name the last argument but extracted it using a numeric index. Whether one uses named arguments (as in Section 5.1) or numeric indices is a matter of personal preference.”&quot;</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxueCA8LSBybm9ybSgxMDApXG5yY29udigyLCB4KVxuYGBgIn0= -->
-<pre class="r"><code>x &lt;- rnorm(100)
-rconv(2, x)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDEyLjYwOTg1XG4ifQ== -->
-<pre><code>[1] 12.60985</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxueCA8LSBybm9ybSgxMDApXG5yY29udigxLCB4KVxuYGBgIn0= -->
-<pre class="r"><code>x &lt;- rnorm(100)
-rconv(1, x)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gcmNvbnYoMSwgeCkgOiBjb3VsZCBub3QgZmluZCBmdW5jdGlvbiBcInJjb252XCJcbiJ9 -->
-<pre><code>Error in rconv(1, x) : could not find function &quot;rconv&quot;</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<div id="cconv2" class="section level2">
-<h2>cconv2</h2>
-<p>With a little bit more trouble we can vectorize this, i.e. make it accept a vector of lags and return a vector of convolutions of the same length. The C code now becomes:</p>
-<pre><code>void cconv (int *l, int *m, double *x, int *n, double *s)
-{
-  double *y, *z, *u;
-  int i;
-  for (i = 0; i &lt; *m; i++)
-    {
-      y = x + (*n - l[i]);
-      z = x + l[i];
-      u = x;
-      s[i] = 0.0;
-      while (u &lt; y)
-        s[i] += *u++ * *z++;
-    }
-}</code></pre>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB1bmxvYWQgdGhlIGxpYnJhcnlcbmR5bi51bmxvYWQocGFzdGUoZmlsZW5hbWUsIC5QbGF0Zm9ybSRkeW5saWIuZXh0LCBzZXAgPSBcIlwiKSlcbmBgYCJ9 -->
-<pre class="r"><code># unload the library
-dyn.unload(paste(filename, .Platform$dynlib.ext, sep = &quot;&quot;))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZmlsZS5yZW1vdmUocGFzdGUoXCIuLi9zcmMvY2NvbnYyXCIsIC5QbGF0Zm9ybSRkeW5saWIuZXh0LCBzZXAgPSBcIlwiKSlcblxuIyBjb21waWxlIHRoZSBDIGNvZGVcbnN5c3RlbShcIlIgQ01EIFNITElCIC4uL3NyYy9jY29udjIuY1wiKVxuYGBgIn0= -->
-<pre class="r"><code>file.remove(paste(&quot;../src/cconv2&quot;, .Platform$dynlib.ext, sep = &quot;&quot;))
-
-# compile the C code
-system(&quot;R CMD SHLIB ../src/cconv2.c&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB0aGlzIGxvYWRzIHRoZSBsaWJyYXJ5IGluIGFueSBzeXN0ZW0sIFdpbmRvd3Mgb3IgTGludXhcbmR5bi5sb2FkKHBhc3RlKFwiLi4vc3JjL2Njb252MlwiLCAuUGxhdGZvcm0kZHlubGliLmV4dCwgc2VwID0gXCJcIikpXG4jIHdyYXBwZXIgZnVuY3Rpb24gdG8gaW52b2tlIGNjb252IFxucmNvbnYyIDwtIGZ1bmN0aW9uKGxhZywgeCkge1xuICAgICAgICAuQyhcImNjb252MlwiLCBcbiAgICAgICAgICAgYXMuaW50ZWdlcihsYWcpLFxuICAgICAgICAgICBhcy5pbnRlZ2VyKGxlbmd0aChsYWcpKSxcbiAgICAgICAgICAgYXMuZG91YmxlKHgpLFxuICAgICAgICAgICBhcy5pbnRlZ2VyKGxlbmd0aCh4KSksXG4gICAgICAgICAgIGFzLmRvdWJsZSgwLjApKVtbNV1dXG59XG5sYWcgPC0gYygxLDIsMyw1KVxubGFnID0gcm5vcm0oMTApXG55IDwtIHJub3JtKDEwKVxucmNvbnYyKGxhZywgeSlcbmBgYCJ9 -->
-<pre class="r"><code># this loads the library in any system, Windows or Linux
-dyn.load(paste(&quot;../src/cconv2&quot;, .Platform$dynlib.ext, sep = &quot;&quot;))
-# wrapper function to invoke cconv 
-rconv2 &lt;- function(lag, x) {
-        .C(&quot;cconv2&quot;, 
-           as.integer(lag),
-           as.integer(length(lag)),
-           as.double(x),
-           as.integer(length(x)),
-           as.double(0.0))[[5]]
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShpbmxpbmUpXG5zaWcgPC0gc2lnbmF0dXJlKHg9XCJudW1lcmljXCIsIGRpbT1cImludGVnZXJcIilcbmJvZHkgPC0gXCJcbiAgICBmb3IgKGludCBqID0gMDsgaiA8IGRpbVsxXTsgKytqKVxuICAgICAgICBmb3IgKGludCBpID0gMDsgaSA8IGRpbVswXTsgKytpKVxuICAgICAgICAgICAgeFtqICogZGltWzBdICsgaV0gKz0gMTtcblwiXG5jZnVuIDwtIGNmdW5jdGlvbihzaWcsIGJvZHk9Ym9keSwgbGFuZ3VhZ2U9XCJDXCIsIGNvbnZlbnRpb249XCIuQ1wiKVxuIyB1c2luZyB0aGUgQyBmdW5jdGlvbiBpbiBSXG5wbHVzMSA8LSBmdW5jdGlvbihtLCBieXJvdyA9IFRSVUUsIGFzbWF0cml4ID0gVFJVRSkge1xuICAgIHN0b3BpZm5vdChpcy5udW1lcmljKG0pKVxuICAgIGlmICghaXMubWF0cml4KHYpKSBcbiAgICAgICAgaWYgKGJ5cm93KSBtIDwtIG1hdHJpeChtLCBucm93PWxlbmd0aChtKSwgbmNvbD0xKVxuICAgICAgICBlbHNlIG0gPC0gbWF0cml4KG0sIG5yb3c9MSwgbmNvbD1sZW5ndGgobSkpXG4gICAgaWYgKGFzbWF0cml4KSBtW10gPSBjZnVuKGFzLm51bWVyaWMobSksIGRpbShtKSkkeFxuICAgIGVsc2UgbSA9IGNmdW4oYXMubnVtZXJpYyhtKSwgZGltKG0pKSR4XG4gICAgbVxufVxucGx1czEoYygzLDUsNyw5KSwgYnlyb3cgPSBGQUxTRSwgYXNtYXRyaXggPSBGQUxTRSlcbmBgYCJ9 -->
+<pre class="r"><code>library(inline)
+sig &lt;- signature(x=&quot;numeric&quot;, dim=&quot;integer&quot;)
+body &lt;- &quot;
+    for (int j = 0; j &lt; dim[1]; ++j)
+        for (int i = 0; i &lt; dim[0]; ++i)
+            x[j * dim[0] + i] += 1;
+&quot;
+cfun &lt;- cfunction(sig, body=body, language=&quot;C&quot;, convention=&quot;.C&quot;)
+# using the C function in R
+plus1 &lt;- function(m, byrow = TRUE, asmatrix = TRUE) {
+    stopifnot(is.numeric(m))
+    if (!is.matrix(v)) 
+        if (byrow) m &lt;- matrix(m, nrow=length(m), ncol=1)
+        else m &lt;- matrix(m, nrow=1, ncol=length(m))
+    if (asmatrix) m[] = cfun(as.numeric(m), dim(m))$x
+    else m = cfun(as.numeric(m), dim(m))$x
+    m
 }
-lag &lt;- c(1,2,3,5)
-lag = rnorm(10)
-y &lt;- rnorm(10)
-rconv2(lag, y)</code></pre>
+plus1(c(3,5,7,9), byrow = FALSE, asmatrix = FALSE)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDE2LjQwMlxuIn0= -->
-<pre><code>[1] 16.402</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdICA0ICA2ICA4IDEwXG4ifQ== -->
+<pre><code>[1]  4  6  8 10</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQogICAgLy8gY2NvbnYuYw0KICAgIHZvaWQgY2NvbnYoaW50ICpsLCBkb3VibGUgKngsIGludCAqbiwgZG91YmxlICpzKQ0KICAgIHsNCiAgICAgICBkb3VibGUgKnkgPSB4ICsgKCpuIC0gKmwpLCAqeiA9IHggKyAqbCwgKnUgPSB4Ow0KICAgIA0KICAgICAgIHdoaWxlICh1IDwgeSkNCiAgICAgICAgICAqcyArPSAqdSsrICogKnorKzsNCiAgICB9DQoNCg0KDQpgYGB7cn0NCiMgcmVtb3ZlIHRoZSBvbGRlciBjb21waWxlZCBmaWxlDQpuYW1lIDwtICJjY29udiINCmNuYW1lIDwtIHBhc3RlMChuYW1lLCAiLmMiKQ0Kd2tkaXIgPC0gICIuLi9zcmMiDQpmaWxlbmFtZSAgPC0gcGFzdGUod2tkaXIsIG5hbWUsIHNlcCA9ICIvIikNCmNmaWxlbmFtZSA8LSBwYXN0ZSh3a2RpciwgY25hbWUsIHNlcCA9ICIvIikNCg0KDQpgYGANCg0KYGBge3J9DQpmaWxlLnJlbW92ZShwYXN0ZShmaWxlbmFtZSwgLlBsYXRmb3JtJGR5bmxpYi5leHQsIHNlcCA9ICIiKSkNCmBgYA0KDQoNCmBgYHtyfQ0KIyBjb21waWxlIHRoZSBDIGNvZGUNCnN5c3RlbSgiUiBDTUQgU0hMSUIgLi4vc3JjL2Njb252LmMiKQ0KYGBgDQoNCg0KYGBge3J9DQojIHRoaXMgbG9hZHMgdGhlIGxpYnJhcnkgaW4gYW55IHN5c3RlbSwgV2luZG93cyBvciBMaW51eA0KZHluLmxvYWQocGFzdGUoZmlsZW5hbWUsIC5QbGF0Zm9ybSRkeW5saWIuZXh0LCBzZXAgPSAiIikpDQpgYGANCg0KDQoNCmBgYHtyfQ0KIyB3cmFwcGVyIGZ1bmN0aW9uIHRvIGludm9rZSBjY29udiANCnJjb252IDwtIGZ1bmN0aW9uKGxhZywgeCkgew0KICAgICAgICAuQygiY2NvbnYiLCANCiAgICAgICAgICAgYXMuaW50ZWdlcihsYWcpLA0KICAgICAgICAgICBhcy5kb3VibGUoeCksDQogICAgICAgICAgIGFzLmludGVnZXIobGVuZ3RoKHgpKSwNCiAgICAgICAgICAgYXMuZG91YmxlKDAuMCkpW1s0XV0NCn0NCmBgYA0KDQoiT2JzZXJ2ZSB0aGF0IHdlIGNvbnZlcnQgYWxsIGFyZ3VtZW50cyB0byB0aGUgYXBwcm9yaWF0ZSB0eXBlIChqdXN0IHRvIGJlIHN1cmUpLiBUaGUgLkMgZnVuY3Rpb24gcmV0dXJucyBhIGxpc3Qgd2l0aCBhbGwgaXRzIGFyZ3VtZW50cywgd2Ugb25seSBuZWVkIHRoZSBsYXN0IChmb3VydGgpIGFyZ3VtZW50LiBJbiB0aGlzIGNhc2Ugd2UgZGlkIG5vdCBuYW1lIHRoZSBsYXN0IGFyZ3VtZW50IGJ1dCBleHRyYWN0ZWQgaXQgdXNpbmcgYSBudW1lcmljIGluZGV4LiBXaGV0aGVyIG9uZSB1c2VzIG5hbWVkIGFyZ3VtZW50cyAoYXMgaW4gU2VjdGlvbiA1LjEpIG9yIG51bWVyaWMgaW5kaWNlcyBpcyBhIG1hdHRlciBvZiBwZXJzb25hbCBwcmVmZXJlbmNlLiIiDQoNCmBgYHtyfQ0KeCA8LSBybm9ybSgxMDApDQpyY29udigyLCB4KQ0KYGBgDQoNCmBgYHtyfQ0KeCA8LSBybm9ybSgxMDApDQpyY29udigxLCB4KQ0KYGBgDQoNCiMjIGNjb252Mg0KDQpXaXRoIGEgbGl0dGxlIGJpdCBtb3JlIHRyb3VibGUgd2UgY2FuIHZlY3Rvcml6ZSB0aGlzLCANCmkuZS4gbWFrZSBpdCBhY2NlcHQgYSB2ZWN0b3Igb2YgbGFncyBhbmQgcmV0dXJuIGEgdmVjdG9yIG9mIA0KY29udm9sdXRpb25zIG9mIHRoZSBzYW1lIGxlbmd0aC4gVGhlIEMgY29kZSBub3cgYmVjb21lczoNCg0KICAgIHZvaWQgY2NvbnYgKGludCAqbCwgaW50ICptLCBkb3VibGUgKngsIGludCAqbiwgZG91YmxlICpzKQ0KICAgIHsNCiAgICAgIGRvdWJsZSAqeSwgKnosICp1Ow0KICAgICAgaW50IGk7DQogICAgICBmb3IgKGkgPSAwOyBpIDwgKm07IGkrKykNCiAgICAgICAgew0KICAgICAgICAgIHkgPSB4ICsgKCpuIC0gbFtpXSk7DQogICAgICAgICAgeiA9IHggKyBsW2ldOw0KICAgICAgICAgIHUgPSB4Ow0KICAgICAgICAgIHNbaV0gPSAwLjA7DQogICAgICAgICAgd2hpbGUgKHUgPCB5KQ0KICAgICAgICAgICAgc1tpXSArPSAqdSsrICogKnorKzsNCiAgICAgICAgfQ0KICAgIH0NCg0KDQoNCg0KYGBge3J9DQojIHVubG9hZCB0aGUgbGlicmFyeQ0KZHluLnVubG9hZChwYXN0ZShmaWxlbmFtZSwgLlBsYXRmb3JtJGR5bmxpYi5leHQsIHNlcCA9ICIiKSkNCmBgYA0KDQoNCmBgYHtyfQ0KZmlsZS5yZW1vdmUocGFzdGUoIi4uL3NyYy9jY29udjIiLCAuUGxhdGZvcm0kZHlubGliLmV4dCwgc2VwID0gIiIpKQ0KDQojIGNvbXBpbGUgdGhlIEMgY29kZQ0Kc3lzdGVtKCJSIENNRCBTSExJQiAuLi9zcmMvY2NvbnYyLmMiKQ0KYGBgDQoNCg0KYGBge3J9DQoNCiMgdGhpcyBsb2FkcyB0aGUgbGlicmFyeSBpbiBhbnkgc3lzdGVtLCBXaW5kb3dzIG9yIExpbnV4DQpkeW4ubG9hZChwYXN0ZSgiLi4vc3JjL2Njb252MiIsIC5QbGF0Zm9ybSRkeW5saWIuZXh0LCBzZXAgPSAiIikpDQoNCiMgd3JhcHBlciBmdW5jdGlvbiB0byBpbnZva2UgY2NvbnYgDQpyY29udjIgPC0gZnVuY3Rpb24obGFnLCB4KSB7DQogICAgICAgIC5DKCJjY29udjIiLCANCiAgICAgICAgICAgYXMuaW50ZWdlcihsYWcpLA0KICAgICAgICAgICBhcy5pbnRlZ2VyKGxlbmd0aChsYWcpKSwNCiAgICAgICAgICAgYXMuZG91YmxlKHgpLA0KICAgICAgICAgICBhcy5pbnRlZ2VyKGxlbmd0aCh4KSksDQogICAgICAgICAgIGFzLmRvdWJsZSgwLjApKVtbNV1dDQp9DQoNCmxhZyA8LSBjKDEsMiwzLDUpDQpsYWcgPSBybm9ybSgxMCkNCnkgPC0gcm5vcm0oMTApDQpyY29udjIobGFnLCB5KQ0KDQpgYGANCg0KDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpTb3VyY2U6IGh0dHBzOi8vc3RhY2tvdmVyZmxvdy5jb20vYS8xMzAwNDU2Mi81MjcwODczDQoNCiMjIGFkZCAxIHRvIHZlY3RvcnMNClRoaXMgQyBmdW5jdGlvbiByZWNlaXZlcyBhIHZlY3RvciwgY29udmVydHMgaXQgdG8gYSBjb2x1bW4tbWF0cml4IGlmIHRoZSB1c2VyIHNwZWNpZmllcyB3aXRoIGBieXJvdz1GQUxTRWAgYW5kIHJldHVybnMgYSBtYXRyaXggYSB2ZWN0b3IgaWYgYGFzbWF0cml4PUZBTFNFYC4NCg0KYGBge3J9DQpsaWJyYXJ5KGlubGluZSkNCg0Kc2lnIDwtIHNpZ25hdHVyZSh4PSJudW1lcmljIiwgZGltPSJpbnRlZ2VyIikNCg0KYm9keSA8LSAiDQogICAgZm9yIChpbnQgaiA9IDA7IGogPCBkaW1bMV07ICsraikNCiAgICAgICAgZm9yIChpbnQgaSA9IDA7IGkgPCBkaW1bMF07ICsraSkNCiAgICAgICAgICAgIHhbaiAqIGRpbVswXSArIGldICs9IDE7DQoiDQoNCmNmdW4gPC0gY2Z1bmN0aW9uKHNpZywgYm9keT1ib2R5LCBsYW5ndWFnZT0iQyIsIGNvbnZlbnRpb249Ii5DIikNCg0KIyB1c2luZyB0aGUgQyBmdW5jdGlvbiBpbiBSDQpwbHVzMSA8LSBmdW5jdGlvbihtLCBieXJvdyA9IFRSVUUsIGFzbWF0cml4ID0gVFJVRSkgew0KICAgIHN0b3BpZm5vdChpcy5udW1lcmljKG0pKQ0KICAgIGlmICghaXMubWF0cml4KHYpKSANCiAgICAgICAgaWYgKGJ5cm93KSBtIDwtIG1hdHJpeChtLCBucm93PWxlbmd0aChtKSwgbmNvbD0xKQ0KICAgICAgICBlbHNlIG0gPC0gbWF0cml4KG0sIG5yb3c9MSwgbmNvbD1sZW5ndGgobSkpDQogICAgaWYgKGFzbWF0cml4KSBtW10gPSBjZnVuKGFzLm51bWVyaWMobSksIGRpbShtKSkkeA0KICAgIGVsc2UgbSA9IGNmdW4oYXMubnVtZXJpYyhtKSwgZGltKG0pKSR4DQogICAgbQ0KfQ0KDQpwbHVzMShjKDMsNSw3LDkpLCBieXJvdyA9IEZBTFNFLCBhc21hdHJpeCA9IEZBTFNFKQ0KYGBg</div>
 
 
 

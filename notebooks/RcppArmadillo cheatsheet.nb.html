@@ -142,7 +142,7 @@ $(document).ready(function () {
 </style>
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("rcpp-cxxfunction-convolve1d.Rmd");
+  window.initializeSourceEmbed("RcppArmadillo cheatsheet.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
@@ -172,151 +172,261 @@ $(document).ready(function () {
 
 
 <!-- rnb-text-begin -->
-<div id="inline-cpp-code" class="section level2">
-<h2>Inline Cpp code</h2>
-<p>This 1D convolution works the same as in Matlab and other examples.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShpbmxpbmUpXG5zcmMgPC0gJ1xuICBSY3BwOjpOdW1lcmljVmVjdG9yIHhhKGEpO1xuICBSY3BwOjpOdW1lcmljVmVjdG9yIHhiKGIpO1xuICBpbnQgbl94YSA9IHhhLnNpemUoKSwgbl94YiA9IHhiLnNpemUoKTtcbiAgUmNwcDo6TnVtZXJpY1ZlY3RvciB4YWIobl94YSArIG5feGIgLSAxKTtcbmZvciAoaW50IGkgPSAwOyBpIDwgbl94YTsgaSsrKVxuICBmb3IgKGludCBqID0gMDsgaiA8IG5feGI7IGorKylcbiAgICB4YWJbaSArIGpdICs9IHhhW2ldICogeGJbal07XG4gcmV0dXJuIHhhYjsnXG5gYGAifQ== -->
-<pre class="r"><code>library(inline)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSgnUmNwcCcpXG5saWJyYXJ5KCdpbmxpbmUnKVxucmNwcF9pbmMgPC0gJ1xuICAgIHVzaW5nIG5hbWVzcGFjZSBSY3BwO1xuICAgIHVzaW5nIG5hbWVzcGFjZSBhcm1hO1xuJ1xubTEgPC0gbWF0cml4KDE6MTYsICBucj00KVxubTIgPC0gbWF0cml4KDE3OjMyLCBucj00KVxudjEgPC0gMToxMFxudjIgPC0gMTE6MjBcbmExIDwtIGFycmF5KDE6MjQsIGRpbSA9IGMoNCwzLDIpKVxuYTIgPC0gYXJyYXkoMjU6NDgsIGRpbSA9IGMoNCwzLDIpKVxubTFcbmBgYCJ9 -->
+<pre class="r"><code>library('Rcpp')
+library('inline')
+rcpp_inc &lt;- '
+    using namespace Rcpp;
+    using namespace arma;
+'
+m1 &lt;- matrix(1:16,  nr=4)
+m2 &lt;- matrix(17:32, nr=4)
+v1 &lt;- 1:10
+v2 &lt;- 11:20
+a1 &lt;- array(1:24, dim = c(4,3,2))
+a2 &lt;- array(25:48, dim = c(4,3,2))
+m1</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICBbLDFdIFssMl0gWywzXSBbLDRdXG5bMSxdICAgIDEgICAgNSAgICA5ICAgMTNcblsyLF0gICAgMiAgICA2ICAgMTAgICAxNFxuWzMsXSAgICAzICAgIDcgICAxMSAgIDE1XG5bNCxdICAgIDQgICAgOCAgIDEyICAgMTZcbiJ9 -->
+<pre><code>     [,1] [,2] [,3] [,4]
+[1,]    1    5    9   13
+[2,]    2    6   10   14
+[3,]    3    7   11   15
+[4,]    4    8   12   16</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYTFcbmBgYCJ9 -->
+<pre class="r"><code>a1</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiLCAsIDFcblxuICAgICBbLDFdIFssMl0gWywzXVxuWzEsXSAgICAxICAgIDUgICAgOVxuWzIsXSAgICAyICAgIDYgICAxMFxuWzMsXSAgICAzICAgIDcgICAxMVxuWzQsXSAgICA0ICAgIDggICAxMlxuXG4sICwgMlxuXG4gICAgIFssMV0gWywyXSBbLDNdXG5bMSxdICAgMTMgICAxNyAgIDIxXG5bMixdICAgMTQgICAxOCAgIDIyXG5bMyxdICAgMTUgICAxOSAgIDIzXG5bNCxdICAgMTYgICAyMCAgIDI0XG4ifQ== -->
+<pre><code>, , 1
+
+     [,1] [,2] [,3]
+[1,]    1    5    9
+[2,]    2    6   10
+[3,]    3    7   11
+[4,]    4    8   12
+
+, , 2
+
+     [,1] [,2] [,3]
+[1,]   13   17   21
+[2,]   14   18   22
+[3,]   15   19   23
+[4,]   16   20   24</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<div id="join-matrices" class="section level2">
+<h2>join matrices</h2>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3JjIDwtICdcbiAgICBtYXQgbTEgPSBhczxtYXQ+KG0xaW4pO1xuICAgIG1hdCBtMiA9IGFzPG1hdD4obTJpbik7XG4gICAgbWF0IG91dCA9IGpvaW5fY29scyhtMSwgbTIpO1xuICAgIHJldHVybih3cmFwKG91dCkpO1xuJ1xuZm4gPC0gY3h4ZnVuY3Rpb24oc2lnbmF0dXJlKG0xaW49XCJudW1lcmljXCIsIG0yaW49XCJudW1lcmljXCIpLCBcbiAgICAgICAgICAgICAgICAgIHNyYywgXG4gICAgICAgICAgICAgICAgICBwbHVnaW49J1JjcHBBcm1hZGlsbG8nLCByY3BwX2luYylcbnJlcyAgPC0gZm4obTEsIG0yKVxudGVzdCA8LSByYmluZChtMSwgbTIpXG5hbGwuZXF1YWwodGVzdCwgcmVzKVxuYGBgIn0= -->
+<pre class="r"><code>src &lt;- '
+    mat m1 = as&lt;mat&gt;(m1in);
+    mat m2 = as&lt;mat&gt;(m2in);
+    mat out = join_cols(m1, m2);
+    return(wrap(out));
+'
+fn &lt;- cxxfunction(signature(m1in=&quot;numeric&quot;, m2in=&quot;numeric&quot;), 
+                  src, 
+                  plugin='RcppArmadillo', rcpp_inc)
+res  &lt;- fn(m1, m2)
+test &lt;- rbind(m1, m2)
+all.equal(test, res)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFRSVUVcbiJ9 -->
+<pre><code>[1] TRUE</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGVzdFxuYGBgIn0= -->
+<pre class="r"><code>test</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICBbLDFdIFssMl0gWywzXSBbLDRdXG5bMSxdICAgIDEgICAgNSAgICA5ICAgMTNcblsyLF0gICAgMiAgICA2ICAgMTAgICAxNFxuWzMsXSAgICAzICAgIDcgICAxMSAgIDE1XG5bNCxdICAgIDQgICAgOCAgIDEyICAgMTZcbls1LF0gICAxNyAgIDIxICAgMjUgICAyOVxuWzYsXSAgIDE4ICAgMjIgICAyNiAgIDMwXG5bNyxdICAgMTkgICAyMyAgIDI3ICAgMzFcbls4LF0gICAyMCAgIDI0ICAgMjggICAzMlxuIn0= -->
+<pre><code>     [,1] [,2] [,3] [,4]
+[1,]    1    5    9   13
+[2,]    2    6   10   14
+[3,]    3    7   11   15
+[4,]    4    8   12   16
+[5,]   17   21   25   29
+[6,]   18   22   26   30
+[7,]   19   23   27   31
+[8,]   20   24   28   32</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="join-cube-slices" class="section level2">
+<h2>join cube slices</h2>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBqb2luX3NsaWNlcyggY3ViZSBDLCBjdWJlIEQgKSBcbiMgZm9yIHR3byBjdWJlcyBDIGFuZCBEOiBqb2luIHRoZSBzbGljZXMgb2YgQyB3aXRoIHRoZSBzbGljZXMgb2YgRDsgY3ViZXMgQyBhbmQgRCBtdXN0IGhhdmUgIyB0aGUgc2FtZSBudW1iZXIgb2Ygcm93cyBhbmQgY29sdW1ucyAoaWUuIGFsbCBzbGljZXMgbXVzdCBoYXZlIHRoZSBzYW1lIHNpemUpXG5cbnNyYyA8LSAnXG4gICAgY3ViZSBjMSA9IGFzPGN1YmU+KGMxaW4pO1xuICAgIGN1YmUgYzIgPSBhczxjdWJlPihjMmluKTtcblxuICAgIC8vaW50IG5zID0gYzEubl9zbGljZXM7XG4gICAgY291dCA8PCBcImN1YmUgYzEgaGFzIFwiIDw8IGMxLm5fc2xpY2VzIDw8IFwiIHNsaWNlc1wiIDw8IGVuZGw7XG4gICAgY291dCA8PCBcImN1YmUgYzIgaGFzIFwiIDw8IGMyLm5fc2xpY2VzIDw8IFwiIHNsaWNlc1wiIDw8IGVuZGw7XG5cbiAgICBjdWJlIG91dCA9IGpvaW5fc2xpY2VzKGMxLCBjMik7XG4gICAgY291dCA8PCBcImN1YmUgb3V0IGhhcyBcIiA8PCBvdXQubl9zbGljZXMgPDwgXCIgc2xpY2VzXCIgPDwgZW5kbDtcbiAgICByZXR1cm4od3JhcChvdXQpKTtcbidcblxuZm4gPC0gY3h4ZnVuY3Rpb24oc2lnbmF0dXJlKGMxaW49XCJudW1lcmljXCIsIGMyaW49XCJudW1lcmljXCIpLCBcbiAgICAgICAgICAgICAgICAgIHNyYywgXG4gICAgICAgICAgICAgICAgICBwbHVnaW49J1JjcHBBcm1hZGlsbG8nLCByY3BwX2luYylcblxucmVzICA8LSBmbihhMSwgYTIpXG5yZXNcblxudGVzdCA8LSByYmluZChhMSwgYTIpXG50ZXN0IDwtIGFycmF5KGMoYTEsIGEyKSwgZGltID0gYyhucm93KGExKSwgbmNvbChhMiksIGRpbShhMSlbM10qMikpXG4jIHRlc3RcbmFsbC5lcXVhbCh0ZXN0LCByZXMpXG5gYGAifQ== -->
+<pre class="r"><code># join_slices( cube C, cube D ) 
+# for two cubes C and D: join the slices of C with the slices of D; cubes C and D must have # the same number of rows and columns (ie. all slices must have the same size)
+
 src &lt;- '
-  Rcpp::NumericVector xa(a);
-  Rcpp::NumericVector xb(b);
-  int n_xa = xa.size(), n_xb = xb.size();
-  Rcpp::NumericVector xab(n_xa + n_xb - 1);
-for (int i = 0; i &lt; n_xa; i++)
-  for (int j = 0; j &lt; n_xb; j++)
-    xab[i + j] += xa[i] * xb[j];
- return xab;'</code></pre>
+    cube c1 = as&lt;cube&gt;(c1in);
+    cube c2 = as&lt;cube&gt;(c2in);
+
+    //int ns = c1.n_slices;
+    cout &lt;&lt; &quot;cube c1 has &quot; &lt;&lt; c1.n_slices &lt;&lt; &quot; slices&quot; &lt;&lt; endl;
+    cout &lt;&lt; &quot;cube c2 has &quot; &lt;&lt; c2.n_slices &lt;&lt; &quot; slices&quot; &lt;&lt; endl;
+
+    cube out = join_slices(c1, c2);
+    cout &lt;&lt; &quot;cube out has &quot; &lt;&lt; out.n_slices &lt;&lt; &quot; slices&quot; &lt;&lt; endl;
+    return(wrap(out));
+'
+
+fn &lt;- cxxfunction(signature(c1in=&quot;numeric&quot;, c2in=&quot;numeric&quot;), 
+                  src, 
+                  plugin='RcppArmadillo', rcpp_inc)
+
+res  &lt;- fn(a1, a2)
+res
+
+test &lt;- rbind(a1, a2)
+test &lt;- array(c(a1, a2), dim = c(nrow(a1), ncol(a2), dim(a1)[3]*2))
+# test
+all.equal(test, res)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+</div>
+<div id="add-matrix-to-a-cube" class="section level2">
+<h2>add matrix to a cube</h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBjcmVhdGUgdGhlIFIgZnVuY3Rpb25cbmNvbnZvbHZlMWQgPC0gY3h4ZnVuY3Rpb24oc2lnbmF0dXJlKGEgPSBcIm51bWVyaWNcIiwgYiA9IFwibnVtZXJpY1wiKSwgXG4gICAgICAgICAgICAgICAgICAgc3JjLCBcbiAgICAgICAgICAgICAgICAgICBwbHVnaW4gPSBcIlJjcHBcIilcbmBgYCJ9 -->
-<pre class="r"><code># create the R function
-convolve1d &lt;- cxxfunction(signature(a = &quot;numeric&quot;, b = &quot;numeric&quot;), 
-                   src, 
-                   plugin = &quot;Rcpp&quot;)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3JjIDwtICdcbiAgICBjdWJlIGMxID0gYXM8Y3ViZT4oYzFpbik7XG4gICAgbWF0ICBtMSA9IGFzPG1hdD4obTFpbik7XG4gICAgLy9JbnRlZ2VyVmVjdG9yIGQxKGMxLm5fcm93cywgYzEubl9jb2xzLCBjMS5uX3NsaWNlcyk7XG4gICAgLy8gTm9ybWFsIE1hdHJpeCBkaW1lbnNpb25zXG4gICAgdW5zaWduZWQgaW50IHhkaW0gPSBjMS5uX3Jvd3M7XG4gIFxuICAgIHVuc2lnbmVkIGludCB5ZGltID0gYzEubl9jb2xzO1xuICBcbiAgICAvLyBEZXB0aCBvZiBBcnJheVxuICAgIHVuc2lnbmVkIGludCB0ZGltID0gYzEubl9zbGljZXM7XG4gICAgY291dCA8PCBcImN1YmUgYzEgaGFzIFwiIDw8IGMxLm5fc2xpY2VzIDw8IFwiIHNsaWNlc1wiIDw8IGVuZGw7XG4gICAgLy8gcmVzdWx0aW5nIGN1YmVcbiAgICBjdWJlIG91dChjMS5iZWdpbigpLCB4ZGltLCB5ZGltLCB0ZGltKzEpO1xuICAgIC8vIHJlc2hhcGUgbWF0cml4IHRvIHNpemUgb2YgY3ViZSBzbGljZXNcbiAgICBtYXQgcm0xID0gcmVzaGFwZShtMSwgeGRpbSwgeWRpbSk7XG4gICAgLy8gam9pbiBzbGljZSBvZiBjdWJlIHBsdXMgcmVzaGFwZWQgbWF0cml4XG4gICAgb3V0ID0gam9pbl9zbGljZXMoYzEsIHJtMSk7XG4gICAgXG4gICAgY291dCA8PCBcImN1YmUgb3V0IGhhcyBcIiA8PCBvdXQubl9zbGljZXMgPDwgXCIgc2xpY2VzXCIgPDwgZW5kbDtcbiAgICByZXR1cm4od3JhcChvdXQpKTtcbidcbmZuIDwtIGN4eGZ1bmN0aW9uKHNpZ25hdHVyZShjMWluPVwibnVtZXJpY1wiLCBtMWluPVwibnVtZXJpY1wiKSwgXG4gICAgICAgICAgICAgICAgICBzcmMsIFxuICAgICAgICAgICAgICAgICAgcGx1Z2luPSdSY3BwQXJtYWRpbGxvJywgcmNwcF9pbmMpXG5yZXMgIDwtIGZuKGExLCBtMSlcbmBgYCJ9 -->
+<pre class="r"><code>src &lt;- '
+    cube c1 = as&lt;cube&gt;(c1in);
+    mat  m1 = as&lt;mat&gt;(m1in);
+    //IntegerVector d1(c1.n_rows, c1.n_cols, c1.n_slices);
+    // Normal Matrix dimensions
+    unsigned int xdim = c1.n_rows;
+  
+    unsigned int ydim = c1.n_cols;
+  
+    // Depth of Array
+    unsigned int tdim = c1.n_slices;
+    cout &lt;&lt; &quot;cube c1 has &quot; &lt;&lt; c1.n_slices &lt;&lt; &quot; slices&quot; &lt;&lt; endl;
+    // resulting cube
+    cube out(c1.begin(), xdim, ydim, tdim+1);
+    // reshape matrix to size of cube slices
+    mat rm1 = reshape(m1, xdim, ydim);
+    // join slice of cube plus reshaped matrix
+    out = join_slices(c1, rm1);
+    
+    cout &lt;&lt; &quot;cube out has &quot; &lt;&lt; out.n_slices &lt;&lt; &quot; slices&quot; &lt;&lt; endl;
+    return(wrap(out));
+'
+fn &lt;- cxxfunction(signature(c1in=&quot;numeric&quot;, m1in=&quot;numeric&quot;), 
+                  src, 
+                  plugin='RcppArmadillo', rcpp_inc)
+res  &lt;- fn(a1, m1)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuY29udm9sdmUxZCgxOjMsIDE6NClcbmBgYFxuYGBgIn0= -->
-<p><code>r</code>r convolve1d(1:3, 1:4)</p>
-<pre><code></code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxueCA8LSBtYXRyaXgocm5vcm0oMTApKVxueSA8LSBtYXRyaXgocm5vcm0oMTApKVxuY29udm9sdmUxZCh4LCB5KVxuYGBgIn0= -->
-<pre class="r"><code>x &lt;- matrix(rnorm(10))
-y &lt;- matrix(rnorm(10))
-convolve1d(x, y)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSAgMC4zNzI3MzY3IC0xLjA4MjU0NDIgLTAuMjA5ODcwNSAgMS40MjQ3MzA3IC0wLjY0NzQ4MTcgIDMuNzEyNzA5MyAtMC4yMzg4MzMxXG4gWzhdIC0yLjAwNDQ0NzggLTQuNDEwODEyOSAtOS4xMjk2Mjg5IC0xLjQwMTI1NDggIDMuOTEwNDgzNSAgOC4xMjYwNTUwIDExLjYzMTQ5NDdcblsxNV0gIDIuMzM2MDI1OSAgMS4yNDQ1NjgyIC0yLjIxODkwMzIgLTAuNTg2MjE0MCAtMC4zOTkxOTQyXG4ifQ== -->
-<pre><code> [1]  0.3727367 -1.0825442 -0.2098705  1.4247307 -0.6474817  3.7127093 -0.2388331
- [8] -2.0044478 -4.4108129 -9.1296289 -1.4012548  3.9104835  8.1260550 11.6314947
-[15]  2.3360259  1.2445682 -2.2189032 -0.5862140 -0.3991942</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiY3ViZSBjMSBoYXMgMiBzbGljZXNcbmN1YmUgb3V0IGhhcyAzIHNsaWNlc1xuIn0= -->
+<pre><code>cube c1 has 2 slices
+cube out has 3 slices</code></pre>
 <!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxueCA9IGMoMywgNCwgNSwgMCwgMClcbnkgPSBjKDIsIDEpXG5jb252b2x2ZTFkKHgsIHkpXG5gYGAifQ== -->
-<pre class="r"><code>x = c(3, 4, 5, 0, 0)
-y = c(2, 1)
-convolve1d(x, y)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVzXG5gYGAifQ== -->
+<pre class="r"><code>res</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdICA2IDExIDE0ICA1ICAwICAwXG4ifQ== -->
-<pre><code>[1]  6 11 14  5  0  0</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiLCAsIDFcblxuICAgICBbLDFdIFssMl0gWywzXVxuWzEsXSAgICAxICAgIDUgICAgOVxuWzIsXSAgICAyICAgIDYgICAxMFxuWzMsXSAgICAzICAgIDcgICAxMVxuWzQsXSAgICA0ICAgIDggICAxMlxuXG4sICwgMlxuXG4gICAgIFssMV0gWywyXSBbLDNdXG5bMSxdICAgMTMgICAxNyAgIDIxXG5bMixdICAgMTQgICAxOCAgIDIyXG5bMyxdICAgMTUgICAxOSAgIDIzXG5bNCxdICAgMTYgICAyMCAgIDI0XG5cbiwgLCAzXG5cbiAgICAgWywxXSBbLDJdIFssM11cblsxLF0gICAgMSAgICA1ICAgIDlcblsyLF0gICAgMiAgICA2ICAgMTBcblszLF0gICAgMyAgICA3ICAgMTFcbls0LF0gICAgNCAgICA4ICAgMTJcbiJ9 -->
+<pre><code>, , 1
+
+     [,1] [,2] [,3]
+[1,]    1    5    9
+[2,]    2    6   10
+[3,]    3    7   11
+[4,]    4    8   12
+
+, , 2
+
+     [,1] [,2] [,3]
+[1,]   13   17   21
+[2,]   14   18   22
+[3,]   15   19   23
+[4,]   16   20   24
+
+, , 3
+
+     [,1] [,2] [,3]
+[1,]    1    5    9
+[2,]    2    6   10
+[3,]    3    7   11
+[4,]    4    8   12</code></pre>
 <!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyA2IDExIDE0ICA1ICAwICAwICAgICAgc2FtZSBhcyBpbiBNYXRsYWJcbmBgYCJ9 -->
-<pre class="r"><code># 6 11 14  5  0  0      same as in Matlab</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGVzdCA8LSBhcnJheShjKGExLCBtMSksIGRpbSA9IGMoNCwzLDMpKVxuYWxsLmVxdWFsKHRlc3QsIHJlcylcbmBgYCJ9 -->
+<pre class="r"><code>test &lt;- array(c(a1, m1), dim = c(4,3,3))
+all.equal(test, res)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxueCA9IGMoMywgNCwgNSlcbnkgPSBjKDIsIDEpXG5jb252b2x2ZTFkKHgsIHkpXG5gYGBcbmBgYCJ9 -->
-<p><code>r</code>r x = c(3, 4, 5) y = c(2, 1) convolve1d(x, y)</p>
-<pre><code></code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdICA2IDExIDE0ICA1XG4ifQ== -->
-<pre><code>[1]  6 11 14  5</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyA2IDExIDE0ICA1ICAwICAwICAgICAgc2FtZSBhcyBpbiBNYXRsYWJcbmBgYFxuYGBgIn0= -->
-<p><code>r</code>r # 6 11 14 5 0 0 same as in Matlab</p>
-<pre><code></code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB0aGlzIGV4YW1wbGUgb24gYXBwbHlpbmcgMUQgY29udm9sdXRpb24gdG8gYSBtYXRyaXggd2lsbCBub3Qgd29yay5cbiMgU2VlIHRoZSBvdXRwdXQgZnJvbSBNYXRsYWIgYW5kIHRoZSByZXN1bHRzIGJlbG93LiBUaGUgMUQgY29udm9sdXRpb24gcmVzcG9uc2UgaXNcbiMgYSB2ZWN0b3Igbm90IGEgbWF0cml4LlxuQSA9IG1hdHJpeCgxLCBucm93PTMsIG5jb2w9MylcbmNvbnZvbHZlMWQoQSwgQSlcbmBgYCJ9 -->
-<pre class="r"><code># this example on applying 1D convolution to a matrix will not work.
-# See the output from Matlab and the results below. The 1D convolution response is
-# a vector not a matrix.
-A = matrix(1, nrow=3, ncol=3)
-convolve1d(A, A)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSAxIDIgMyA0IDUgNiA3IDggOSA4IDcgNiA1IDQgMyAyIDFcbiJ9 -->
-<pre><code> [1] 1 2 3 4 5 6 7 8 9 8 7 6 5 4 3 2 1</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyAxIDIgMyA0IDUgNiA3IDggOSA4IDcgNiA1IDQgMyAyIDFcbiMgSW4gTWF0bGFiIHRoZSBjb252b2x1dGlvbiBvZiAoQSwgQSkgaXMgYSA1eDUgbWF0cml4OlxuICAgICAjIDEgICAgIDIgICAgIDMgICAgIDIgICAgIDFcbiAgICAgIyAyICAgICA0ICAgICA2ICAgICA0ICAgICAyXG4gICAgICMgMyAgICAgNiAgICAgOSAgICAgNiAgICAgM1xuICAgICAjIDIgICAgIDQgICAgIDYgICAgIDQgICAgIDJcbiAgICAgIyAxICAgICAyICAgICAzICAgICAyICAgICAxXG4jIGlmIHdlIGNvbnZlcnQgQSB0byBhIHZlY3RvciB2MSBhZCBmaWYgdGhlIGNvbnZvbHV0aW9uIHVzaW5nIHRoaXMgZnVuY3Rpb25cbiMgdGhlIHJlc3VsdCBpcyBhbm90aGVyIHZlY3RvciBvZiAxNyBlbGVtZW50cy5cbnYxID0gYXMudmVjdG9yKEEpXG5sZW5ndGgodjEpXG5gYGAifQ== -->
-<pre class="r"><code># 1 2 3 4 5 6 7 8 9 8 7 6 5 4 3 2 1
-# In Matlab the convolution of (A, A) is a 5x5 matrix:
-     # 1     2     3     2     1
-     # 2     4     6     4     2
-     # 3     6     9     6     3
-     # 2     4     6     4     2
-     # 1     2     3     2     1
-# if we convert A to a vector v1 ad fif the convolution using this function
-# the result is another vector of 17 elements.
-v1 = as.vector(A)
-length(v1)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDlcbiJ9 -->
-<pre><code>[1] 9</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY29udm9sdmUxZCh2MSwgdjEpXG5gYGAifQ== -->
-<pre class="r"><code>convolve1d(v1, v1)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSAxIDIgMyA0IDUgNiA3IDggOSA4IDcgNiA1IDQgMyAyIDFcbiJ9 -->
-<pre><code> [1] 1 2 3 4 5 6 7 8 9 8 7 6 5 4 3 2 1</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGVuZ3RoKGNvbnZvbHZlMWQodjEsIHYxKSlcbmBgYCJ9 -->
-<pre class="r"><code>length(convolve1d(v1, v1))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDE3XG4ifQ== -->
-<pre><code>[1] 17</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFRSVUVcbiJ9 -->
+<pre><code>[1] TRUE</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+</div>
+<div id="extract-part-of-a-cube" class="section level2">
+<h2>Extract part of a cube</h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxudjEgPSBhcy52ZWN0b3IoQSlcbnYxXG5gYGBcbmBgYCJ9 -->
-<p><code>r</code>r v1 = as.vector(A) v1</p>
-<pre><code></code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3JjIDwtICdcbiAgICBjdWJlIGMxID0gYXM8Y3ViZT4oYzFpbik7XG4gICAgSW50ZWdlclZlY3RvciB2MSh2MWluKTtcbiAgICBJbnRlZ2VyVmVjdG9yIHYyKHYyaW4pO1xuICAgIFxuICAgIGN1YmUgb3V0ID0gYzE7XG4gICAgLy9jMS5wcmludChcImMxOlwiKTtcbiAgICBcbiAgICAvL3YxLmVhY2goIFtdKHZlYyYgYSl7IGEucHJpbnQoKTsgfSApOyAgICAgLy8gbGFtYmRhIGZ1bmN0aW9uIHdpdGggbm9uLWNvbnN0IHZlY3RvclxuICAgIGNvdXQgPDwgXCJ2ZWN0b3IgdjEgaGFzIFwiIDw8IHYxIDw8IFwidmFsdWVzXCIgPDwgZW5kbDtcbiAgICBjb3V0IDw8IFwidmVjdG9yIHYxIGhhcyBcIiA8PCB2MS5zaXplKCkgPDwgXCIgZWxlbWVudHNcIiA8PCBlbmRsO1xuICAgIGNvdXQgPDwgXCJ2ZWN0b3IgdjIgaGFzIFwiIDw8IHYyLnNpemUoKSA8PCBcIiBlbGVtZW50c1wiIDw8IGVuZGw7XG4gICAgLy8gam9pbiBzbGljZSBvZiBjdWJlIHBsdXMgcmVzaGFwZWQgbWF0cml4XG4gICAgb3V0ID0gYzEuc3ViY3ViZSh2MVswXSx2MVsxXSx2MVsyXSwgIHYyWzBdLCB2MlsxXSwgdjJbMl0pO1xuICAgIFxuICAgIC8vY291dCA8PCBcImN1YmUgb3V0IGhhcyBcIiA8PCBvdXQubl9zbGljZXMgPDwgXCIgc2xpY2VzXCIgPDwgZW5kbDtcbiAgICByZXR1cm4od3JhcChvdXQpKTtcbidcbmZuIDwtIGN4eGZ1bmN0aW9uKHNpZ25hdHVyZShjMWluPVwibnVtZXJpY1wiLCB2MWluPVwiaW50ZWdlclwiLCB2MmluPVwiaW50ZWdlclwiKSwgXG4gICAgICAgICAgICAgICAgICBzcmMsIFxuICAgICAgICAgICAgICAgICAgcGx1Z2luPSdSY3BwQXJtYWRpbGxvJywgcmNwcF9pbmMpXG51MSA8LSBjKDAsMCwwKVxudTIgPC0gYygxLDEsMSlcbnJlcyAgPC0gZm4oYTEsIHUxLCB1MilcbmBgYCJ9 -->
+<pre class="r"><code>src &lt;- '
+    cube c1 = as&lt;cube&gt;(c1in);
+    IntegerVector v1(v1in);
+    IntegerVector v2(v2in);
+    
+    cube out = c1;
+    //c1.print(&quot;c1:&quot;);
+    
+    //v1.each( [](vec&amp; a){ a.print(); } );     // lambda function with non-const vector
+    cout &lt;&lt; &quot;vector v1 has &quot; &lt;&lt; v1 &lt;&lt; &quot;values&quot; &lt;&lt; endl;
+    cout &lt;&lt; &quot;vector v1 has &quot; &lt;&lt; v1.size() &lt;&lt; &quot; elements&quot; &lt;&lt; endl;
+    cout &lt;&lt; &quot;vector v2 has &quot; &lt;&lt; v2.size() &lt;&lt; &quot; elements&quot; &lt;&lt; endl;
+    // join slice of cube plus reshaped matrix
+    out = c1.subcube(v1[0],v1[1],v1[2],  v2[0], v2[1], v2[2]);
+    
+    //cout &lt;&lt; &quot;cube out has &quot; &lt;&lt; out.n_slices &lt;&lt; &quot; slices&quot; &lt;&lt; endl;
+    return(wrap(out));
+'
+fn &lt;- cxxfunction(signature(c1in=&quot;numeric&quot;, v1in=&quot;integer&quot;, v2in=&quot;integer&quot;), 
+                  src, 
+                  plugin='RcppArmadillo', rcpp_inc)
+u1 &lt;- c(0,0,0)
+u2 &lt;- c(1,1,1)
+res  &lt;- fn(a1, u1, u2)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDEgMSAxIDEgMSAxIDEgMSAxXG4ifQ== -->
-<pre><code>[1] 1 1 1 1 1 1 1 1 1</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoidmVjdG9yIHYxIGhhcyAwIDAgMHZhbHVlc1xudmVjdG9yIHYxIGhhcyAzIGVsZW1lbnRzXG52ZWN0b3IgdjIgaGFzIDMgZWxlbWVudHNcbiJ9 -->
+<pre><code>vector v1 has 0 0 0values
+vector v1 has 3 elements
+vector v2 has 3 elements</code></pre>
 <!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuY29udm9sdmUxZCh2MSwgdjEpXG5gYGBcbmBgYCJ9 -->
-<p><code>r</code>r convolve1d(v1, v1)</p>
-<pre><code></code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVzXG5gYGAifQ== -->
+<pre class="r"><code>res</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSAxIDIgMyA0IDUgNiA3IDggOSA4IDcgNiA1IDQgMyAyIDFcbiJ9 -->
-<pre><code> [1] 1 2 3 4 5 6 7 8 9 8 7 6 5 4 3 2 1</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiLCAsIDFcblxuICAgICBbLDFdIFssMl1cblsxLF0gICAgMSAgICA1XG5bMixdICAgIDIgICAgNlxuXG4sICwgMlxuXG4gICAgIFssMV0gWywyXVxuWzEsXSAgIDEzICAgMTdcblsyLF0gICAxNCAgIDE4XG4ifQ== -->
+<pre><code>, , 1
+
+     [,1] [,2]
+[1,]    1    5
+[2,]    2    6
+
+, , 2
+
+     [,1] [,2]
+[1,]   13   17
+[2,]   14   18</code></pre>
 <!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB0ZXN0IDwtIGFycmF5KGMoYTEsIG0xKSwgZGltID0gYyg0LDMsMykpXG4jIGFsbC5lcXVhbCh0ZXN0LCByZXMpXG5gYGAifQ== -->
+<pre class="r"><code># test &lt;- array(c(a1, m1), dim = c(4,3,3))
+# all.equal(test, res)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQoNCiMjIElubGluZSBDcHAgY29kZQ0KVGhpcyAxRCBjb252b2x1dGlvbiB3b3JrcyB0aGUgc2FtZSBhcyBpbiBNYXRsYWIgYW5kIG90aGVyIGV4YW1wbGVzLg0KDQpgYGB7cn0NCmxpYnJhcnkoaW5saW5lKQ0KDQpzcmMgPC0gJw0KICAgIFJjcHA6Ok51bWVyaWNWZWN0b3IgeGEoYSk7DQogICAgUmNwcDo6TnVtZXJpY1ZlY3RvciB4YihiKTsNCiAgICANCiAgICBpbnQgbl94YSA9IHhhLnNpemUoKSwgbl94YiA9IHhiLnNpemUoKTsNCiAgICBSY3BwOjpOdW1lcmljVmVjdG9yIHhhYihuX3hhICsgbl94YiAtIDEpOw0KICAgIA0KICAgIGZvciAoaW50IGkgPSAwOyBpIDwgbl94YTsgaSsrKQ0KICAgICAgICBmb3IgKGludCBqID0gMDsgaiA8IG5feGI7IGorKykNCiAgICAgICAgICAgIHhhYltpICsgal0gKz0geGFbaV0gKiB4YltqXTsNCiAgICByZXR1cm4geGFiOycNCmBgYA0KDQoNCmBgYHtyfQ0KIyBjcmVhdGUgdGhlIFIgZnVuY3Rpb24NCmNvbnZvbHZlMWQgPC0gY3h4ZnVuY3Rpb24oc2lnbmF0dXJlKGEgPSAibnVtZXJpYyIsIGIgPSAibnVtZXJpYyIpLCANCiAgICAgICAgICAgICAgICAgICBzcmMsIA0KICAgICAgICAgICAgICAgICAgIHBsdWdpbiA9ICJSY3BwIikNCmBgYA0KDQpgYGB7cn0NCmNvbnZvbHZlMWQoMTozLCAxOjQpDQpgYGANCg0KYGBge3J9DQoNCnggPC0gbWF0cml4KHJub3JtKDEwKSkNCnkgPC0gbWF0cml4KHJub3JtKDEwKSkNCg0KY29udm9sdmUxZCh4LCB5KQ0KYGBgDQoNCg0KYGBge3J9DQp4ID0gYygzLCA0LCA1LCAwLCAwKQ0KeSA9IGMoMiwgMSkNCg0KY29udm9sdmUxZCh4LCB5KQ0KIyA2IDExIDE0ICA1ICAwICAwICAgICAgc2FtZSBhcyBpbiBNYXRsYWINCmBgYA0KDQoNCmBgYHtyfQ0KeCA9IGMoMywgNCwgNSkNCnkgPSBjKDIsIDEpDQoNCmNvbnZvbHZlMWQoeCwgeSkNCiMgNiAxMSAxNCAgNSAgMCAgMCAgICAgIHNhbWUgYXMgaW4gTWF0bGFiDQpgYGANCg0KDQpgYGB7cn0NCiMgdGhpcyBleGFtcGxlIG9uIGFwcGx5aW5nIDFEIGNvbnZvbHV0aW9uIHRvIGEgbWF0cml4IHdpbGwgbm90IHdvcmsuDQojIFNlZSB0aGUgb3V0cHV0IGZyb20gTWF0bGFiIGFuZCB0aGUgcmVzdWx0cyBiZWxvdy4gVGhlIDFEIGNvbnZvbHV0aW9uIHJlc3BvbnNlIGlzDQojIGEgdmVjdG9yIG5vdCBhIG1hdHJpeC4NCkEgPSBtYXRyaXgoMSwgbnJvdz0zLCBuY29sPTMpDQpjb252b2x2ZTFkKEEsIEEpDQojIDEgMiAzIDQgNSA2IDcgOCA5IDggNyA2IDUgNCAzIDIgMQ0KDQojIEluIE1hdGxhYiB0aGUgY29udm9sdXRpb24gb2YgKEEsIEEpIGlzIGEgNXg1IG1hdHJpeDoNCiAgICAgIyAxICAgICAyICAgICAzICAgICAyICAgICAxDQogICAgICMgMiAgICAgNCAgICAgNiAgICAgNCAgICAgMg0KICAgICAjIDMgICAgIDYgICAgIDkgICAgIDYgICAgIDMNCiAgICAgIyAyICAgICA0ICAgICA2ICAgICA0ICAgICAyDQogICAgICMgMSAgICAgMiAgICAgMyAgICAgMiAgICAgMQ0KDQojIGlmIHdlIGNvbnZlcnQgQSB0byBhIHZlY3RvciB2MSBhZCBmaWYgdGhlIGNvbnZvbHV0aW9uIHVzaW5nIHRoaXMgZnVuY3Rpb24NCiMgdGhlIHJlc3VsdCBpcyBhbm90aGVyIHZlY3RvciBvZiAxNyBlbGVtZW50cy4NCnYxID0gYXMudmVjdG9yKEEpDQpsZW5ndGgodjEpDQpjb252b2x2ZTFkKHYxLCB2MSkNCmxlbmd0aChjb252b2x2ZTFkKHYxLCB2MSkpDQpgYGANCg0KYGBge3J9DQp2MSA9IGFzLnZlY3RvcihBKQ0KdjENCmNvbnZvbHZlMWQodjEsIHYxKQ0KYGBgDQoNCg==</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQoNCmBgYHtyfQ0KbGlicmFyeSgnUmNwcCcpDQpsaWJyYXJ5KCdpbmxpbmUnKQ0KDQpyY3BwX2luYyA8LSAnDQogICAgdXNpbmcgbmFtZXNwYWNlIFJjcHA7DQogICAgdXNpbmcgbmFtZXNwYWNlIGFybWE7DQonDQoNCm0xIDwtIG1hdHJpeCgxOjE2LCAgbnI9NCkNCm0yIDwtIG1hdHJpeCgxNzozMiwgbnI9NCkNCnYxIDwtIDE6MTANCnYyIDwtIDExOjIwDQoNCmExIDwtIGFycmF5KDE6MjQsIGRpbSA9IGMoNCwzLDIpKQ0KYTIgPC0gYXJyYXkoMjU6NDgsIGRpbSA9IGMoNCwzLDIpKQ0KbTENCmExDQpgYGANCg0KIyMgam9pbiBtYXRyaWNlcw0KDQpgYGB7cn0NCnNyYyA8LSAnDQogICAgbWF0IG0xID0gYXM8bWF0PihtMWluKTsNCiAgICBtYXQgbTIgPSBhczxtYXQ+KG0yaW4pOw0KICAgIG1hdCBvdXQgPSBqb2luX2NvbHMobTEsIG0yKTsNCiAgICByZXR1cm4od3JhcChvdXQpKTsNCicNCg0KZm4gPC0gY3h4ZnVuY3Rpb24oc2lnbmF0dXJlKG0xaW49Im51bWVyaWMiLCBtMmluPSJudW1lcmljIiksIA0KICAgICAgICAgICAgICAgICAgc3JjLCANCiAgICAgICAgICAgICAgICAgIHBsdWdpbj0nUmNwcEFybWFkaWxsbycsIHJjcHBfaW5jKQ0KDQpyZXMgIDwtIGZuKG0xLCBtMikNCnRlc3QgPC0gcmJpbmQobTEsIG0yKQ0KYWxsLmVxdWFsKHRlc3QsIHJlcykNCnRlc3QNCmBgYA0KDQojIyBqb2luIGN1YmUgc2xpY2VzDQoNCmBgYHtyfQ0KIyBqb2luX3NsaWNlcyggY3ViZSBDLCBjdWJlIEQgKSANCiMgZm9yIHR3byBjdWJlcyBDIGFuZCBEOiBqb2luIHRoZSBzbGljZXMgb2YgQyB3aXRoIHRoZSBzbGljZXMgb2YgRDsgY3ViZXMgQyBhbmQgRCBtdXN0IGhhdmUgIyB0aGUgc2FtZSBudW1iZXIgb2Ygcm93cyBhbmQgY29sdW1ucyAoaWUuIGFsbCBzbGljZXMgbXVzdCBoYXZlIHRoZSBzYW1lIHNpemUpDQoNCnNyYyA8LSAnDQogICAgY3ViZSBjMSA9IGFzPGN1YmU+KGMxaW4pOw0KICAgIGN1YmUgYzIgPSBhczxjdWJlPihjMmluKTsNCg0KICAgIC8vaW50IG5zID0gYzEubl9zbGljZXM7DQogICAgY291dCA8PCAiY3ViZSBjMSBoYXMgIiA8PCBjMS5uX3NsaWNlcyA8PCAiIHNsaWNlcyIgPDwgZW5kbDsNCiAgICBjb3V0IDw8ICJjdWJlIGMyIGhhcyAiIDw8IGMyLm5fc2xpY2VzIDw8ICIgc2xpY2VzIiA8PCBlbmRsOw0KDQogICAgY3ViZSBvdXQgPSBqb2luX3NsaWNlcyhjMSwgYzIpOw0KICAgIGNvdXQgPDwgImN1YmUgb3V0IGhhcyAiIDw8IG91dC5uX3NsaWNlcyA8PCAiIHNsaWNlcyIgPDwgZW5kbDsNCiAgICByZXR1cm4od3JhcChvdXQpKTsNCicNCg0KZm4gPC0gY3h4ZnVuY3Rpb24oc2lnbmF0dXJlKGMxaW49Im51bWVyaWMiLCBjMmluPSJudW1lcmljIiksIA0KICAgICAgICAgICAgICAgICAgc3JjLCANCiAgICAgICAgICAgICAgICAgIHBsdWdpbj0nUmNwcEFybWFkaWxsbycsIHJjcHBfaW5jKQ0KDQpyZXMgIDwtIGZuKGExLCBhMikNCnJlcw0KDQp0ZXN0IDwtIHJiaW5kKGExLCBhMikNCnRlc3QgPC0gYXJyYXkoYyhhMSwgYTIpLCBkaW0gPSBjKG5yb3coYTEpLCBuY29sKGEyKSwgZGltKGExKVszXSoyKSkNCiMgdGVzdA0KYWxsLmVxdWFsKHRlc3QsIHJlcykNCmBgYA0KDQoNCg0KIyMgYWRkIG1hdHJpeCB0byBhIGN1YmUNCg0KYGBge3J9DQoNCnNyYyA8LSAnDQogICAgY3ViZSBjMSA9IGFzPGN1YmU+KGMxaW4pOw0KICAgIG1hdCAgbTEgPSBhczxtYXQ+KG0xaW4pOw0KDQogICAgLy9JbnRlZ2VyVmVjdG9yIGQxKGMxLm5fcm93cywgYzEubl9jb2xzLCBjMS5uX3NsaWNlcyk7DQoNCiAgICAvLyBOb3JtYWwgTWF0cml4IGRpbWVuc2lvbnMNCiAgICB1bnNpZ25lZCBpbnQgeGRpbSA9IGMxLm5fcm93czsNCiAgDQogICAgdW5zaWduZWQgaW50IHlkaW0gPSBjMS5uX2NvbHM7DQogIA0KICAgIC8vIERlcHRoIG9mIEFycmF5DQogICAgdW5zaWduZWQgaW50IHRkaW0gPSBjMS5uX3NsaWNlczsNCg0KDQogICAgY291dCA8PCAiY3ViZSBjMSBoYXMgIiA8PCBjMS5uX3NsaWNlcyA8PCAiIHNsaWNlcyIgPDwgZW5kbDsNCg0KICAgIC8vIHJlc3VsdGluZyBjdWJlDQogICAgY3ViZSBvdXQoYzEuYmVnaW4oKSwgeGRpbSwgeWRpbSwgdGRpbSsxKTsNCg0KICAgIC8vIHJlc2hhcGUgbWF0cml4IHRvIHNpemUgb2YgY3ViZSBzbGljZXMNCiAgICBtYXQgcm0xID0gcmVzaGFwZShtMSwgeGRpbSwgeWRpbSk7DQoNCiAgICAvLyBqb2luIHNsaWNlIG9mIGN1YmUgcGx1cyByZXNoYXBlZCBtYXRyaXgNCiAgICBvdXQgPSBqb2luX3NsaWNlcyhjMSwgcm0xKTsNCiAgICANCiAgICBjb3V0IDw8ICJjdWJlIG91dCBoYXMgIiA8PCBvdXQubl9zbGljZXMgPDwgIiBzbGljZXMiIDw8IGVuZGw7DQogICAgcmV0dXJuKHdyYXAob3V0KSk7DQonDQoNCmZuIDwtIGN4eGZ1bmN0aW9uKHNpZ25hdHVyZShjMWluPSJudW1lcmljIiwgbTFpbj0ibnVtZXJpYyIpLCANCiAgICAgICAgICAgICAgICAgIHNyYywgDQogICAgICAgICAgICAgICAgICBwbHVnaW49J1JjcHBBcm1hZGlsbG8nLCByY3BwX2luYykNCg0KcmVzICA8LSBmbihhMSwgbTEpDQpyZXMNCnRlc3QgPC0gYXJyYXkoYyhhMSwgbTEpLCBkaW0gPSBjKDQsMywzKSkNCmFsbC5lcXVhbCh0ZXN0LCByZXMpDQpgYGANCg0KDQojIyBFeHRyYWN0IHBhcnQgb2YgYSBjdWJlDQoNCmBgYHtyfQ0KDQpzcmMgPC0gJw0KICAgIGN1YmUgYzEgPSBhczxjdWJlPihjMWluKTsNCiAgICBJbnRlZ2VyVmVjdG9yIHYxKHYxaW4pOw0KICAgIEludGVnZXJWZWN0b3IgdjIodjJpbik7DQoNCiAgICANCiAgICBjdWJlIG91dCA9IGMxOw0KICAgIC8vYzEucHJpbnQoImMxOiIpOw0KICAgIA0KICAgIC8vdjEuZWFjaCggW10odmVjJiBhKXsgYS5wcmludCgpOyB9ICk7ICAgICAvLyBsYW1iZGEgZnVuY3Rpb24gd2l0aCBub24tY29uc3QgdmVjdG9yDQoNCiAgICBjb3V0IDw8ICJ2ZWN0b3IgdjEgaGFzICIgPDwgdjEgPDwgInZhbHVlcyIgPDwgZW5kbDsNCiAgICBjb3V0IDw8ICJ2ZWN0b3IgdjEgaGFzICIgPDwgdjEuc2l6ZSgpIDw8ICIgZWxlbWVudHMiIDw8IGVuZGw7DQogICAgY291dCA8PCAidmVjdG9yIHYyIGhhcyAiIDw8IHYyLnNpemUoKSA8PCAiIGVsZW1lbnRzIiA8PCBlbmRsOw0KDQoNCiAgICAvLyBqb2luIHNsaWNlIG9mIGN1YmUgcGx1cyByZXNoYXBlZCBtYXRyaXgNCiAgICBvdXQgPSBjMS5zdWJjdWJlKHYxWzBdLHYxWzFdLHYxWzJdLCAgdjJbMF0sIHYyWzFdLCB2MlsyXSk7DQogICAgDQogICAgLy9jb3V0IDw8ICJjdWJlIG91dCBoYXMgIiA8PCBvdXQubl9zbGljZXMgPDwgIiBzbGljZXMiIDw8IGVuZGw7DQogICAgcmV0dXJuKHdyYXAob3V0KSk7DQonDQoNCmZuIDwtIGN4eGZ1bmN0aW9uKHNpZ25hdHVyZShjMWluPSJudW1lcmljIiwgdjFpbj0iaW50ZWdlciIsIHYyaW49ImludGVnZXIiKSwgDQogICAgICAgICAgICAgICAgICBzcmMsIA0KICAgICAgICAgICAgICAgICAgcGx1Z2luPSdSY3BwQXJtYWRpbGxvJywgcmNwcF9pbmMpDQoNCg0KdTEgPC0gYygwLDAsMCkNCnUyIDwtIGMoMSwxLDEpDQpyZXMgIDwtIGZuKGExLCB1MSwgdTIpDQpyZXMNCiMgdGVzdCA8LSBhcnJheShjKGExLCBtMSksIGRpbSA9IGMoNCwzLDMpKQ0KIyBhbGwuZXF1YWwodGVzdCwgcmVzKQ0KYGBgDQoNCg0K</div>
 
 
 

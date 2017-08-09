@@ -1,0 +1,58 @@
+---
+title: "CRASHING"
+output: html_notebook
+---
+
+
+    #include <stddef.h>
+    #include <stdio.h>
+    
+    #define max(x, y) (((x) > (y)) ? (x) : (y))
+    
+    void conv(const double v1[], size_t n1, const double v2[], size_t n2, double r[])
+    {
+        for (size_t n = 0; n < n1 + n2 - 1; n++)
+            for (size_t k = 0; k < max(n1, n2); k++)
+                r[n] += (k < n1 ? v1[k] : 0) * (n - k < n2 ? v2[n - k] : 0);
+    }
+
+
+CRASHING CRASHING CRASHING CRASHING CRASHING CRASHING CRASHING CRASHING 
+
+```{r}
+# compile the C code
+system("R CMD SHLIB ../src/conv1d.c")
+```
+
+
+
+
+
+
+```{r}
+# this loads the library in any system, Windows or Linux
+dyn.load(paste("../src/conv1d", .Platform$dynlib.ext, sep = ""))
+```
+
+
+
+```{r}
+# wrapper function to invoke cconv 
+r.conv1d <- function(v1, v2) {
+        .C("conv1d", 
+           as.vector(v1),
+           as.integer(length(v1)),
+           as.vector(v2),
+           as.integer(length(v2)),
+           as.vector(0.0))[[5]]
+}
+```
+
+
+```{r}
+x = c(3, 4, 5)
+y = c(2, 1)
+
+r.conv1d(x, y)
+# 6 11 14  5  0  0      same as in Matlab
+```

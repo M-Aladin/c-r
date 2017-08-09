@@ -142,7 +142,7 @@ $(document).ready(function () {
 </style>
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("rcpp-cxxfunction-convolve1d.Rmd");
+  window.initializeSourceEmbed("fooblas.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
@@ -172,151 +172,236 @@ $(document).ready(function () {
 
 
 <!-- rnb-text-begin -->
-<div id="inline-cpp-code" class="section level2">
-<h2>Inline Cpp code</h2>
-<p>This 1D convolution works the same as in Matlab and other examples.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShpbmxpbmUpXG5zcmMgPC0gJ1xuICBSY3BwOjpOdW1lcmljVmVjdG9yIHhhKGEpO1xuICBSY3BwOjpOdW1lcmljVmVjdG9yIHhiKGIpO1xuICBpbnQgbl94YSA9IHhhLnNpemUoKSwgbl94YiA9IHhiLnNpemUoKTtcbiAgUmNwcDo6TnVtZXJpY1ZlY3RvciB4YWIobl94YSArIG5feGIgLSAxKTtcbmZvciAoaW50IGkgPSAwOyBpIDwgbl94YTsgaSsrKVxuICBmb3IgKGludCBqID0gMDsgaiA8IG5feGI7IGorKylcbiAgICB4YWJbaSArIGpdICs9IHhhW2ldICogeGJbal07XG4gcmV0dXJuIHhhYjsnXG5gYGAifQ== -->
-<pre class="r"><code>library(inline)
-src &lt;- '
-  Rcpp::NumericVector xa(a);
-  Rcpp::NumericVector xb(b);
-  int n_xa = xa.size(), n_xb = xb.size();
-  Rcpp::NumericVector xab(n_xa + n_xb - 1);
-for (int i = 0; i &lt; n_xa; i++)
-  for (int j = 0; j &lt; n_xb; j++)
-    xab[i + j] += xa[i] * xb[j];
- return xab;'</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBmb29ibGFzLmMgd2lsbCBub3QgY29tcGlsZSBmcm9tIHdpdGhpbiBSU3R1ZGlvXG4jIGl0IGhhcyB0byBiZSBjb21waWxlZCBmcm9tIHRoZSBjb21tYW5kIGxpbmVcbiMgJCAgICBSIENNRCBTSExJQiBmb29ibGFzLmNcbnN5c3RlbShcIlIgQ01EIFNITElCIC4uL3NyYy9mb29ibGFzLmNcIilcbmBgYCJ9 -->
+<pre class="r"><code># fooblas.c will not compile from within RStudio
+# it has to be compiled from the command line
+# $    R CMD SHLIB fooblas.c
+system(&quot;R CMD SHLIB ../src/fooblas.c&quot;)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBjcmVhdGUgdGhlIFIgZnVuY3Rpb25cbmNvbnZvbHZlMWQgPC0gY3h4ZnVuY3Rpb24oc2lnbmF0dXJlKGEgPSBcIm51bWVyaWNcIiwgYiA9IFwibnVtZXJpY1wiKSwgXG4gICAgICAgICAgICAgICAgICAgc3JjLCBcbiAgICAgICAgICAgICAgICAgICBwbHVnaW4gPSBcIlJjcHBcIilcbmBgYCJ9 -->
-<pre class="r"><code># create the R function
-convolve1d &lt;- cxxfunction(signature(a = &quot;numeric&quot;, b = &quot;numeric&quot;), 
-                   src, 
-                   plugin = &quot;Rcpp&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuY29udm9sdmUxZCgxOjMsIDE6NClcbmBgYFxuYGBgIn0= -->
-<p><code>r</code>r convolve1d(1:3, 1:4)</p>
-<pre><code></code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxueCA8LSBtYXRyaXgocm5vcm0oMTApKVxueSA8LSBtYXRyaXgocm5vcm0oMTApKVxuY29udm9sdmUxZCh4LCB5KVxuYGBgIn0= -->
-<pre class="r"><code>x &lt;- matrix(rnorm(10))
-y &lt;- matrix(rnorm(10))
-convolve1d(x, y)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSAgMC4zNzI3MzY3IC0xLjA4MjU0NDIgLTAuMjA5ODcwNSAgMS40MjQ3MzA3IC0wLjY0NzQ4MTcgIDMuNzEyNzA5MyAtMC4yMzg4MzMxXG4gWzhdIC0yLjAwNDQ0NzggLTQuNDEwODEyOSAtOS4xMjk2Mjg5IC0xLjQwMTI1NDggIDMuOTEwNDgzNSAgOC4xMjYwNTUwIDExLjYzMTQ5NDdcblsxNV0gIDIuMzM2MDI1OSAgMS4yNDQ1NjgyIC0yLjIxODkwMzIgLTAuNTg2MjE0MCAtMC4zOTkxOTQyXG4ifQ== -->
-<pre><code> [1]  0.3727367 -1.0825442 -0.2098705  1.4247307 -0.6474817  3.7127093 -0.2388331
- [8] -2.0044478 -4.4108129 -9.1296289 -1.4012548  3.9104835  8.1260550 11.6314947
-[15]  2.3360259  1.2445682 -2.2189032 -0.5862140 -0.3991942</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoibWFrZTogTm90aGluZyB0byBiZSBkb25lIGZvciBgYWxsJy5cbiJ9 -->
+<pre><code>make: Nothing to be done for `all'.</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxueCA9IGMoMywgNCwgNSwgMCwgMClcbnkgPSBjKDIsIDEpXG5jb252b2x2ZTFkKHgsIHkpXG5gYGAifQ== -->
-<pre class="r"><code>x = c(3, 4, 5, 0, 0)
-y = c(2, 1)
-convolve1d(x, y)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdICA2IDExIDE0ICA1ICAwICAwXG4ifQ== -->
-<pre><code>[1]  6 11 14  5  0  0</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyA2IDExIDE0ICA1ICAwICAwICAgICAgc2FtZSBhcyBpbiBNYXRsYWJcbmBgYCJ9 -->
-<pre class="r"><code># 6 11 14  5  0  0      same as in Matlab</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB0aGlzIGxvYWRzIHRoZSBsaWJyYXJ5IGluIGFueSBzeXN0ZW0sIFdpbmRvd3Mgb3IgTGludXhcbmR5bi5sb2FkKHBhc3RlKFwiLi4vc3JjL2Zvb2JsYXNcIiwgLlBsYXRmb3JtJGR5bmxpYi5leHQsIHNlcCA9IFwiXCIpKVxuYGBgIn0= -->
+<pre class="r"><code># this loads the library in any system, Windows or Linux
+dyn.load(paste(&quot;../src/fooblas&quot;, .Platform$dynlib.ext, sep = &quot;&quot;))</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxueCA9IGMoMywgNCwgNSlcbnkgPSBjKDIsIDEpXG5jb252b2x2ZTFkKHgsIHkpXG5gYGBcbmBgYCJ9 -->
-<p><code>r</code>r x = c(3, 4, 5) y = c(2, 1) convolve1d(x, y)</p>
-<pre><code></code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdICA2IDExIDE0ICA1XG4ifQ== -->
-<pre><code>[1]  6 11 14  5</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyA2IDExIDE0ICA1ICAwICAwICAgICAgc2FtZSBhcyBpbiBNYXRsYWJcbmBgYFxuYGBgIn0= -->
-<p><code>r</code>r # 6 11 14 5 0 0 same as in Matlab</p>
-<pre><code></code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB2b2lkIGZvbyhpbnQgKmRpbWVuc2lvbiwgZG91YmxlICp2ZWN0MSwgZG91YmxlICp2ZWN0MilcbiMgd3JhcHBlclxuYy5mb29ibGFzID0gZnVuY3Rpb24oYSwgYikge1xuICAgcmVzIDwtIC5DKCdmb29ibGFzJyxcbiAgICAgIGFzLmludGVnZXIobGVuZ3RoKGEpKSxcbiAgICAgIGFzLmRvdWJsZShhKSxcbiAgICAgIGFzLmRvdWJsZShiKSlcbiAgIHJlc1tjKDIsMyldXG59XG5gYGAifQ== -->
+<pre class="r"><code># void foo(int *dimension, double *vect1, double *vect2)
+# wrapper
+c.fooblas = function(a, b) {
+   res &lt;- .C('fooblas',
+      as.integer(length(a)),
+      as.double(a),
+      as.double(b))
+   res[c(2,3)]
+}</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB0aGlzIGV4YW1wbGUgb24gYXBwbHlpbmcgMUQgY29udm9sdXRpb24gdG8gYSBtYXRyaXggd2lsbCBub3Qgd29yay5cbiMgU2VlIHRoZSBvdXRwdXQgZnJvbSBNYXRsYWIgYW5kIHRoZSByZXN1bHRzIGJlbG93LiBUaGUgMUQgY29udm9sdXRpb24gcmVzcG9uc2UgaXNcbiMgYSB2ZWN0b3Igbm90IGEgbWF0cml4LlxuQSA9IG1hdHJpeCgxLCBucm93PTMsIG5jb2w9MylcbmNvbnZvbHZlMWQoQSwgQSlcbmBgYCJ9 -->
-<pre class="r"><code># this example on applying 1D convolution to a matrix will not work.
-# See the output from Matlab and the results below. The 1D convolution response is
-# a vector not a matrix.
-A = matrix(1, nrow=3, ncol=3)
-convolve1d(A, A)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYy5mb29ibGFzKGMoNSwgMTApLCBjKDMsNikpXG5gYGAifQ== -->
+<pre class="r"><code>c.fooblas(c(5, 10), c(3,6))</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSAxIDIgMyA0IDUgNiA3IDggOSA4IDcgNiA1IDQgMyAyIDFcbiJ9 -->
-<pre><code> [1] 1 2 3 4 5 6 7 8 9 8 7 6 5 4 3 2 1</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyAxIDIgMyA0IDUgNiA3IDggOSA4IDcgNiA1IDQgMyAyIDFcbiMgSW4gTWF0bGFiIHRoZSBjb252b2x1dGlvbiBvZiAoQSwgQSkgaXMgYSA1eDUgbWF0cml4OlxuICAgICAjIDEgICAgIDIgICAgIDMgICAgIDIgICAgIDFcbiAgICAgIyAyICAgICA0ICAgICA2ICAgICA0ICAgICAyXG4gICAgICMgMyAgICAgNiAgICAgOSAgICAgNiAgICAgM1xuICAgICAjIDIgICAgIDQgICAgIDYgICAgIDQgICAgIDJcbiAgICAgIyAxICAgICAyICAgICAzICAgICAyICAgICAxXG4jIGlmIHdlIGNvbnZlcnQgQSB0byBhIHZlY3RvciB2MSBhZCBmaWYgdGhlIGNvbnZvbHV0aW9uIHVzaW5nIHRoaXMgZnVuY3Rpb25cbiMgdGhlIHJlc3VsdCBpcyBhbm90aGVyIHZlY3RvciBvZiAxNyBlbGVtZW50cy5cbnYxID0gYXMudmVjdG9yKEEpXG5sZW5ndGgodjEpXG5gYGAifQ== -->
-<pre class="r"><code># 1 2 3 4 5 6 7 8 9 8 7 6 5 4 3 2 1
-# In Matlab the convolution of (A, A) is a 5x5 matrix:
-     # 1     2     3     2     1
-     # 2     4     6     4     2
-     # 3     6     9     6     3
-     # 2     4     6     4     2
-     # 1     2     3     2     1
-# if we convert A to a vector v1 ad fif the convolution using this function
-# the result is another vector of 17 elements.
-v1 = as.vector(A)
-length(v1)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDlcbiJ9 -->
-<pre><code>[1] 9</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY29udm9sdmUxZCh2MSwgdjEpXG5gYGAifQ== -->
-<pre class="r"><code>convolve1d(v1, v1)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSAxIDIgMyA0IDUgNiA3IDggOSA4IDcgNiA1IDQgMyAyIDFcbiJ9 -->
-<pre><code> [1] 1 2 3 4 5 6 7 8 9 8 7 6 5 4 3 2 1</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGVuZ3RoKGNvbnZvbHZlMWQodjEsIHYxKSlcbmBgYCJ9 -->
-<pre class="r"><code>length(convolve1d(v1, v1))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDE3XG4ifQ== -->
-<pre><code>[1] 17</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiW1sxXV1cblsxXSAzIDZcblxuW1syXV1cblsxXSAgNSAxMFxuIn0= -->
+<pre><code>[[1]]
+[1] 3 6
+
+[[2]]
+[1]  5 10</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxudjEgPSBhcy52ZWN0b3IoQSlcbnYxXG5gYGBcbmBgYCJ9 -->
-<p><code>r</code>r v1 = as.vector(A) v1</p>
-<pre><code></code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYy5mb29ibGFzKG1hdHJpeCg1LCBucm93PTMsIG5jb2w9MiksIG1hdHJpeCgyLCBucm93PTMsIG5jb2w9MikpXG5gYGAifQ== -->
+<pre class="r"><code>c.fooblas(matrix(5, nrow=3, ncol=2), matrix(2, nrow=3, ncol=2))</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDEgMSAxIDEgMSAxIDEgMSAxXG4ifQ== -->
-<pre><code>[1] 1 1 1 1 1 1 1 1 1</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuY29udm9sdmUxZCh2MSwgdjEpXG5gYGBcbmBgYCJ9 -->
-<p><code>r</code>r convolve1d(v1, v1)</p>
-<pre><code></code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSAxIDIgMyA0IDUgNiA3IDggOSA4IDcgNiA1IDQgMyAyIDFcbiJ9 -->
-<pre><code> [1] 1 2 3 4 5 6 7 8 9 8 7 6 5 4 3 2 1</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiW1sxXV1cblsxXSAyIDIgMiAyIDIgMlxuXG5bWzJdXVxuWzFdIDUgNSA1IDUgNSA1XG4ifQ== -->
+<pre><code>[[1]]
+[1] 2 2 2 2 2 2
+
+[[2]]
+[1] 5 5 5 5 5 5</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<div id="another-version-of-swap-using-matrices" class="section level2">
+<h2>another version of swap using matrices</h2>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB2b2lkIGZvbyhpbnQgKmRpbWVuc2lvbiwgZG91YmxlICp2ZWN0MSwgZG91YmxlICp2ZWN0MilcbiMgZGltZW5zaW9uOiBudW1iZXIgb2YgZWxlbWVudHMgaW4gaW5wdXQgdmVjdG9yKHMpXG5jLmZvb2JsYXMyID0gZnVuY3Rpb24oYSwgYikge1xuICAgIHNhIDwtIHNiIDwtIGFcbiAgIHJlcyA8LSAuQygnZm9vYmxhcycsXG4gICAgICBhcy5pbnRlZ2VyKGxlbmd0aChhKSksXG4gICAgICBhcy5kb3VibGUoYSksXG4gICAgICBhcy5kb3VibGUoYikpXG4gICBzYVtdIDwtIHJlc1tbMl1dXG4gICBzYltdIDwtIHJlc1tbM11dXG4gICBsaXN0KGEsIGIsIHNhLCBzYikgICMgcmV0dXJuIG9yaWdpbmFsIGFuZCBzd2FwcGVkXG59XG5gYGAifQ== -->
+<pre class="r"><code># void foo(int *dimension, double *vect1, double *vect2)
+# dimension: number of elements in input vector(s)
+c.fooblas2 = function(a, b) {
+    sa &lt;- sb &lt;- a
+   res &lt;- .C('fooblas',
+      as.integer(length(a)),
+      as.double(a),
+      as.double(b))
+   sa[] &lt;- res[[2]]
+   sb[] &lt;- res[[3]]
+   list(a, b, sa, sb)  # return original and swapped
+}</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYy5mb29ibGFzMihtYXRyaXgoNSwgbnJvdz0zLCBuY29sPTIpLCBtYXRyaXgoMiwgbnJvdz0zLCBuY29sPTIpKVxuYGBgIn0= -->
+<pre class="r"><code>c.fooblas2(matrix(5, nrow=3, ncol=2), matrix(2, nrow=3, ncol=2))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiW1sxXV1cbiAgICAgWywxXSBbLDJdXG5bMSxdICAgIDUgICAgNVxuWzIsXSAgICA1ICAgIDVcblszLF0gICAgNSAgICA1XG5cbltbMl1dXG4gICAgIFssMV0gWywyXVxuWzEsXSAgICAyICAgIDJcblsyLF0gICAgMiAgICAyXG5bMyxdICAgIDIgICAgMlxuXG5bWzNdXVxuICAgICBbLDFdIFssMl1cblsxLF0gICAgMiAgICAyXG5bMixdICAgIDIgICAgMlxuWzMsXSAgICAyICAgIDJcblxuW1s0XV1cbiAgICAgWywxXSBbLDJdXG5bMSxdICAgIDUgICAgNVxuWzIsXSAgICA1ICAgIDVcblszLF0gICAgNSAgICA1XG4ifQ== -->
+<pre><code>[[1]]
+     [,1] [,2]
+[1,]    5    5
+[2,]    5    5
+[3,]    5    5
+
+[[2]]
+     [,1] [,2]
+[1,]    2    2
+[2,]    2    2
+[3,]    2    2
+
+[[3]]
+     [,1] [,2]
+[1,]    2    2
+[2,]    2    2
+[3,]    2    2
+
+[[4]]
+     [,1] [,2]
+[1,]    5    5
+[2,]    5    5
+[3,]    5    5</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYy5mb29ibGFzMihhcnJheSg0LCBkaW09Yyg0LDMsMikpLCBhcnJheSg3LCBkaW0gPSBjKDQsMywyKSkpXG5gYGAifQ== -->
+<pre class="r"><code>c.fooblas2(array(4, dim=c(4,3,2)), array(7, dim = c(4,3,2)))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiW1sxXV1cbiwgLCAxXG5cbiAgICAgWywxXSBbLDJdIFssM11cblsxLF0gICAgNCAgICA0ICAgIDRcblsyLF0gICAgNCAgICA0ICAgIDRcblszLF0gICAgNCAgICA0ICAgIDRcbls0LF0gICAgNCAgICA0ICAgIDRcblxuLCAsIDJcblxuICAgICBbLDFdIFssMl0gWywzXVxuWzEsXSAgICA0ICAgIDQgICAgNFxuWzIsXSAgICA0ICAgIDQgICAgNFxuWzMsXSAgICA0ICAgIDQgICAgNFxuWzQsXSAgICA0ICAgIDQgICAgNFxuXG5cbltbMl1dXG4sICwgMVxuXG4gICAgIFssMV0gWywyXSBbLDNdXG5bMSxdICAgIDcgICAgNyAgICA3XG5bMixdICAgIDcgICAgNyAgICA3XG5bMyxdICAgIDcgICAgNyAgICA3XG5bNCxdICAgIDcgICAgNyAgICA3XG5cbiwgLCAyXG5cbiAgICAgWywxXSBbLDJdIFssM11cblsxLF0gICAgNyAgICA3ICAgIDdcblsyLF0gICAgNyAgICA3ICAgIDdcblszLF0gICAgNyAgICA3ICAgIDdcbls0LF0gICAgNyAgICA3ICAgIDdcblxuXG5bWzNdXVxuLCAsIDFcblxuICAgICBbLDFdIFssMl0gWywzXVxuWzEsXSAgICA3ICAgIDcgICAgN1xuWzIsXSAgICA3ICAgIDcgICAgN1xuWzMsXSAgICA3ICAgIDcgICAgN1xuWzQsXSAgICA3ICAgIDcgICAgN1xuXG4sICwgMlxuXG4gICAgIFssMV0gWywyXSBbLDNdXG5bMSxdICAgIDcgICAgNyAgICA3XG5bMixdICAgIDcgICAgNyAgICA3XG5bMyxdICAgIDcgICAgNyAgICA3XG5bNCxdICAgIDcgICAgNyAgICA3XG5cblxuW1s0XV1cbiwgLCAxXG5cbiAgICAgWywxXSBbLDJdIFssM11cblsxLF0gICAgNCAgICA0ICAgIDRcblsyLF0gICAgNCAgICA0ICAgIDRcblszLF0gICAgNCAgICA0ICAgIDRcbls0LF0gICAgNCAgICA0ICAgIDRcblxuLCAsIDJcblxuICAgICBbLDFdIFssMl0gWywzXVxuWzEsXSAgICA0ICAgIDQgICAgNFxuWzIsXSAgICA0ICAgIDQgICAgNFxuWzMsXSAgICA0ICAgIDQgICAgNFxuWzQsXSAgICA0ICAgIDQgICAgNFxuIn0= -->
+<pre><code>[[1]]
+, , 1
+
+     [,1] [,2] [,3]
+[1,]    4    4    4
+[2,]    4    4    4
+[3,]    4    4    4
+[4,]    4    4    4
+
+, , 2
+
+     [,1] [,2] [,3]
+[1,]    4    4    4
+[2,]    4    4    4
+[3,]    4    4    4
+[4,]    4    4    4
+
+
+[[2]]
+, , 1
+
+     [,1] [,2] [,3]
+[1,]    7    7    7
+[2,]    7    7    7
+[3,]    7    7    7
+[4,]    7    7    7
+
+, , 2
+
+     [,1] [,2] [,3]
+[1,]    7    7    7
+[2,]    7    7    7
+[3,]    7    7    7
+[4,]    7    7    7
+
+
+[[3]]
+, , 1
+
+     [,1] [,2] [,3]
+[1,]    7    7    7
+[2,]    7    7    7
+[3,]    7    7    7
+[4,]    7    7    7
+
+, , 2
+
+     [,1] [,2] [,3]
+[1,]    7    7    7
+[2,]    7    7    7
+[3,]    7    7    7
+[4,]    7    7    7
+
+
+[[4]]
+, , 1
+
+     [,1] [,2] [,3]
+[1,]    4    4    4
+[2,]    4    4    4
+[3,]    4    4    4
+[4,]    4    4    4
+
+, , 2
+
+     [,1] [,2] [,3]
+[1,]    4    4    4
+[2,]    4    4    4
+[3,]    4    4    4
+[4,]    4    4    4</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB0aGlzIGxvYWRzIHRoZSBsaWJyYXJ5IGluIGFueSBzeXN0ZW0sIFdpbmRvd3Mgb3IgTGludXhcbmR5bi51bmxvYWQocGFzdGUoXCIuLi9zcmMvZm9vYmxhc1wiLCAuUGxhdGZvcm0kZHlubGliLmV4dCwgc2VwID0gXCJcIikpXG5gYGAifQ== -->
+<pre class="r"><code># this loads the library in any system, Windows or Linux
+dyn.unload(paste(&quot;../src/fooblas&quot;, .Platform$dynlib.ext, sep = &quot;&quot;))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="notes-about-compilation" class="section level2">
+<h2>Notes about compilation</h2>
+<ul>
+<li>You need a file Makevars in ./src</li>
+<li>fooblas.c will not compile from within RStudio. It has to be compiled from the command line like this: <code>R CMD SHLIB fooblas.c</code></li>
+<li></li>
+</ul>
+<blockquote>
+<p>after removing Makevars in ./src</p>
+</blockquote>
+<pre><code>msfz751@HPZBOOK15G2W10 MSYS /i/pub.packages/rBlaster/src
+$ R CMD SHLIB fooblas.c
+c:/Rtools/mingw_64/bin/gcc  -I&quot;C:/PROGRA~1/R/R-34~1.1/include&quot; -DNDEBUG     -I&quot;d:/Compiler/gcc-4.9.3/local330/include&quot;     -O2 -Wall  -std=gnu99 -mtune=core2 -c fooblas.c -o fooblas.o
+c:/Rtools/mingw_64/bin/gcc -shared -s -static-libgcc -o fooblas.dll tmp.def fooblas.o -Ld:/Compiler/gcc-4.9.3/local330/lib/x64 -Ld:/Compiler/gcc-4.9.3/local330/lib -LC:/PROGRA~1/R/R-34~1.1/bin/x64 -lR
+fooblas.o:fooblas.c:(.text+0x28): undefined reference to `dswap_'
+collect2.exe: error: ld returned 1 exit status</code></pre>
+<blockquote>
+<p>after replacing Makevars back to ./src</p>
+</blockquote>
+<pre><code>msfz751@HPZBOOK15G2W10 MSYS /i/pub.packages/rBlaster/src
+$ R CMD SHLIB fooblas.c
+c:/Rtools/mingw_64/bin/gcc -shared -s -static-libgcc -o fooblas.dll tmp.def fooblas.o -fopenmp -LC:/PROGRA~1/R/R-34~1.1/bin/x64 -lRlapack -LC:/PROGRA~1/R/R-34~1.1/bin/x64 -lRblas -lgfortran -lm -lquadmath -Ld:/Compiler/gcc-4.9.3/local330/lib/x64 -Ld:/Compiler/gcc-4.9.3/local330/lib -LC:/PROGRA~1/R/R-34~1.1/bin/x64 -lR</code></pre>
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQoNCiMjIElubGluZSBDcHAgY29kZQ0KVGhpcyAxRCBjb252b2x1dGlvbiB3b3JrcyB0aGUgc2FtZSBhcyBpbiBNYXRsYWIgYW5kIG90aGVyIGV4YW1wbGVzLg0KDQpgYGB7cn0NCmxpYnJhcnkoaW5saW5lKQ0KDQpzcmMgPC0gJw0KICAgIFJjcHA6Ok51bWVyaWNWZWN0b3IgeGEoYSk7DQogICAgUmNwcDo6TnVtZXJpY1ZlY3RvciB4YihiKTsNCiAgICANCiAgICBpbnQgbl94YSA9IHhhLnNpemUoKSwgbl94YiA9IHhiLnNpemUoKTsNCiAgICBSY3BwOjpOdW1lcmljVmVjdG9yIHhhYihuX3hhICsgbl94YiAtIDEpOw0KICAgIA0KICAgIGZvciAoaW50IGkgPSAwOyBpIDwgbl94YTsgaSsrKQ0KICAgICAgICBmb3IgKGludCBqID0gMDsgaiA8IG5feGI7IGorKykNCiAgICAgICAgICAgIHhhYltpICsgal0gKz0geGFbaV0gKiB4YltqXTsNCiAgICByZXR1cm4geGFiOycNCmBgYA0KDQoNCmBgYHtyfQ0KIyBjcmVhdGUgdGhlIFIgZnVuY3Rpb24NCmNvbnZvbHZlMWQgPC0gY3h4ZnVuY3Rpb24oc2lnbmF0dXJlKGEgPSAibnVtZXJpYyIsIGIgPSAibnVtZXJpYyIpLCANCiAgICAgICAgICAgICAgICAgICBzcmMsIA0KICAgICAgICAgICAgICAgICAgIHBsdWdpbiA9ICJSY3BwIikNCmBgYA0KDQpgYGB7cn0NCmNvbnZvbHZlMWQoMTozLCAxOjQpDQpgYGANCg0KYGBge3J9DQoNCnggPC0gbWF0cml4KHJub3JtKDEwKSkNCnkgPC0gbWF0cml4KHJub3JtKDEwKSkNCg0KY29udm9sdmUxZCh4LCB5KQ0KYGBgDQoNCg0KYGBge3J9DQp4ID0gYygzLCA0LCA1LCAwLCAwKQ0KeSA9IGMoMiwgMSkNCg0KY29udm9sdmUxZCh4LCB5KQ0KIyA2IDExIDE0ICA1ICAwICAwICAgICAgc2FtZSBhcyBpbiBNYXRsYWINCmBgYA0KDQoNCmBgYHtyfQ0KeCA9IGMoMywgNCwgNSkNCnkgPSBjKDIsIDEpDQoNCmNvbnZvbHZlMWQoeCwgeSkNCiMgNiAxMSAxNCAgNSAgMCAgMCAgICAgIHNhbWUgYXMgaW4gTWF0bGFiDQpgYGANCg0KDQpgYGB7cn0NCiMgdGhpcyBleGFtcGxlIG9uIGFwcGx5aW5nIDFEIGNvbnZvbHV0aW9uIHRvIGEgbWF0cml4IHdpbGwgbm90IHdvcmsuDQojIFNlZSB0aGUgb3V0cHV0IGZyb20gTWF0bGFiIGFuZCB0aGUgcmVzdWx0cyBiZWxvdy4gVGhlIDFEIGNvbnZvbHV0aW9uIHJlc3BvbnNlIGlzDQojIGEgdmVjdG9yIG5vdCBhIG1hdHJpeC4NCkEgPSBtYXRyaXgoMSwgbnJvdz0zLCBuY29sPTMpDQpjb252b2x2ZTFkKEEsIEEpDQojIDEgMiAzIDQgNSA2IDcgOCA5IDggNyA2IDUgNCAzIDIgMQ0KDQojIEluIE1hdGxhYiB0aGUgY29udm9sdXRpb24gb2YgKEEsIEEpIGlzIGEgNXg1IG1hdHJpeDoNCiAgICAgIyAxICAgICAyICAgICAzICAgICAyICAgICAxDQogICAgICMgMiAgICAgNCAgICAgNiAgICAgNCAgICAgMg0KICAgICAjIDMgICAgIDYgICAgIDkgICAgIDYgICAgIDMNCiAgICAgIyAyICAgICA0ICAgICA2ICAgICA0ICAgICAyDQogICAgICMgMSAgICAgMiAgICAgMyAgICAgMiAgICAgMQ0KDQojIGlmIHdlIGNvbnZlcnQgQSB0byBhIHZlY3RvciB2MSBhZCBmaWYgdGhlIGNvbnZvbHV0aW9uIHVzaW5nIHRoaXMgZnVuY3Rpb24NCiMgdGhlIHJlc3VsdCBpcyBhbm90aGVyIHZlY3RvciBvZiAxNyBlbGVtZW50cy4NCnYxID0gYXMudmVjdG9yKEEpDQpsZW5ndGgodjEpDQpjb252b2x2ZTFkKHYxLCB2MSkNCmxlbmd0aChjb252b2x2ZTFkKHYxLCB2MSkpDQpgYGANCg0KYGBge3J9DQp2MSA9IGFzLnZlY3RvcihBKQ0KdjENCmNvbnZvbHZlMWQodjEsIHYxKQ0KYGBgDQoNCg==</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpgYGB7cn0NCiMgZm9vYmxhcy5jIHdpbGwgbm90IGNvbXBpbGUgZnJvbSB3aXRoaW4gUlN0dWRpbw0KIyBpdCBoYXMgdG8gYmUgY29tcGlsZWQgZnJvbSB0aGUgY29tbWFuZCBsaW5lDQojICQgICAgUiBDTUQgU0hMSUIgZm9vYmxhcy5jDQpzeXN0ZW0oIlIgQ01EIFNITElCIC4uL3NyYy9mb29ibGFzLmMiKQ0KYGBgDQoNCg0KYGBge3J9DQojIHRoaXMgbG9hZHMgdGhlIGxpYnJhcnkgaW4gYW55IHN5c3RlbSwgV2luZG93cyBvciBMaW51eA0KZHluLmxvYWQocGFzdGUoIi4uL3NyYy9mb29ibGFzIiwgLlBsYXRmb3JtJGR5bmxpYi5leHQsIHNlcCA9ICIiKSkNCmBgYA0KDQoNCmBgYHtyfQ0KIyB2b2lkIGZvbyhpbnQgKmRpbWVuc2lvbiwgZG91YmxlICp2ZWN0MSwgZG91YmxlICp2ZWN0MikNCg0KIyB3cmFwcGVyDQpjLmZvb2JsYXMgPSBmdW5jdGlvbihhLCBiKSB7DQogICByZXMgPC0gLkMoJ2Zvb2JsYXMnLA0KICAgICAgYXMuaW50ZWdlcihsZW5ndGgoYSkpLA0KICAgICAgYXMuZG91YmxlKGEpLA0KICAgICAgYXMuZG91YmxlKGIpKQ0KICAgcmVzW2MoMiwzKV0NCn0NCmBgYA0KDQoNCmBgYHtyfQ0KYy5mb29ibGFzKGMoNSwgMTApLCBjKDMsNikpDQpgYGANCg0KYGBge3J9DQpjLmZvb2JsYXMobWF0cml4KDUsIG5yb3c9MywgbmNvbD0yKSwgbWF0cml4KDIsIG5yb3c9MywgbmNvbD0yKSkNCmBgYA0KDQojIyBhbm90aGVyIHZlcnNpb24gb2Ygc3dhcCB1c2luZyBtYXRyaWNlcw0KDQpgYGB7cn0NCiMgdm9pZCBmb28oaW50ICpkaW1lbnNpb24sIGRvdWJsZSAqdmVjdDEsIGRvdWJsZSAqdmVjdDIpDQojIGRpbWVuc2lvbjogbnVtYmVyIG9mIGVsZW1lbnRzIGluIGlucHV0IHZlY3RvcihzKQ0KDQpjLmZvb2JsYXMyID0gZnVuY3Rpb24oYSwgYikgew0KICAgIHNhIDwtIHNiIDwtIGENCiAgIHJlcyA8LSAuQygnZm9vYmxhcycsDQogICAgICBhcy5pbnRlZ2VyKGxlbmd0aChhKSksDQogICAgICBhcy5kb3VibGUoYSksDQogICAgICBhcy5kb3VibGUoYikpDQogICBzYVtdIDwtIHJlc1tbMl1dDQogICBzYltdIDwtIHJlc1tbM11dDQogICBsaXN0KGEsIGIsIHNhLCBzYikgICMgcmV0dXJuIG9yaWdpbmFsIGFuZCBzd2FwcGVkDQp9DQpgYGANCg0KDQpgYGB7cn0NCmMuZm9vYmxhczIobWF0cml4KDUsIG5yb3c9MywgbmNvbD0yKSwgbWF0cml4KDIsIG5yb3c9MywgbmNvbD0yKSkNCmBgYA0KDQpgYGB7cn0NCmMuZm9vYmxhczIoYXJyYXkoNCwgZGltPWMoNCwzLDIpKSwgYXJyYXkoNywgZGltID0gYyg0LDMsMikpKQ0KYGBgDQoNCg0KYGBge3J9DQojIHRoaXMgbG9hZHMgdGhlIGxpYnJhcnkgaW4gYW55IHN5c3RlbSwgV2luZG93cyBvciBMaW51eA0KZHluLnVubG9hZChwYXN0ZSgiLi4vc3JjL2Zvb2JsYXMiLCAuUGxhdGZvcm0kZHlubGliLmV4dCwgc2VwID0gIiIpKQ0KYGBgDQoNCiMjIE5vdGVzIGFib3V0IGNvbXBpbGF0aW9uDQoNCiogWW91IG5lZWQgYSBmaWxlIE1ha2V2YXJzIGluIC4vc3JjDQoqIGZvb2JsYXMuYyB3aWxsIG5vdCBjb21waWxlIGZyb20gd2l0aGluIFJTdHVkaW8uIEl0IGhhcyB0byBiZSBjb21waWxlZCBmcm9tIHRoZSBjb21tYW5kIGxpbmUgbGlrZSB0aGlzOiBgUiBDTUQgU0hMSUIgZm9vYmxhcy5jYA0KKg0KDQo+IGFmdGVyIHJlbW92aW5nIE1ha2V2YXJzIGluIC4vc3JjDQoNCiAgICBtc2Z6NzUxQEhQWkJPT0sxNUcyVzEwIE1TWVMgL2kvcHViLnBhY2thZ2VzL3JCbGFzdGVyL3NyYw0KICAgICQgUiBDTUQgU0hMSUIgZm9vYmxhcy5jDQogICAgYzovUnRvb2xzL21pbmd3XzY0L2Jpbi9nY2MgIC1JIkM6L1BST0dSQX4xL1IvUi0zNH4xLjEvaW5jbHVkZSIgLUROREVCVUcgICAgIC1JImQ6L0NvbXBpbGVyL2djYy00LjkuMy9sb2NhbDMzMC9pbmNsdWRlIiAgICAgLU8yIC1XYWxsICAtc3RkPWdudTk5IC1tdHVuZT1jb3JlMiAtYyBmb29ibGFzLmMgLW8gZm9vYmxhcy5vDQogICAgYzovUnRvb2xzL21pbmd3XzY0L2Jpbi9nY2MgLXNoYXJlZCAtcyAtc3RhdGljLWxpYmdjYyAtbyBmb29ibGFzLmRsbCB0bXAuZGVmIGZvb2JsYXMubyAtTGQ6L0NvbXBpbGVyL2djYy00LjkuMy9sb2NhbDMzMC9saWIveDY0IC1MZDovQ29tcGlsZXIvZ2NjLTQuOS4zL2xvY2FsMzMwL2xpYiAtTEM6L1BST0dSQX4xL1IvUi0zNH4xLjEvYmluL3g2NCAtbFINCiAgICBmb29ibGFzLm86Zm9vYmxhcy5jOigudGV4dCsweDI4KTogdW5kZWZpbmVkIHJlZmVyZW5jZSB0byBgZHN3YXBfJw0KICAgIGNvbGxlY3QyLmV4ZTogZXJyb3I6IGxkIHJldHVybmVkIDEgZXhpdCBzdGF0dXMNCg0KICAgIA0KPiBhZnRlciByZXBsYWNpbmcgTWFrZXZhcnMgYmFjayB0byAuL3NyYw0KDQogICAgbXNmejc1MUBIUFpCT09LMTVHMlcxMCBNU1lTIC9pL3B1Yi5wYWNrYWdlcy9yQmxhc3Rlci9zcmMNCiAgICAkIFIgQ01EIFNITElCIGZvb2JsYXMuYw0KICAgIGM6L1J0b29scy9taW5nd182NC9iaW4vZ2NjIC1zaGFyZWQgLXMgLXN0YXRpYy1saWJnY2MgLW8gZm9vYmxhcy5kbGwgdG1wLmRlZiBmb29ibGFzLm8gLWZvcGVubXAgLUxDOi9QUk9HUkF+MS9SL1ItMzR+MS4xL2Jpbi94NjQgLWxSbGFwYWNrIC1MQzovUFJPR1JBfjEvUi9SLTM0fjEuMS9iaW4veDY0IC1sUmJsYXMgLWxnZm9ydHJhbiAtbG0gLWxxdWFkbWF0aCAtTGQ6L0NvbXBpbGVyL2djYy00LjkuMy9sb2NhbDMzMC9saWIveDY0IC1MZDovQ29tcGlsZXIvZ2NjLTQuOS4zL2xvY2FsMzMwL2xpYiAtTEM6L1BST0dSQX4xL1IvUi0zNH4xLjEvYmluL3g2NCAtbFINCg0KDQoNCg==</div>
 
 
 

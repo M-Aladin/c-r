@@ -1,0 +1,47 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Source: manual
+
+## convolution of vectors
+
+```{r}
+
+cppFunction(code = '
+    NumericVector convolve4cpp(NumericVector a, NumericVector b) {
+        Rcpp::NumericVector xa(a), xb(b);
+        int n_xa = xa.size(), n_xb = xb.size();
+        Rcpp::NumericVector xab(n_xa + n_xb - 1);      // size of the result vector
+        
+        typedef Rcpp::NumericVector::iterator vec_iterator;
+        vec_iterator ia = xa.begin(), ib = xb.begin();
+        vec_iterator iab = xab.begin();
+        for (int i = 0; i < n_xa; i++)
+            for (int j = 0; j < n_xb; j++)
+                iab[i + j] += ia[i] * ib[j];
+    
+    return xab;
+}')
+
+x = 1:8
+convolve4cpp(x, c(2,2,2))
+
+```
+
+```{r}
+x = c(3, 4, 5, 0, 0)
+y = c(2, 1)
+
+convolve4cpp(x, y)
+# 6 11 14  5  0  0      same as in Matlab
+```
+
+```{r}
+x = c(3, 4, 5)
+y = c(2, 1)
+
+convolve4cpp(x, y)
+# 6 11 14  5           same as in Matlab
+```

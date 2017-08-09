@@ -1,0 +1,217 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Source: http://markovjumps.blogspot.be/2011/12/r-array-to-rcpparmadillo-cube.html
+    https://stackoverflow.com/a/12570932/5270873
+    
+RcppArmadillo has a proper 'Cube' type generalizing matrices to 3-d.  
+RcppArmadillo has `Cube` as a first class object.
+
+```{r}
+require(inline)
+require(RcppArmadillo)
+ 
+src <- '
+    using namespace Rcpp;
+     
+    NumericVector vecArray(myArray);
+        IntegerVector arrayDims = vecArray.attr("dim");
+        arma::cube cubeArray(vecArray.begin(), 
+                             arrayDims[0], arrayDims[1], arrayDims[2], false);
+ 
+        //change one element in the array/cube
+        cubeArray(0,0,0) = 518;  
+ 
+    return(wrap(cubeArray));  
+'
+```
+
+
+```{r}
+readCube = cxxfunction(signature(myArray="numeric"), 
+                       body=src, 
+                       plugin="RcppArmadillo")
+
+set.seed(345)
+testArray = array(rnorm(18), dim=c(3,3,2))
+print(testArray)
+```
+
+
+```{r}
+readCube(testArray)
+```
+
+
+
+```{r}
+require(inline)
+require(RcppArmadillo)
+ 
+example <- '
+    using namespace Rcpp;
+    arma::cube x(1,2,3);
+    arma::cube y = arma::cube(4,5,6);
+
+    y.ones();
+    
+    arma::mat B = arma::mat(4,5);
+    B.zeros();
+    y.slice(2) = B;
+
+    arma::cube p(5,6,7) ;
+    p.fill(7);
+    arma::cube q = y + y;
+    arma::cube r = y %  y; // %	Schur product: element-wise multiplication of two objects
+
+    arma::cube::fixed<4,5,6> f;
+    f.ones();
+
+    x.ones();
+
+    p(0,0,0) = 1;
+
+    return(wrap( r ));
+'
+
+cubeExample = cxxfunction(body=example, 
+                       plugin="RcppArmadillo")
+
+
+myCube <- cubeExample()
+dim(myCube)
+myCube
+```
+
+## subsube, slicing, save
+
+```{r}
+require(inline)
+require(RcppArmadillo)
+ 
+subcube <- '
+    using namespace Rcpp;
+    
+    arma::cube A = arma::cube(2,3,4);
+    A.zeros();
+
+    arma::mat B = A.slice(1);   // each slice is a matrix
+    
+    A.slice(0) = arma::mat(2,3);
+    A.slice(0)(1,2) = 99.0;
+
+    A.subcube(0,0,1,  1,1,2)   = arma::cube(2,2,2);
+    A( arma::span(0,1), arma::span(0,1), arma::span(1,2) ) = arma::cube(2,2,2);
+    A( 0,0,1, arma::size(2,2,2) )              = arma::cube(2,2,2);
+
+    // add 123 to all elements of A greater than 0.5
+    A.elem( arma::find(A > 0.5) ) += 123.0;
+
+    arma::cube C = A.head_slices(2);  // get first two slices
+
+    A.head_slices(2) += 123.0;
+
+    A.save("A.mat");    // default save format is binary
+    
+
+    return(wrap( C ));
+'
+
+subcubeExample = cxxfunction(body=subcube, 
+                       plugin="RcppArmadillo")
+
+
+subcubeExample()
+```
+
+
+## iterators
+
+```{r}
+require(inline)
+require(RcppArmadillo)
+ 
+code <- '
+    using namespace Rcpp;
+    
+    arma::cube X = arma::cube(2,3,4);
+    X.ones();
+
+
+    arma::cube::iterator a = X.begin();
+    arma::cube::iterator b = X.end();
+
+    for(arma::cube::iterator i=a; i!=b; ++i)
+    {
+       arma::cout << *i << arma::endl;
+    }
+
+    arma::cube::slice_iterator c = X.begin_slice(1);  // start of slice 1
+    arma::cube::slice_iterator d = X.end_slice(2);    // end of slice 2
+    
+    for(arma::cube::slice_iterator i=c; i!=d; ++i)
+    {
+        arma::cout << *i << arma::endl;
+         (*i) = 123.0;
+    }
+    
+
+    return(wrap( X ));
+'
+
+iterExample = cxxfunction(body=code, 
+                       plugin="RcppArmadillo")
+
+
+iterExample()
+```
+
+
+
+        #include <RcppArmadillo.h>
+        // [[Rcpp::depends(RcppArmadillo)]]
+        
+        // [[Rcpp::export]]
+        arma::cube array2cube( SEXP myArray ) {
+        
+        Rcpp::NumericVector vecArray(myArray);
+        Rcpp::IntegerVector arrayDims = vecArray.attr("dim");
+        
+        arma::cube cubeArray(vecArray.begin(), arrayDims[0], arrayDims[1], arrayDims[2], false);
+        
+        return(cubeArray);  
+}
+
+
+src <- '
+    using namespace Rcpp;
+     
+    NumericVector vecArray(myArray);
+        IntegerVector arrayDims = vecArray.attr("dim");
+        arma::cube cubeArray(vecArray.begin(), 
+                             arrayDims[0], arrayDims[1], arrayDims[2], false);
+ 
+        //change one element in the array/cube
+        cubeArray(0,0,0) = 518;  
+ 
+    return(wrap(cubeArray));  
+'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

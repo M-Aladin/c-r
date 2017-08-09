@@ -1,0 +1,57 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Source: http://adv-r.had.co.nz/C-interface.html
+
+## C data structures
+At the C-level, all R objects are stored in a common datatype, the SEXP, or S-expression. All R objects are S-expressions so every C function that you create must return a SEXP as output and take SEXPs as inputs. (Technically, this is a pointer to a structure with typedef SEXPREC.) A SEXP is a variant type, with subtypes for all R’s data structures. The most important types are:
+
+    REALSXP: numeric vector
+    INTSXP: integer vector
+    LGLSXP: logical vector
+    STRSXP: character vector
+    VECSXP: list
+    CLOSXP: function (closure)
+    ENVSXP: environment
+
+```{r}
+# compile the C code
+system("R CMD SHLIB ../src/add.c")
+```
+
+```{r}
+# this loads the library in any system, Windows or Linux
+dyn.load(paste("../src/add", .Platform$dynlib.ext, sep = ""))
+```
+
+```{r}
+# In R ----------------------------------------
+add <- function(a, b) {
+  .Call("add", a, b)
+}
+```
+
+```{r}
+add(3, 7)
+```
+
+
+
+## inline version
+
+```{r}
+library(inline)
+
+add <- cfunction(c(a = "integer", b = "integer"), "
+  SEXP result = PROTECT(allocVector(REALSXP, 1));
+  REAL(result)[0] = asReal(a) + asReal(b);
+  UNPROTECT(1);
+
+  return result;
+")
+
+add(1, 5)
+```
+

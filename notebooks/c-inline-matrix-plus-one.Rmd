@@ -1,0 +1,98 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Source: https://stackoverflow.com/a/13004562/5270873
+
+
+## Passing a matrix as an argument
+
+```{r}
+library(inline)
+
+sig <- signature(x="numeric", dim="integer")
+
+body <- "
+    for (int j = 0; j < dim[1]; ++j)
+        for (int i = 0; i < dim[0]; ++i)
+            x[j * dim[0] + i] += 1;
+"
+
+cfun <- cfunction(sig, body=body, language="C", convention=".C")
+```
+
+```{r}
+# using the C function in R
+plus1 <- function(m) {
+    m[] = cfun(as.numeric(m), dim(m))$x
+    m
+}
+
+plus1(matrix(1, nrow=3, ncol=4))
+```
+
+
+
+```{r}
+# the same input variable `x` is used as output
+mx <- matrix(1, nrow=3, ncol=4)
+mx[] = cfun(as.numeric(mx), dim(mx))$x
+mx
+```
+
+
+
+## changing the loop to three dimensions
+
+```{r}
+library(inline)
+
+sig <- signature(x="numeric", dim="integer")
+
+body3 <- "
+    for (int k = 0; k < dim[2]; ++k)
+        for (int j = 0; j < dim[1]; ++j)
+            for (int i = 0; i < dim[0]; ++i)
+                x[ i*(dim[0]*dim[1]*dim[2]) + i ] += 1;
+        
+"
+
+cfun3 <- cfunction(sig, body=body3, language="C", convention=".C")
+```
+
+```{r}
+# using the C function in R
+plus3 <- function(m) {
+    m[] = cfun3(as.numeric(m), dim(m))$x
+    m
+}
+
+plus3(array(1, dim = c(4, 3, 2)))
+```
+
+
+
+```{r}
+library(inline)
+
+sig <- signature(x="numeric", dim="integer")
+
+body4 <- "
+    for (int j = 0; j < dim[1]; ++j)
+        for (int i = 0; i < dim[0]; ++i)
+            x[j * dim[0] + i] += 1;
+"
+
+cfun4 <- cfunction(sig, body=body4, language="C", convention=".C")
+```
+
+```{r}
+# using the C function in R
+plus4 <- function(m) {
+    m[] = cfun4(as.numeric(m), dim(m))$x
+    m
+}
+
+plus4(matrix(1, nrow=3, ncol=4))
+```

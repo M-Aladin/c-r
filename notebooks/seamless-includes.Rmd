@@ -1,0 +1,44 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+An example is provided by the following code sample from the Rcpp FAQ which
+was created after a user question on the Rcpp mailing list. A simple templated class
+which squares its argument is created in a code snippet supplied via include. The
+main function then uses this templated class on two different types:
+
+```{r}
+library(inline)
+
+inc <- '
+    template <typename T>
+    class square : public std::unary_function<T,T> {
+        public:
+            T operator()( T t) const { return t*t ;}
+};
+'
+
+
+src <- '
+    double x = Rcpp::as<double>(xs);    // pass a double
+    int i    = Rcpp::as<int>(is);       // passs an integer
+
+    square<double> sqdbl;   // square the real number
+    square<int> sqint;      // square the integer
+
+    Rcpp::DataFrame df = Rcpp::DataFrame::create(Rcpp::Named("x", sqdbl(x)),
+                        Rcpp::Named("i", sqint(i)));
+    return df;
+'
+
+
+fun <- cxxfunction(signature(xs="numeric", is="integer"), 
+                   body = src, 
+                   include = inc, 
+                   plugin="Rcpp")
+
+
+fun(2.2, 3L)
+```
+

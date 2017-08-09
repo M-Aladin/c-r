@@ -1,0 +1,68 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Source: https://stackoverflow.com/a/13004562/5270873
+
+
+## C code
+
+
+    void cplus1(double *x, int *dim)
+    {
+        for (int j = 0; j < dim[1]; ++j)
+            for (int i = 0; i < dim[0]; ++i)
+                x[j * dim[0] + i] += 1;
+    }
+    
+    
+    
+    
+```{r}
+# compile the C code
+system("R CMD SHLIB ../src/matrix_plus_one.c")
+```
+
+```{r}
+# this loads the library in any system, Windows or Linux
+dyn.load(paste("../src/matrix_plus_one", .Platform$dynlib.ext, sep = ""))
+```
+
+
+
+```{r}
+# wrapper
+matrixPlus1 = function(m) {
+   m[] = .C('cplus1', as.numeric(m), dim(m))[[1]]
+   m
+}
+```
+
+
+```{r}
+matrixPlus1(matrix(3, nrow=3, ncol=3))
+```
+
+```{r}
+# passing an array
+matrixPlus1(array(1, dim = c(3,4,2)))
+
+# only the first array gets added because in C we are only have two loops:
+# one loop per dimension
+# , , 1
+# 
+#      [,1] [,2] [,3] [,4]
+# [1,]    2    2    2    2
+# [2,]    2    2    2    2
+# [3,]    2    2    2    2
+#
+# , , 2
+# 
+#      [,1] [,2] [,3] [,4]
+# [1,]    1    1    1    1
+# [2,]    1    1    1    1
+# [3,]    1    1    1    1
+```
+
+

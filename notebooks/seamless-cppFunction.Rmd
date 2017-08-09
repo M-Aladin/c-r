@@ -1,0 +1,79 @@
+---
+title: "Rcpp attributes"
+output:
+  html_document: default
+  html_notebook: default
+---
+
+A recent addition to Rcpp provides an even more direct connection between C++
+and R. This feature is called “attributes” as it is inspired by a C++ extension of
+the same name in the new C++11 standard (which will be available to R users only
+when CRAN permits use of these extension, which may be years away).
+
+Simply put, “Rcpp attributes” internalizes key features of the inline package
+while at the same time reusing some of the infrastructure built for use by inline
+such as the plugins.
+
+“Rcpp attributes” adds new functions sourceCpp to source a C++ function
+(similar to how sourceis used for R code), cppFunctionfor a similar creation
+of a function from a character argument, evalCppfor a direct evaluation of a C++
+expression and more.
+
+Behind the scenes, these functions make use of the existing wrappers as<>and
+wrap and do in fact rely heavily on them: any arguments with existing convert-
+ers to or from SEXP types can be used. The standard build commands such as R
+RMD COMPILEand R CMD SHLIB are executed behind the scenes, and template
+programming is used to provide compile-time bindings and conversion.
+An example may illustrate this:
+
+```{r}
+library(Rcpp)
+library(inline)
+
+# Listing 2.9
+ cpptxt <- '
+    int fibonacci(const int x) {
+        if (x < 2) return(x);
+    return (fibonacci(x - 1)) + fibonacci(x - 2);
+    }'
+
+fibCpp <- cppFunction(cpptxt) # compiles, load, links, ..
+fibCpp(6)
+```
+
+cppFunction returns an R function which calls a wrapper, also created by
+cppFunctionin a temporary ﬁle which it also builds. The wrapper function in
+turn calls the C++ function we passed as a character string. The build process
+administered by cppFunction uses a caching mechanism which ensures that
+only one compilation is needed per session (as long as the source code used is un-
+changed).
+
+Alternatively, we could pass the name of a ﬁle containing the code to the function
+sourceCpp which would compile, link, and load the corresponding C++ code
+and assign it to the R function on the left-hand side of the assignment.
+
+
+```{r}
+library(RcppGSL)
+ code <- '
+
+     #include <gsl/gsl_vector.h> 
+    #include <gsl/gsl_const_mksa.h> // decl of constants
+    
+    // [[Rcpp::depends(RcppGSL)]]
+    std::vector<double> volumes() {
+    std::vector<double> v(5);
+
+    v[0] = GSL_CONST_MKSA_US_GALLON; // 1 US gallon
+    v[1] = GSL_CONST_MKSA_CANADIAN_GALLON; // 1 Canadian gallon
+    v[2] = GSL_CONST_MKSA_UK_GALLON; // 1 UK gallon
+    v[3] = GSL_CONST_MKSA_QUART; // 1 quart
+    v[4] = GSL_CONST_MKSA_PINT; // 1 pint
+    return v;
+    }
+'
+
+gslVolumes <- cppFunction(code, depends="RcppGSL")
+gslVolumes()
+```
+

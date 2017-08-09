@@ -1,0 +1,48 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Source: https://stackoverflow.com/questions/28026818/how-to-call-c-function-from-r
+
+## C file version
+
+
+  void addOneToVector(int* n, double* vector) {
+      for (int i = 0; i < *n; ++i)
+          vector[i] += 1.0;
+  }
+  
+
+```{r}
+system("R CMD SHLIB ../src/add_one.c")
+```
+
+
+
+```{r}
+# this loads the library in any system, Windows or Linux
+dyn.load(paste("../src/add_one", .Platform$dynlib.ext, sep = ""))
+```
+
+
+
+```{r}
+x = 1:3
+ret_val = .C("addOneToVector", n=length(x), vector=as.double(x))
+ret_val
+```
+
+
+
+## Inline version
+
+```{r}
+addOne = inline::cfunction(sig = c(n = "integer",
+                                   vector = "numeric"), 
+                           body = 'for(int i = 0; i < *n; ++i) vector[i] += 1.0;', convention = ".C")
+
+addOne(length(x), as.double(x))$vector
+# [1] 4 5 6
+```
+

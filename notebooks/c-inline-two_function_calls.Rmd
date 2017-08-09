@@ -1,0 +1,66 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Source: inline examples
+
+```{r}
+library(inline)
+## Same example in C
+code4 <- "
+      int i;
+      for (i = 0; i < *n; i++) 
+        x[i] = x[i]*x[i]*x[i];
+"
+cubefn4 <- cfunction(signature(n="integer", x="numeric"), code4, language = "C", convention = ".C")
+cubefn4(20, 1:20)
+```
+
+## Defining two functions, one of which calls the other
+
+```{r}
+## Use of .C convention with C code
+## Defining two functions, one of which calls the other
+sigSq <- signature(n="integer", x="numeric")
+
+# 1st function
+codeSq <- "
+  for (int i=0; i < *n; i++) {
+    x[i] = x[i]*x[i];
+  }"
+sigQd <- signature(n="integer", x="numeric")
+
+# 2nd function
+codeQd <- "
+  squarefn(n, x);
+  squarefn(n, x);
+"
+
+fns <- cfunction( list(squarefn=sigSq, quadfn=sigQd), 
+                  list(codeSq, codeQd), 
+                  convention=".C")
+
+squarefn <- fns[["squarefn"]]
+quadfn <- fns[["quadfn"]]
+
+n <- 4
+squarefn(n, x)$x
+quadfn(n, x)$x
+```
+
+## Alternative declaration using 'setCMethod'
+
+```{r}
+## Alternative declaration using 'setCMethod'
+setCMethod(c("squarefn", "quadfn"), list(sigSq, sigQd), 
+           list(codeSq, codeQd), convention=".C")
+ 
+n <- 5          
+squarefn(n, x)$x
+quadfn(n, x)$x
+```
+
+
+
+

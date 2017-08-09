@@ -1,0 +1,78 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+http://lists.r-forge.r-project.org/pipermail/rcpp-devel/2013-March/005441.html
+
+
+## Embedded code with cxxfunction
+
+```{r}
+library(RcppArmadillo)
+library(inline)
+
+if( require( RcppArmadillo ) ) {
+	fx <- cxxfunction( signature(x = "vector", n = "integer") , '
+		Rcpp::NumericVector XX(x);
+		Rcpp::IntegerVector dim(n);
+		arma::cube AY(XX.begin(), dim[0], dim[1], dim[2]);
+		return(wrap(AY));
+	', plugin = "RcppArmadillo" )
+}
+
+set.seed(10)
+x = array(rnorm(25*25*10), dim=c(25,25,10))   # R array
+y = fx(x, c(25,25,10))                        # Armadillo array
+all.equal(x,y)
+```
+
+
+## Separated code with cxxfunction
+
+```{r}
+library(RcppArmadillo)
+library(inline)
+
+body <- '
+        Rcpp::NumericVector XX(x);
+		Rcpp::IntegerVector dim(n);
+		arma::cube AY(XX.begin(), dim[0], dim[1], dim[2]);
+		return(wrap(AY));
+'
+
+if( require( RcppArmadillo ) ) {
+	fx <- cxxfunction( signature(x = "vector", n = "integer") , 
+	                   body = body, 
+	                   plugin = "RcppArmadillo" )
+}
+
+set.seed(10)
+x = array(rnorm(25*25*10), dim=c(25,25,10))   # R array
+y = fx(x, c(25,25,10))                        # Armadillo array
+all.equal(x,y)
+```
+
+## Separate code using a direct function with cppFunction
+
+```{r}
+library(Rcpp)
+library(RcppArmadillo)
+library(inline)
+
+code <- '
+        arma::cube fx(Rcpp::NumericVector x, Rcpp::IntegerVector n) {
+        Rcpp::NumericVector XX(x);
+		Rcpp::IntegerVector dim(n);
+		arma::cube AY(XX.begin(), dim[0], dim[1], dim[2]);
+		return(AY);
+}
+'
+
+cppFunction(code = code, depends = "RcppArmadillo")
+
+set.seed(10)
+x = array(rnorm(25*25*10), dim=c(25,25,10))   # R array
+y = fx(x, c(25,25,10))                        # Armadillo array
+all.equal(x,y)
+```

@@ -1,0 +1,59 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+
+code <- '
+    // copy the data to armadillo structures
+    arma::colvec x = Rcpp::as<arma::colvec> (x_);
+    arma::mat    Y = Rcpp::as<arma::mat>(Y_) ;
+    arma::colvec z = Rcpp::as<arma::colvec>(z_) ;
+    
+    // calculate the result
+    double result = arma::as_scalar(arma::trans(x) * arma::inv(Y) * z);
+    
+    // return it to R
+    return Rcpp::wrap( result ); '
+
+
+fx <- cxxfunction(signature(x_="numeric", Y_="matrix", z_="numeric"), 
+                     body=code, plugin="RcppArmadillo")
+
+
+ fx(1:4, diag(4), 1:4)
+```
+
+
+```{r}
+t(1:4) %*% solve(diag(4)) %*% 1:4
+```
+
+
+# as matrix
+
+```{r}
+
+code <- '
+    // copy the data to armadillo structures
+    arma::colvec x = Rcpp::as<arma::colvec> (x_);
+    arma::mat    Y = Rcpp::as<arma::mat>(Y_) ;
+    arma::colvec z = Rcpp::as<arma::colvec>(z_) ;
+
+    arma::mat result; // declare result as matrix type
+    
+    // calculate the result
+    result = arma::trans(x) * arma::inv(Y) * z;
+    
+    // return it to R
+    return Rcpp::wrap( result ); '
+
+
+fx <- cxxfunction(signature(x_="numeric", Y_="matrix", z_="numeric"), 
+                     body=code, plugin="RcppArmadillo")
+
+
+fx(1:4, diag(4), 1:4)
+```

@@ -1,0 +1,36 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Source: https://stackoverflow.com/a/13004562/5270873
+
+## add 1 to vectors
+This C function receives a vector, converts it to a column-matrix if the user specifies with `byrow=FALSE` and returns a matrix a vector if `asmatrix=FALSE`.
+
+```{r}
+library(inline)
+
+sig <- signature(x="numeric", dim="integer")
+
+body <- "
+    for (int j = 0; j < dim[1]; ++j)
+        for (int i = 0; i < dim[0]; ++i)
+            x[j * dim[0] + i] += 1;
+"
+
+cfun <- cfunction(sig, body=body, language="C", convention=".C")
+
+# using the C function in R
+plus1 <- function(m, byrow = TRUE, asmatrix = TRUE) {
+    stopifnot(is.numeric(m))
+    if (!is.matrix(v)) 
+        if (byrow) m <- matrix(m, nrow=length(m), ncol=1)
+        else m <- matrix(m, nrow=1, ncol=length(m))
+    if (asmatrix) m[] = cfun(as.numeric(m), dim(m))$x
+    else m = cfun(as.numeric(m), dim(m))$x
+    m
+}
+
+plus1(c(3,5,7,9), byrow = FALSE, asmatrix = FALSE)
+```

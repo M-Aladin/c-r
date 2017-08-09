@@ -1,0 +1,82 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Source: http://eli.thegreenplace.net/2015/memory-layout-of-multi-dimensional-arrays/
+
+
+
+## changing the loop to three dimensions
+
+```{r}
+# http://eli.thegreenplace.net/2015/memory-layout-of-multi-dimensional-arrays/
+
+library(inline)
+
+sig <- signature(x="numeric", dim="integer")
+
+body3 <- "
+    #include <stdio.h>
+    for (int i = 0; i < dim[0]; ++i)
+        for (int j = 0; j < dim[1]; ++j)
+            for (int k = 0; k < dim[2]; ++k) {
+                x[ k + dim[2]*(j+ i*dim[1]) ] += 1;
+            }
+        
+"
+
+cfun3 <- cfunction(sig, body=body3, language="C", convention=".C")
+
+# using the C function in R
+plus3 <- function(m) {
+    m[] = cfun3(as.numeric(m), dim(m))$x
+    m
+}
+
+plus3(array(1, dim = c(3, 4, 3)))
+```
+
+
+```{r}
+# applying on a vector 3x1x1
+plus3(array(1, dim = c(3, 1, 1)))
+```
+
+
+## inverting the indices
+instead of having `i` outside we put `k`. The result is the same.
+
+```{r}
+# http://eli.thegreenplace.net/2015/memory-layout-of-multi-dimensional-arrays/
+
+# instead of having `i` outside we put `k`.
+# The result is the same
+
+library(inline)
+
+sig <- signature(x="numeric", dim="integer")
+
+body <- "
+    #include <stdio.h>
+    for (int k = 0; k < dim[0]; ++k)
+        for (int j = 0; j < dim[1]; ++j)
+            for (int i = 0; i < dim[2]; ++i) {
+                x[ k + dim[2]*(j+ i*dim[1]) ] += 1;
+            }
+        
+"
+
+cfun <- cfunction(sig, body=body, language="C", convention=".C")
+
+# using the C function in R
+plus <- function(m) {
+    m[] = cfun(as.numeric(m), dim(m))$x
+    m
+}
+
+plus(array(1, dim = c(3, 4, 3)))
+```
+
+
+
