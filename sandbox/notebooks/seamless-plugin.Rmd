@@ -38,6 +38,7 @@ fun <- cxxfunction(signature(ys="numeric", Xs="numeric"),
 ```
 
 ```{r}
+# it will not work without proviing a matrix
 # provide a matrix for group
 lm.plugin <- fun(weight, group)
 lm.plugin
