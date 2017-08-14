@@ -23,6 +23,15 @@ NumericVector convolve1d(NumericVector a, NumericVector b) {
 //
 
 /*** R
-convolve1d(1:4, 2:5)
-# [1]  2  7 16 30 34 31 20
+# simple example that gives this response in Matlab
+x = c(3, 4, 5, 0, 0)
+y = c(2, 1)
+convolve1d(x, y) 
+# 6 11 14  5  0  0      as in Matlab
+
+x = c(3, 4, 5)
+y = c(2, 1)
+convolve1d(x, y) 
+# 6 11 14  5    as in Matlab
+
 */

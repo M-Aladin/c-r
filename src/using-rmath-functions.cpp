@@ -37,7 +37,6 @@ Rcpp::NumericVector mypnorm(Rcpp::NumericVector x) {
  */
  
 /*** R
-
 x <- seq(0, 1, length=1e3)
 res <- mypnorm(x)
 head(res)

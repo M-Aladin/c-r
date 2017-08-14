@@ -25,3 +25,12 @@ cube up_C(mat a){
     }
     return(C);
 }
+
+
+/*** R
+# read a matrix and create a cube of m x n x m 
+# fill the first slice of the cube with the original matrix
+# calculate the product of the rows
+mx <- matrix(1:12, nrow=4, ncol=3)
+up_C(mx)
+*/

@@ -5,3 +5,4 @@ extern "C" SEXP helloWorld(void) {
 	Rprintf("Hello, World!\n");
 	return R_NilValue;
 }
+

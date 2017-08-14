@@ -24,3 +24,6 @@ NumericMatrix gibbs(int N, int thin) {
 
 
 
+/*** R
+    gibbs(100, 10)
+*/

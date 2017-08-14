@@ -22,3 +22,13 @@ NumericMatrix vecToMat(NumericVector x, double y) {
     
     return (ans);
 }
+
+
+/*** R
+# square matrix as input 1:3 means 3x3
+v1 <- seq(1, 3)
+vecToMat(v1, 2)
+
+v2 <- 1:4
+vecToMat(v2, 1)
+*/
