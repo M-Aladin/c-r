@@ -9,3 +9,44 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
+
+## C to R programming
+Examples of C, C++ code that can be called from R.
+
+## Libraries used and required
+* inline
+* Rcpp
+* RcppArmadillo
+* rbenchmark
+* compiler
+
+
+## Methods
+
+* Use notebooks to call C++ code with `sourceCpp`
+
+* Use notebook to show and run inline code
+
+* C++ code located under `./src` folder contain `R` that run the functions in the same script
+
+* C code cannot be run from within the C script. It msu be compiled first. 
+Example: to run the function `bessel`:
+
+`system("R CMD SHLIB ../src/bessel.c")` # compile
+
+`dyn.load(paste("../src/bessel", .Platform$dynlib.ext, sep = ""))` # load
+
+* C code is called with the function .C()
+
+
+
+## Comparison of R vs C++
+There is a notebok, Kalman.Rmd, that compares different implementation of R code vs a single C++ program. This example uses C++ classes.
+
+
+## Other methods
+
+C++ 11 being used as well.
+
+

@@ -178,20 +178,32 @@ $(document).ready(function () {
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVxdWlyZShSY3BwKVxuYGBgIn0= -->
 <pre class="r"><code>require(Rcpp)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBSY3BwXG4ifQ== -->
-<pre><code>Loading required package: Rcpp</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBSY3BwXG5cbkF0dGFjaGluZyBwYWNrYWdlOiDjpLzjuLFSY3Bw46S847iyXG5cblRoZSBmb2xsb3dpbmcgb2JqZWN0IGlzIG1hc2tlZCBmcm9tIOOkvOO4sXBhY2thZ2U6aW5saW5l46S847iyOlxuXG4gICAgcmVnaXN0ZXJQbHVnaW5cbiJ9 -->
+<pre><code>Loading required package: Rcpp
+
+Attaching package: 㤼㸱Rcpp㤼㸲
+
+The following object is masked from 㤼㸱package:inline㤼㸲:
+
+    registerPlugin</code></pre>
 <!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVxdWlyZShSY3BwQXJtYWRpbGxvKVxuYGBgIn0= -->
-<pre class="r"><code>require(RcppArmadillo)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVxdWlyZShSY3BwQXJtYWRpbGxvKVxuc291cmNlQ3BwKFwiLi4vc3JjL2FybWFDdWJlLmNwcFwiKVxuYGBgIn0= -->
+<pre class="r"><code>require(RcppArmadillo)
+sourceCpp(&quot;../src/armaCube.cpp&quot;)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBSY3BwQXJtYWRpbGxvXG4ifQ== -->
-<pre><code>Loading required package: RcppArmadillo</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiXG4+IEEgPSBhcnJheSgxOjYwLCBjKDIsNSw2KSlcblxuPiBBMiA9IGFycmF5KDEyMDo2MCwgYygyLDUsNikpXG5cbj4gYWxsLmVxdWFsKGYoQSwgQTIpLCBBK0EyKVxuWzFdIFRSVUVcbiJ9 -->
+<pre><code>
+&gt; A = array(1:60, c(2,5,6))
+
+&gt; A2 = array(120:60, c(2,5,6))
+
+&gt; all.equal(f(A, A2), A+A2)
+[1] TRUE</code></pre>
 <!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc291cmNlQ3BwKFwiLi4vc3JjL2FybWFDdWJlLmNwcFwiKVxuQSA9IGFycmF5KDE6NjAsYygyLDUsNikpXG5BMiA9IGFycmF5KDEyMDo2MCxjKDIsNSw2KSlcbmFsbC5lcXVhbChmKEEsQTIpLEErQTIpXG5gYGAifQ== -->
-<pre class="r"><code>sourceCpp(&quot;../src/armaCube.cpp&quot;)
-A = array(1:60,c(2,5,6))
-A2 = array(120:60,c(2,5,6))
-all.equal(f(A,A2),A+A2)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuQSA9IGFycmF5KDE6NjAsIGMoMiw1LDYpKVxuQTIgPSBhcnJheSgxMjA6NjAsIGMoMiw1LDYpKVxuYWxsLmVxdWFsKGYoQSwgQTIpLCBBK0EyKVxuYGBgIn0= -->
+<pre class="r"><code>A = array(1:60, c(2,5,6))
+A2 = array(120:60, c(2,5,6))
+all.equal(f(A, A2), A+A2)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-output-begin eyJkYXRhIjoiWzFdIFRSVUVcbiJ9 -->
 <pre><code>[1] TRUE</code></pre>
@@ -200,7 +212,7 @@ all.equal(f(A,A2),A+A2)</code></pre>
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpodHRwOi8vd3d3LmVjb25yLm9yZy9CbGl0ekV4YW1wbGUuaHRtbA0KDQoNCmBgYHtyfQ0KcmVxdWlyZShSY3BwKQ0KcmVxdWlyZShSY3BwQXJtYWRpbGxvKQ0KDQpzb3VyY2VDcHAoIi4uL3NyYy9hcm1hQ3ViZS5jcHAiKQ0KDQpBID0gYXJyYXkoMTo2MCwgYygyLDUsNikpDQpBMiA9IGFycmF5KDEyMDo2MCwgYygyLDUsNikpDQphbGwuZXF1YWwoZihBLCBBMiksIEErQTIpDQpgYGANCg0K</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpodHRwOi8vd3d3LmVjb25yLm9yZy9CbGl0ekV4YW1wbGUuaHRtbA0KDQoNCmBgYHtyfQ0KIyB0aGlzIEMrKyBjb2RlIGNhbiBhbHNvIGJlIHJ1biBmcm9tIHRoZSBzY3JpcHQgaXRzZWxmDQoNCnJlcXVpcmUoUmNwcCkNCnJlcXVpcmUoUmNwcEFybWFkaWxsbykNCg0Kc291cmNlQ3BwKCIuLi9zcmMvYXJtYUN1YmUuY3BwIikNCg0KQSA9IGFycmF5KDE6NjAsIGMoMiw1LDYpKQ0KQTIgPSBhcnJheSgxMjA6NjAsIGMoMiw1LDYpKQ0KYWxsLmVxdWFsKGYoQSwgQTIpLCBBK0EyKQ0KYGBgDQoNCg==</div>
 
 
 

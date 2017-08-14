@@ -21,7 +21,7 @@ src <- '
         arma::cube cubeArray(vecArray.begin(), 
                              arrayDims[0], arrayDims[1], arrayDims[2], false);
  
-        //change one element in the array/cube
+        // change one element in the array/cube
         cubeArray(0,0,0) = 518;  
  
     return(wrap(cubeArray));  

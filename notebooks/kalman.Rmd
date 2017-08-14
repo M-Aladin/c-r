@@ -157,6 +157,8 @@ KalmanRimp <- function(pos) {
 }
 ```
 
+
+
 ### Listing 3
 
 ```{r}
@@ -233,11 +235,11 @@ library(RcppArmadillo)
 library(inline)
 
 kalmanSrc <- '
- mat Z = as<mat>(ZS );   // p assed from R
- Kalman K;
- mat Y = K.estimate(Z) ;
- return wrap(Y) ;
-'
+         mat Z = as<mat>(ZS );   // p assed from R
+         Kalman K;
+         mat Y = K.estimate(Z) ;
+         return wrap(Y) ;
+        '
 
 KalmanCpp <- cxxfunction(signature(ZS="numeric"), 
                          body=kalmanSrc ,include=kalmanClass, 
@@ -293,9 +295,9 @@ print(res[,1:4])
 KalmanCpp is the RcppArmadillo based implementation in C++ shown in Listings 3 and 4. KalmanR is the R implementation shown in Listing 2; KalmanRC is the byte-compiled version of KalmanR. FirstKalmanR is a direct translation of the original Matlab implementation mentioned in Section 4; FirstKalmanRC is the corresponding byte-compiled version. Timings are averaged over 100 replications. The comparison was made using R version 2.15.1, Rcpp version 0.9.12 and RcppArmadillo version 0.3.2.0 on Ubuntu 12.04 running in 64-bit mode on a 2.67 GHz Intel i7 processor.
 
 A small example implementing a Kalman filter illustrated two key aspects. First,
-orders of magnitude of performance gains can be obtained by deploying C++ code
-along with R. Second, the ease of use and readability of the corresponding C++
-code is similar to the R code from which it was derived. This combination makes
-RcppArmadillo a compelling tool in the arsenal of applied researchers deploying
+orders of magnitude of performance gains can be obtained by deploying C++ code 
+along with R. Second, the ease of use and readability of the corresponding C++ 
+code is similar to the R code from which it was derived. This combination makes 
+RcppArmadillo a compelling tool in the arsenal of applied researchers deploying 
 computational methods in statistical computing and data analysis.
 

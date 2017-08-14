@@ -120,7 +120,29 @@ $(document).ready(function () {
 </div>
 
 
-
+<div id="c-to-r-programming" class="section level2">
+<h2>C to R programming</h2>
+<p>Examples of C, C++ code that can be called from R.</p>
+</div>
+<div id="libraries-used-and-required" class="section level2">
+<h2>Libraries used and required</h2>
+<ul>
+<li>inline</li>
+<li>Rcpp</li>
+<li>RcppArmadillo</li>
+</ul>
+</div>
+<div id="methods" class="section level2">
+<h2>Methods</h2>
+<ul>
+<li><p>Use notebooks to call C++ code with <code>sourceCpp</code></p></li>
+<li><p>Use notebook to show and run inline code</p></li>
+<li><p>C++ code located under <code>./src</code> folder contain <code>R</code> that run the functions in the same script</p></li>
+<li><p>C code cannot be run from within the C script. It msu be compiled first. Example: to run the function <code>bessel</code>:</p></li>
+</ul>
+<p><code>system(&quot;R CMD SHLIB ../src/bessel.c&quot;)</code> # compile</p>
+<p><code>dyn.load(paste(&quot;../src/bessel&quot;, .Platform$dynlib.ext, sep = &quot;&quot;))</code> # load</p>
+</div>
 
 
 

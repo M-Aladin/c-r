@@ -7,6 +7,8 @@ http://www.econr.org/BlitzExample.html
 
 
 ```{r}
+# this C++ code can also be run from the script itself
+
 require(Rcpp)
 require(RcppArmadillo)
 
