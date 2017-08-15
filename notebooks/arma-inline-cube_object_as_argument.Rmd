@@ -1,0 +1,108 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+
+## arma::cube object as function argument
+
+Source: https://github.com/RcppCore/RcppArmadillo/issues/42
+
+```{r}
+library(Rcpp)
+cppFunction("arma::cube doubleCube(arma::cube cb) { return 2*cb; }", 
+                        depends="RcppArmadillo")
+
+doubleCube(array(1:8, dim=c(2,2,2)))
+```
+
+
+## Same as above but with code separated
+
+```{r}
+library(Rcpp)
+
+src <- '
+    arma::cube doubleCube(arma::cube cb) 
+{ 
+    return 2*cb; 
+}
+'
+
+cppFunction(code = src, depends="RcppArmadillo")
+
+doubleCube(array(1:8, dim=c(2,2,2)))
+```
+
+
+## Another example of passing a cube as argument
+
+```{r}
+require(RcppArmadillo)
+require(inline)
+ 
+src <- '
+    using namespace Rcpp;
+     
+    arma::cube array2cube(arma::cube myArray );
+        
+    Rcpp::NumericVector vecArray(myArray);
+    Rcpp::IntegerVector arrayDims = vecArray.attr("dim");
+        
+    arma::cube cubeArray(vecArray.begin(), 
+                        arrayDims[0], arrayDims[1], arrayDims[2], false);
+        
+    return(wrap( cubeArray ));
+'
+
+# R function
+cubeArg = cxxfunction(signature(myArray="numeric"), 
+                       body=src, 
+                       plugin="RcppArmadillo")
+
+# run
+cubeArg(array(1:8, dim=c(2,2,2)))
+```
+
+
+## change the dimensions of an array
+https://stackoverflow.com/questions/29821737/error-when-passing-armacubeargument-to-function-using-rcpparmadillo
+
+
+```{r}
+require(Rcpp)
+require(RcppArmadillo)
+require(inline)
+
+
+src <- '
+    //#include <RcppArmadillo.h>
+
+    // [[Rcpp::depends(RcppArmadillo)]]
+    using namespace Rcpp; 
+    using namespace arma;
+
+    // [[Rcpp::export]]
+    arma::cube ssmooth(arma::mat A, arma::cube B) {
+    
+    int ns = A.n_rows;    
+    int nk = A.n_cols;    
+    int np = B.n_rows;    
+    
+    arma::mat C  = arma::zeros<mat>(nk, ns);
+    arma::cube D = arma::zeros<cube>(nk, nk, ns);
+    
+    return D;
+}
+'
+
+# cppFunction(code = src, depends="RcppArmadillo")
+
+# R function
+cubeSmooth = cppFunction(code=src, 
+                       depends="RcppArmadillo")
+
+cubeSmooth(matrix(10, nrow=5,ncol = 2), array(1:8, dim=c(5,4,2)))
+```
+

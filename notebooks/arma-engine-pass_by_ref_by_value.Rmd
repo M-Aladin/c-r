@@ -1,0 +1,71 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r engine= 'Rcpp'}
+
+// [[Rcpp::depends(RcppArmadillo)]]
+
+#include <RcppArmadillo.h>
+#include <Rcpp.h>  
+
+using namespace Rcpp; 
+
+/* 
+                         By value
+*/ 
+
+// First passing Armadillo matrices by value
+void doStuff1(arma::mat c, arma::mat d){
+  double x = c(1,1) + d(1,1);
+} 
+
+// [[Rcpp::export]]
+void twoMatrices1(NumericMatrix A, NumericMatrix B) {
+    arma::mat M1(A.begin(), A.nrow(), A.ncol(), false);
+    arma::mat M2(B.begin(), B.nrow(), B.ncol(), false);
+  
+    for (int i = 0; i < 100; i++){
+      doStuff1(M1, M2);
+    }
+} 
+
+/* 
+                        By reference
+*/ 
+
+// Now passign Armadillo matrices by reference
+void doStuff2(const arma::mat& c, const arma::mat& d){
+  double x = c(1,1) + d(1,1);
+}
+
+// [[Rcpp::export]]
+void twoMatrices2(NumericMatrix A, NumericMatrix B) {
+    arma::mat M1(A.begin(), A.nrow(), A.ncol(), false);
+    arma::mat M2(B.begin(), B.nrow(), B.ncol(), false);
+  
+    for (int i = 0; i < 100; i++){
+      doStuff2(M1, M2);
+    }
+}
+
+```
+
+Now I am going to call twoMatrices1() and twoMatrices2() from R, using rbenchmark package to compare their speed. I am going to use fairly large matrices (100x100), so the cost of moving them around is significant.
+
+```{r}
+library(RcppArmadillo)
+library(rbenchmark)
+ 
+# sourceCpp("matrix_code.cpp")
+ 
+x = matrix(1,500,500)
+y = matrix(1,500,500)
+ 
+res <- benchmark(twoMatrices1(x, y), twoMatrices2(x, y), 
+                 columns = c("test", "replications", "elapsed", "relative"), 
+                 order="relative", replications=1000)
+print(res)
+```
+As you can see, passing two 100x100 Armadillo matrices by value is more than 100 times slower than passing these matrices by reference. Perhaps not a very surprising outcome, but an important one to keep in mind when porting R code to C++.

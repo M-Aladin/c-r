@@ -1,0 +1,75 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r engine= 'Rcpp'}
+#include <RcppArmadillo.h>
+#include <Rcpp.h>  
+
+//[[Rcpp::depends(RcppArmadillo)]]
+
+using namespace Rcpp; 
+using namespace arma; 
+
+// namespaces
+// #include <iostream>
+// using namespace std;
+
+namespace first
+{
+    int var = 5;
+}
+
+namespace second
+{
+    double var = 3.1416;
+}
+
+// [[Rcpp::export]]
+int main () {
+    cout << first::var << endl;
+    cout << second::var << endl;
+return 0;
+}
+
+
+```
+
+
+```{r}
+main()
+```
+
+
+
+```{r engine= 'Rcpp'}
+#include <RcppArmadillo.h>
+
+//[[Rcpp::depends(RcppArmadillo)]]
+
+
+// namespaces
+#include <iostream>
+using namespace std;
+
+namespace first
+{
+    int var = 5;
+}
+
+namespace second
+{
+    double var = 3.1416;
+}
+
+
+// [[Rcpp::export]]
+int main2() {
+    cout << first::var << endl;
+    cout << second::var << endl;
+return 0;
+}
+
+```
+

@@ -1,0 +1,43 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+https://stackoverflow.com/questions/12569992/constructing-3d-array-in-rcpp/12570932#12570932
+
+## The Rcpp way
+
+```{r engine='Rcpp'}
+#include <Rcpp.h>
+using namespace Rcpp;
+
+//[[Rcpp::export]]
+NumericVector arrayC(NumericVector input, IntegerVector dim) { 
+  input.attr("dim") = dim;
+  return input;
+}
+
+```
+
+
+```{r}
+x = 1:8
+arrayC(x, c(2,2,2))
+```
+
+## Another simpler way with cppFunction
+
+```{r}
+library("Rcpp")
+
+cppFunction(code='
+NumericVector arrayC(NumericVector input, IntegerVector dim) { 
+  input.attr("dim") = dim;
+  return input;
+}
+')
+
+x = 1:8
+arrayC(x, c(2,2,2))
+```
+
