@@ -1,0 +1,83 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+https://stackoverflow.com/questions/19106032/how-can-i-replicate-random-draws-in-rcpparmadillo\
+
+
+
+```{r engine='Rcpp'}
+#include <RcppArmadillo.h>
+
+//[[Rcpp::depends(RcppArmadillo)]]
+
+// [[Rcpp::export]]
+void armadillo_set_seed_random() {
+    arma::arma_rng::set_seed_random();              // set the seed to a random value
+} 
+
+// [[Rcpp::export]]
+void armadillo_set_seed(unsigned int val) {
+    Rcpp::Rcout << "Setting value " << val << std::endl;
+    arma::arma_rng::set_seed(val);                  // set the seed to given value
+} 
+
+```
+
+
+```{r}
+library(Rcpp)
+library(RcppArmadillo)
+
+set.seed(42)
+RcppArmadillo:::armadillo_set_seed(42)
+
+evalCpp("arma::mat(2,2).randn()", depends="RcppArmadillo")
+
+set.seed(42)
+evalCpp("arma::mat(2,2).randn()", depends="RcppArmadillo")
+```
+
+```{r}
+set.seed(42)
+RcppArmadillo:::armadillo_set_seed(42)
+evalCpp("arma::mat(2,2).randn()", depends="RcppArmadillo")
+
+set.seed(42)
+# RcppArmadillo:::armadillo_set_seed(42)
+evalCpp("arma::mat(2,2).randn()", depends="RcppArmadillo")
+```
+
+```{r}
+set.seed(42)
+RcppArmadillo:::armadillo_set_seed(42)
+evalCpp("arma::cube(2,2, 2).randn()", depends="RcppArmadillo")
+
+set.seed(42)
+# RcppArmadillo:::armadillo_set_seed(42)
+evalCpp("arma::cube(2,2, 2).randn()", depends="RcppArmadillo")
+```
+
+
+## This doesn't preserve the seed
+If we don't set the seed in R first, the C++ function will not repeat the same numbers.
+
+```{r}
+
+
+cppFunction('arma::mat foo(unsigned int seed) { 
+                arma::arma_rng::set_seed(seed); 
+                return arma::mat(2,2).randn(); }', depends="RcppArmadillo")
+
+set.seed(42)
+foo(42)
+
+# set.seed(42)
+foo(42)
+```
+
+```{r}
+foo(42)
+```
+

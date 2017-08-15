@@ -1,0 +1,21 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+http://www.econr.org/BlitzExample.html
+
+
+```{r}
+# this C++ code can also be run from the script itself
+
+require(Rcpp)
+require(RcppArmadillo)
+
+sourceCpp("../src/armaCube.cpp")
+
+A = array(1:60, c(2,5,6))
+A2 = array(120:60, c(2,5,6))
+all.equal(f(A, A2), A+A2)
+```
+

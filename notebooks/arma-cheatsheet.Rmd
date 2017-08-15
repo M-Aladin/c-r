@@ -1,0 +1,172 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library('Rcpp')
+library('inline')
+
+rcpp_inc <- '
+    using namespace Rcpp;
+    using namespace arma;
+'
+
+m1 <- matrix(1:16,  nr=4)
+m2 <- matrix(17:32, nr=4)
+v1 <- 1:10
+v2 <- 11:20
+
+a1 <- array(1:24, dim = c(4,3,2))
+a2 <- array(25:48, dim = c(4,3,2))
+m1
+a1
+```
+
+## join matrices
+
+```{r}
+src <- '
+    mat m1 = as<mat>(m1in);
+    mat m2 = as<mat>(m2in);
+    mat out = join_cols(m1, m2);
+    return(wrap(out));
+'
+
+fn <- cxxfunction(signature(m1in="numeric", m2in="numeric"), 
+                  src, 
+                  plugin='RcppArmadillo', rcpp_inc)
+
+res  <- fn(m1, m2)
+test <- rbind(m1, m2)
+all.equal(test, res)
+test
+```
+
+## join cube slices
+
+```{r}
+library(inline)
+library(Rcpp)
+library(RcppArmadillo)
+
+# join_slices( cube C, cube D ) 
+# for two cubes C and D: join the slices of C with the slices of D; cubes C and D must have # the same number of rows and columns (ie. all slices must have the same size)
+
+src <- '
+    cube c1 = as<cube>(c1in);
+    cube c2 = as<cube>(c2in);
+
+    //int ns = c1.n_slices;
+    cout << "cube c1 has " << c1.n_slices << " slices" << endl;
+    cout << "cube c2 has " << c2.n_slices << " slices" << endl;
+
+    cube out = join_slices(c1, c2);
+    cout << "cube out has " << out.n_slices << " slices" << endl;
+    return(wrap(out));
+'
+
+fn <- cxxfunction(signature(c1in="numeric", c2in="numeric"), 
+                  src, 
+                  plugin='RcppArmadillo', rcpp_inc)
+
+res  <- fn(a1, a2)
+res
+
+test <- rbind(a1, a2)
+test <- array(c(a1, a2), dim = c(nrow(a1), ncol(a2), dim(a1)[3]*2))
+# test
+all.equal(test, res)
+```
+
+
+
+## add matrix to a cube
+
+```{r}
+
+src <- '
+    cube c1 = as<cube>(c1in);
+    mat  m1 = as<mat>(m1in);
+
+    //IntegerVector d1(c1.n_rows, c1.n_cols, c1.n_slices);
+
+    // Normal Matrix dimensions
+    unsigned int xdim = c1.n_rows;
+  
+    unsigned int ydim = c1.n_cols;
+  
+    // Depth of Array
+    unsigned int tdim = c1.n_slices;
+
+
+    cout << "cube c1 has " << c1.n_slices << " slices" << endl;
+
+    // resulting cube
+    cube out(c1.begin(), xdim, ydim, tdim+1);
+
+    // reshape matrix to size of cube slices
+    mat rm1 = reshape(m1, xdim, ydim);
+
+    // join slice of cube plus reshaped matrix
+    out = join_slices(c1, rm1);
+    
+    cout << "cube out has " << out.n_slices << " slices" << endl;
+    return(wrap(out));
+'
+
+fn <- cxxfunction(signature(c1in="numeric", m1in="numeric"), 
+                  src, 
+                  plugin='RcppArmadillo', rcpp_inc)
+
+res  <- fn(a1, m1)
+res
+test <- array(c(a1, m1), dim = c(4,3,3))
+all.equal(test, res)
+```
+
+
+
+
+## Extract part of a cube
+
+```{r}
+
+src <- '
+    cube c1 = as<cube>(c1in);
+    IntegerVector v1(v1in);
+    IntegerVector v2(v2in);
+
+    
+    cube out = c1;
+    //c1.print("c1:");
+    
+    //v1.each( [](vec& a){ a.print(); } );     // lambda function with non-const vector
+
+    cout << "vector v1 has " << v1 << "values" << endl;
+    cout << "vector v1 has " << v1.size() << " elements" << endl;
+    cout << "vector v2 has " << v2.size() << " elements" << endl;
+
+
+    // join slice of cube plus reshaped matrix
+    out = c1.subcube(v1[0],v1[1],v1[2],  v2[0], v2[1], v2[2]);
+    
+    //cout << "cube out has " << out.n_slices << " slices" << endl;
+    return(wrap(out));
+'
+
+fn <- cxxfunction(signature(c1in="numeric", v1in="integer", v2in="integer"), 
+                  src, 
+                  plugin='RcppArmadillo', rcpp_inc)
+
+
+u1 <- c(0,0,0)
+u2 <- c(1,1,1)
+res  <- fn(a1, u1, u2)
+res
+# test <- array(c(a1, m1), dim = c(4,3,3))
+# all.equal(test, res)
+```
+
+

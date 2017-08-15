@@ -65,3 +65,18 @@ NumericVector convolve2D(NumericMatrix input, NumericMatrix kernel) {
 
     return out;
 }
+
+
+/*** R
+m1 <- matrix(1, nrow=3, ncol=4)
+m2 <- matrix(1, nrow=3, ncol=4)
+    
+convolve2D(m1, m2)
+# as in Matlab
+# 
+# 1     2     3     4     3     2     1
+# 2     4     6     8     6     4     2
+# 3     6     9    12     9     6     3
+# 2     4     6     8     6     4     2
+# 1     2     3     4     3     2     1
+*/
