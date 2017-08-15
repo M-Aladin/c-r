@@ -122,7 +122,8 @@ $(document).ready(function () {
 
 <div id="c-to-r-programming" class="section level2">
 <h2>C to R programming</h2>
-<p>Examples of C, C++ code that can be called from R.</p>
+<p>Examples of C, C++ functions that can be called from R.<br />
+Mainly oriented to the use of C++ Armadillo.</p>
 </div>
 <div id="libraries-used-and-required" class="section level2">
 <h2>Libraries used and required</h2>
@@ -130,18 +131,61 @@ $(document).ready(function () {
 <li>inline</li>
 <li>Rcpp</li>
 <li>RcppArmadillo</li>
+<li>rbenchmark</li>
+<li>compiler</li>
 </ul>
 </div>
 <div id="methods" class="section level2">
 <h2>Methods</h2>
 <ul>
-<li><p>Use notebooks to call C++ code with <code>sourceCpp</code></p></li>
-<li><p>Use notebook to show and run inline code</p></li>
+<li>Use notebooks to:
+<ul>
+<li>call <code>C++</code> code with <code>sourceCpp</code></li>
+<li>show and run <code>C</code> code with <code>inline</code></li>
+<li>write directly C++ code in R chunks using <code>engine='Rcpp'</code></li>
+<li>run inline <code>C++</code> code with the <code>cxxfunction</code> function</li>
+</ul></li>
+<li>Use C, C++ files:
+<ul>
+<li>when these codes will be called from a notebook</li>
+<li>the C++ files can have R calls</li>
+</ul></li>
 <li><p>C++ code located under <code>./src</code> folder contain <code>R</code> that run the functions in the same script</p></li>
-<li><p>C code cannot be run from within the C script. It msu be compiled first. Example: to run the function <code>bessel</code>:</p></li>
+<li><p><code>R</code> code cannot be run from within the <code>C</code> file. It must be compiled first and called from a notebook or from an <code>R</code> script</p></li>
 </ul>
-<p><code>system(&quot;R CMD SHLIB ../src/bessel.c&quot;)</code> # compile</p>
-<p><code>dyn.load(paste(&quot;../src/bessel&quot;, .Platform$dynlib.ext, sep = &quot;&quot;))</code> # load</p>
+<blockquote>
+<p>Example: to run the function <code>bessel</code>:</p>
+</blockquote>
+<pre class="r"><code>system(&quot;R CMD SHLIB ../src/bessel.c&quot;)                             # compile
+
+dyn.load(paste(&quot;../src/bessel&quot;, .Platform$dynlib.ext, sep = &quot;&quot;))  # load</code></pre>
+</div>
+<div id="comparison-of-r-vs-c" class="section level2">
+<h2>Comparison of R vs C++</h2>
+<p>There is a notebook, <code>Kalman.Rmd</code>, that compares different implementations of R code vs a single C++ program. The example uses C++ classes.</p>
+<p>Other examples will have a description <code>benchmark</code> when performing a comparison between R functions and C++ functions.</p>
+</div>
+<div id="findings" class="section level2">
+<h2>Findings</h2>
+<ul>
+<li><p><code>RcppArmadillo</code> is easier to understand and program than pure C++. It contains a types abstracton that makes it similar to Matlab/Octave.</p></li>
+<li><p><code>Rcpp</code> can achieve the same results but would take mode development time than <code>RcppArmadillo</code></p></li>
+<li><p><code>RcppArmadillo</code> has a 3D type called <code>cube</code> which is a tensor of the third-level. Not all the matrix functions are implemented for the <code>cube</code> type.</p></li>
+<li><p><code>RcppArmadillo</code> allows to write variables directly to files. It is also easy to print to the console using <code>cout &lt;&lt;</code> notation</p></li>
+<li><p>It is better to code the algorithm first in <code>R</code> and the translate it to C++</p></li>
+<li><p><code>Rcpp</code> and <code>RcppArmadillo</code> types can be mixed but some do not carry over exactly well</p></li>
+</ul>
+</div>
+<div id="observations" class="section level2">
+<h2>Observations</h2>
+<ul>
+<li><p>Keep always in mind the array/matrix/vector indices; in C and C++ the index starts at <code>0</code></p></li>
+<li><p>C code is called with the function .C()</p></li>
+</ul>
+</div>
+<div id="other" class="section level2">
+<h2>Other</h2>
+<p>C++ 11 being used as well in couple of examples.</p>
 </div>
 
 
