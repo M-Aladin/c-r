@@ -6,26 +6,6 @@ output: html_notebook
 https://faculty.washington.edu/heagerty/Courses/b572/public/rccp_demo.R
 
 
-```{r}
-## A classical way of calling C/C++ using .Call()
-## Learn more by (re)reading "Writing R Extentions"
-
-## 1. Show the source of "aux_mat.c"
-## 2. Create a shared library: > R CMD SHLIB aux_mat.c
-
-system("R CMD SHLIB ../src/aux_mat.c")
-
-# ## 3. Load the shared library into R
-# dyn.load("../src/aux_mat")
-# 
-# ## 4. Call C function "aut_mat"
-# test.vec = runif(5)
-# test.scalar = runif(1)
-# 
-# test.output1 = aux.mat(test.vec, test.scalar)
-# test.output2 = .Call("aux_mat", test.vec, test.scalar)
-```
-
 
 ```{r}
 library(inline)
@@ -65,39 +45,16 @@ matexp.code  = '
     
     return Rcpp::wrap(eigen_vectors*(arma::diagmat(arma::exp(eigen_values)))*(arma::inv(eigen_vectors)));'
 
-matexp.eigen.rcpp = cxxfunction(signature(eigenlist="list"), body=matexp.code,plugin="RcppArmadillo")
+matexp.eigen.rcpp = cxxfunction(signature(eigenlist="list"), 
+                                body = matexp.code, 
+                                plugin="RcppArmadillo")
 
 test.matexp2 = matexp.eigen.rcpp(A.eigen)
 
-system.time(for (i in 1:10000) test.matexp1=matexp.eigen(A.eigen))
-system.time(for (i in 1:10000) test.matexp2=matexp.eigen.rcpp(A.eigen))
+system.time(for (i in 1:1000) test.matexp1=matexp.eigen(A.eigen))
+system.time(for (i in 1:1000) test.matexp2=matexp.eigen.rcpp(A.eigen))
 
 ```
 
 
-```{r}
-## 3-D arrays in R = cubes in Armadillo
-library(inline)
-library(RcppArmadillo)
-
-src <- '
-      using namespace Rcpp;
-    
-    NumericVector vecArray(myArray);
-    IntegerVector arrayDims(myDims);
-    
-    arma::cube cubeArray(vecArray.begin(), arrayDims[0], arrayDims[1], arrayDims[2], false);
-    
-    //change one element in the array/cube
-    cubeArray(0,0,0) = 518;  
-    
-    return(wrap(cubeArray));  
-'
-
-readCube = cxxfunction(signature(myArray="numeric", myDims="integer"),body=src, plugin="RcppArmadillo")
-
-testArray = array(rnorm(18), dim=c(3,3,2))
-print(testArray)
-readCube(testArray,dim(testArray))
-```
 

@@ -6,6 +6,26 @@ output: html_notebook
 https://faculty.washington.edu/heagerty/Courses/b572/public/rccp_demo.R
 
 
+```{r}
+## A classical way of calling C/C++ using .Call()
+## Learn more by (re)reading "Writing R Extentions"
+
+## 1. Show the source of "aux_mat.c"
+## 2. Create a shared library: > R CMD SHLIB aux_mat.c
+
+system("R CMD SHLIB ../src/aux_mat.c")
+
+# ## 3. Load the shared library into R
+# dyn.load("../src/aux_mat")
+# 
+# ## 4. Call C function "aut_mat"
+# test.vec = runif(5)
+# test.scalar = runif(1)
+# 
+# test.output1 = aux.mat(test.vec, test.scalar)
+# test.output2 = .Call("aux_mat", test.vec, test.scalar)
+```
+
 
 ```{r}
 library(inline)
@@ -49,8 +69,8 @@ matexp.eigen.rcpp = cxxfunction(signature(eigenlist="list"), body=matexp.code,pl
 
 test.matexp2 = matexp.eigen.rcpp(A.eigen)
 
-system.time(for (i in 1:1000) test.matexp1=matexp.eigen(A.eigen))
-system.time(for (i in 1:1000) test.matexp2=matexp.eigen.rcpp(A.eigen))
+system.time(for (i in 1:10000) test.matexp1=matexp.eigen(A.eigen))
+system.time(for (i in 1:10000) test.matexp2=matexp.eigen.rcpp(A.eigen))
 
 ```
 
