@@ -2,9 +2,10 @@
 using namespace Rcpp;
 using namespace RcppArmadillo;
 using namespace arma;
-//[[Rcpp::depends(RcppArmadillo)]]
 
+//[[Rcpp::depends(RcppArmadillo)]]
 //[[Rcpp::export]]
+
 double inner (arma::vec x,
                arma::vec y
 ) {

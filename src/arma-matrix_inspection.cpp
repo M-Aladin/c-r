@@ -1,7 +1,9 @@
 #include <RcppArmadillo.h>
 using namespace Rcpp;
 
+//[[Rcpp::depends(RcppArmadillo)]]
 //[[Rcpp::export]]
+
 int a7 (arma::mat x) {
     // More useful than Rcout. No need to loop through elements.
     x.print() ;

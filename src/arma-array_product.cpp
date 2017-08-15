@@ -2,10 +2,10 @@
 using namespace Rcpp;
 using namespace RcppArmadillo;
 using namespace arma;
+
 //[[Rcpp::depends(RcppArmadillo)]]
-
-
 //[[Rcpp::export]]
+
 cube product (cube x, cube y) {
     
     arma::cube r = x %  y; // %	array product: element-wise multiplication of two objects
