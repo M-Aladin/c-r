@@ -77,7 +77,7 @@ require(inline)
 
 
 src <- '
-    #include <RcppArmadillo.h>
+    //#include <RcppArmadillo.h>
 
     // [[Rcpp::depends(RcppArmadillo)]]
     using namespace Rcpp; 

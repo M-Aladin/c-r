@@ -47,6 +47,10 @@ test
 ## join cube slices
 
 ```{r}
+library(inline)
+library(Rcpp)
+library(RcppArmadillo)
+
 # join_slices( cube C, cube D ) 
 # for two cubes C and D: join the slices of C with the slices of D; cubes C and D must have # the same number of rows and columns (ie. all slices must have the same size)
 
@@ -121,6 +125,8 @@ res
 test <- array(c(a1, m1), dim = c(4,3,3))
 all.equal(test, res)
 ```
+
+
 
 
 ## Extract part of a cube

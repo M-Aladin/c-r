@@ -1,0 +1,532 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+## Displace a row down in array matrices
+
+```{r engine='Rcpp'}
+#include <RcppArmadillo.h>
+using namespace Rcpp;
+using namespace RcppArmadillo;
+using namespace arma;
+
+//[[Rcpp::depends(RcppArmadillo)]]
+//[[Rcpp::export]]
+
+cube up_CI(mat a){
+    int m = a.n_rows;    // get rows from matrix a
+    int n = a.n_cols;    // get cols from matrix a
+    
+    cube C = cube(m, n, m, fill::zeros);  // create array and fill w/zeros
+    
+    C.slice(0) = a;  // output array 1st matrix is matrix a
+    
+    for (int slices = 1; slices < m; ++slices){   // move through slices
+        for (int j = 0; j < n; ++j) {             // move through cols
+            for (int i = slices; i < m; ++i) {    // move through rows
+                // extract subcubes
+                vec S = C.subcube(i - slices, j, 0, i, j, 0);
+                // Armadillo product function arma::prod(S)
+                C(i, j, slices) = prod(S);
+            }
+        }
+    }
+    return(C);
+}
+
+
+```
+
+```{r}
+mx <- matrix(10, nrow=5, ncol=2)    # R array to send
+up_CI(mx)
+```
+
+
+## Multivariate normal
+
+```{r engine='Rcpp'}
+#include <RcppArmadillo.h>
+// [[Rcpp::depends(RcppArmadillo)]]
+
+using namespace Rcpp;
+
+// [[Rcpp::export]]
+arma::mat mvrnormArma(int n, arma::vec mu, arma::mat sigma) {
+   int ncols = sigma.n_cols;
+   arma::mat Y = arma::randn(n, ncols);
+   return arma::repmat(mu, 1, n).t() + Y * arma::chol(sigma);
+}
+```
+
+
+```{r}
+sigma <- matrix(c(1, 0.9, -0.3, 0.9, 1, -0.4, -0.3, -0.4, 1), ncol = 3)
+mu <- c(10, 5, -3)
+
+mvrnormArma(50, mu, sigma)
+
+colMeans(mvrnormArma(50, mu, sigma))
+```
+
+
+## Join slices of two cubes/arrays
+
+```{r engine='Rcpp'}
+/* for two cubes C and D: join the slices of C with the slices of D; cubes C 
+ * and D must have the same number of rows and columns (ie. all slices must 
+ * have the same size)
+ */ 
+    
+#include <RcppArmadillo.h>
+using namespace Rcpp;
+using namespace RcppArmadillo;
+using namespace arma;
+
+//[[Rcpp::depends(RcppArmadillo)]]
+//[[Rcpp::export]]
+
+cube joinSlices( cube c1, cube c2 ) {
+
+
+    //int ns = c1.n_slices;
+    cout << "cube c1 has " << c1.n_slices << " slices" << endl;
+    cout << "cube c2 has " << c2.n_slices << " slices" << endl;
+
+    cube out = join_slices(c1, c2);
+    
+    cout << "cube out has " << out.n_slices << " slices" << endl;
+    return out;
+}
+```
+
+
+```{r}
+a1 <- array(1:24, dim = c(4,3,2))
+a2 <- array(25:48, dim = c(4,3,2))
+
+joinSlices(a1, a2)
+```
+
+## column means of a cube (colMeans)
+
+```{r engine='Rcpp'}
+#include <RcppArmadillo.h>
+using namespace Rcpp; 
+using namespace arma;
+
+//[[Rcpp::depends(RcppArmadillo)]]
+//[[Rcpp::export]]
+
+mat cubeColMeans(arma::cube X){
+    int nSlice = X.n_slices;
+    int nCol = X.n_cols;
+    int nRow = X.n_rows;
+    
+    arma::vec Vtmp(nCol);
+    arma::mat Mtmp(nRow, nCol);
+    arma::mat Means(nCol, nSlice);
+    
+    for (int i = 0; i < nSlice; i++){
+        Mtmp = X.slice(i);
+        for(int j = 0; j < nCol; j++){
+            Vtmp(j) = sum(Mtmp.col(j)) / nRow; 
+            // Rcout << "Vtmp: \n"   << Vtmp(j) << std::endl ;
+        }
+        
+        Means.col(i) = Vtmp;
+        // Rcout << "Means.col: \n"   << Means.col(i) << std::endl ;
+        
+    }
+    return(Means);
+}
+
+```
+
+
+```{r}
+xl <- array(1:100, c(5, 10, 2))
+# xl
+
+
+# R equivalent function
+# rcubeColMeans <- function(x) t(apply(x, 2, colMeans)) # another way
+rcubeColMeans <- function(x) apply(x, c(2,3), mean)
+
+identical(rcubeColMeans(xl), cubeColMeans(xl))
+
+```
+
+## rowSums
+
+```{r engine='Rcpp'}
+#include <RcppArmadillo.h>
+using namespace Rcpp; 
+using namespace arma;
+
+//[[Rcpp::depends(RcppArmadillo)]]
+//[[Rcpp::export]]
+
+mat cubeRowMeans(arma::cube X){
+    int nSlice = X.n_slices;
+    int nCol = X.n_cols;
+    int nRow = X.n_rows;
+    
+    arma::vec Vtmp(nRow);          // vector with size of the rows
+    arma::mat Mtmp(nCol, nRow);    // extraction matrix with as-is dimensions
+    arma::mat Means(nRow, nSlice); // matrix with size nRow by number of slices
+    
+    for (int k = 0; k < nSlice; k++){
+        Mtmp = X.slice(k);
+        // Rcout << "Matrix: \n"   << Mtmp << std::endl ;
+        for(int i = 0; i < nRow; i++){
+            Vtmp(i) = sum(Mtmp.row(i)) / nCol; 
+            // Rcout << "Vtmp: \n"   << Vtmp(i) << std::endl ;
+        }
+        Means.col(k) = Vtmp;
+        //Rcout << "Means.col: \n"   << Means.col(k) << std::endl ;
+    }
+    return(Means);
+}
+
+```
+
+
+```{r}
+xl <- array(1:100, c(5, 10, 2))
+# xl
+
+# R equivalent function
+rcubeRowMeans <- function(x) apply(x, c(1,3), mean)
+identical(rcubeRowMeans(xl), cubeRowMeans(xl))
+```
+
+
+## add a matrix slice to a cube
+
+```{r engine='Rcpp'}
+#include <RcppArmadillo.h>
+using namespace Rcpp; 
+using namespace RcppArmadillo;
+using namespace arma;
+
+
+//[[Rcpp::depends(RcppArmadillo)]]
+//[[Rcpp::export]]
+
+cube add_matrix_slice(cube c1, mat m1) {
+
+    // Normal Matrix dimensions
+    int xdim = c1.n_rows;
+    int ydim = c1.n_cols;
+    int tdim = c1.n_slices;  // Depth of Array
+
+
+    cout << "cube c1 had before " << c1.n_slices << " slices" << endl;
+
+    // resulting cube
+    cube out(c1.begin(), xdim, ydim, tdim+1);
+
+    // reshape matrix to size of cube slices
+    mat rm1 = reshape(m1, xdim, ydim);         // this is critical !!!
+
+    // join slice of cube plus reshaped matrix
+    out = join_slices(c1, rm1);
+    
+    cout << "cube out has " << out.n_slices << " slices now" << endl;
+    return out;
+}    
+```
+
+
+```{r}
+m1 <- matrix(100:115,  nr=4)           # matrix is 4x4
+a1 <- array(1:24, dim = c(4,3,2))
+
+res  <- add_matrix_slice(a1, m1)
+res
+
+test <- array(c(a1, m1), dim = c(4,3,3))
+all.equal(test, res)
+```
+
+
+## add a shifted matrix slice to a cube
+
+```{r engine='Rcpp'}
+#include <RcppArmadillo.h>
+using namespace Rcpp; 
+using namespace RcppArmadillo;
+using namespace arma;
+
+
+//[[Rcpp::depends(RcppArmadillo)]]
+//[[Rcpp::export]]
+
+cube add_matrix_shift_slice(cube c1, mat m1, int N=0, int dim=0) {
+
+    // Normal Matrix dimensions
+    int xdim = c1.n_rows;
+    int ydim = c1.n_cols;
+    int tdim = c1.n_slices;  // Depth of Array
+
+
+    cout << "cube c1 had before " << c1.n_slices << " slices" << endl;
+
+    // resulting cube
+    cube out(c1.begin(), xdim, ydim, tdim+1);
+     
+    /* arma::shift(X, N, dim)
+     * For matrix X, generate a copy of the matrix with the elements shifted by 
+     * N positions in each column (dim=0), or each row (dim=1)
+     * N can be positive or negative
+     * The dim argument is optional; by default dim=0 is used     
+     */
+    mat rm1 = shift(m1, N, dim);
+    // Rcout << "rm1: \n"   << rm1 << std::endl ;
+
+    // reshape matrix to size of cube slices
+    rm1 = reshape(rm1, xdim, ydim);         // this is critical !!!
+
+    // join slice of cube plus reshaped matrix
+    out = join_slices(c1, rm1);
+    
+    cout << "cube out has " << out.n_slices << " slices now" << endl;
+    return out;
+}    
+```
+
+
+```{r}
+m1 <- matrix(100:199,  nr=10)           # matrix is 4x4
+m1
+a1 <- array(1:24, dim = c(4,3,2))
+
+cat("no shift, default values \n")
+add_matrix_shift_slice(a1, m1)
+
+# shift 2 columns to the left
+cat("shift 2 columns to the left \n")
+add_matrix_shift_slice(a1, m1, N = 2, dim = 1)
+
+# shift 6 columns to the right
+cat("shift 6 columns to the right \n")
+add_matrix_shift_slice(a1, m1, N = -6, dim = 1)
+```
+
+
+
+```{r engine='Rcpp'}
+#include <RcppArmadillo.h>
+using namespace Rcpp; 
+using namespace RcppArmadillo;
+using namespace arma;
+
+
+//[[Rcpp::depends(RcppArmadillo)]]
+//[[Rcpp::export]]
+
+cube extract_cube(cube c1, vec v1, vec v2) {
+    
+    cube out = c1;
+    //c1.print("c1:");
+    
+    //v1.each( [](vec& a){ a.print(); } );     // lambda function with non-const vector
+
+    cout << "vector v1 has " << v1 << "values" << endl;
+    cout << "vector v1 has " << v1.size() << " elements" << endl;
+    cout << "vector v2 has " << v2.size() << " elements" << endl;
+
+
+    // join slice of cube plus reshaped matrix
+    out = c1.subcube(v1[0],v1[1],v1[2],  v2[0], v2[1], v2[2]);
+    
+    //cout << "cube out has " << out.n_slices << " slices" << endl;
+    return out;
+}
+```
+
+
+```{r}
+a1 <- array(1:24, dim = c(4,3,2))
+a1
+u1 <- c(0,0,0)   # from
+u2 <- c(1,1,1)   # to
+res  <- extract_cube(a1, u1, u2)
+res
+```
+
+## calculates the mutual information of an arbitrary joint distribution.
+http://www.mjdenny.com/Rcpp_Intro.html
+
+```{r engine='Rcpp'}
+#include <RcppArmadillo.h>
+using namespace Rcpp; 
+
+//[[Rcpp::depends(RcppArmadillo)]]
+//[[Rcpp::export]]
+
+double Mutual_Information(arma::mat joint_dist) {
+    
+    joint_dist = joint_dist/sum(sum(joint_dist));
+    double mutual_information = 0;
+    int num_rows = joint_dist.n_rows;
+    int num_cols = joint_dist.n_cols;
+    arma::mat colsums = sum(joint_dist,0);
+    arma::mat rowsums = sum(joint_dist,1);
+    for(int i = 0; i < num_rows; ++i){
+        for(int j = 0; j <  num_cols; ++j){
+            double temp = log((joint_dist(i,j)/(colsums[j]*rowsums[i])));
+            if(!std::isfinite(temp)){
+                temp = 0;
+            }
+            mutual_information += joint_dist(i,j) * temp; 
+        }
+    } 
+    return mutual_information;    
+}
+```
+
+
+```{r}
+Mutual_Information(matrix(1:600, nrow = 10))
+```
+
+
+## rdirichlet in Rcpp -- 3/16/16
+http://www.mjdenny.com/blog.html#4-5-15
+
+A paper (and R package) I am currently working on requires me to sample quite a bit from a Dirichlet distribution. There are a number of nice options for doing this in many languages, including R, but as far as I am aware, none of these interface nicely with Rcpp (and are easily portable in an R package). While browsing StackExchange and Dirk Eddelbuettel's website, hoping to find a magical solution, I came across a link to the Wikipedia page on the Dirichlet_distribution. It points to a pretty simple way to sample from a Dirichlet distribution using a bunch of Gammas, which Rcpp does provide, so I decided to code it up myself! Lets take a look at the source code :
+
+
+```{r engine='Rcpp'}
+// [[Rcpp::depends(RcppArmadillo)]]
+#include <RcppArmadillo.h>
+
+// [[Rcpp::export]]
+arma::mat rdirichlet_cpp(int num_samples,
+                         arma::vec alpha_m) {
+    int distribution_size = alpha_m.n_elem;
+    // each row will be a draw from a Dirichlet
+    arma::mat distribution = arma::zeros(num_samples, distribution_size);
+
+    for (int i = 0; i < num_samples; ++i) {
+        double sum_term = 0;
+        // loop through the distribution and draw Gamma variables
+        for (int j = 0; j < distribution_size; ++j) {
+            double cur = R::rgamma(alpha_m[j],1.0);
+            distribution(i,j) = cur;
+            sum_term += cur;
+        }
+        // now normalize
+        for (int j = 0; j < distribution_size; ++j) {
+            distribution(i,j) = distribution(i,j)/sum_term;
+        }
+    }
+    return(distribution);
+}
+```
+
+
+I decided to try this out against the rdirichlet() functions included in the gtools and MCMCpack packages. It looks like about a 25% speedup. The more important thing is that this code is easy to stick in your Rcpp project, which makes for much faster sampling.
+
+```{r}
+alpha <- 5
+topics <- 100
+alpha_m <- rep(alpha/topics,topics)
+ 
+system.time({
+     temp <- gtools::rdirichlet(1000000, alpha_m)
+})
+
+ 
+system.time({
+     temp2 <- MCMCpack::rdirichlet(1000000, alpha_m)
+ })
+
+system.time({
+     temp2 <- rdirichlet_cpp(1000000, alpha_m)
+ })
+
+
+```
+
+Which produces a plot that should look something like the following:
+
+```{r}
+alpha <- 5
+draws <- 1
+dimen <- 20
+alpha_m <- rep(alpha/dimen, dimen)
+
+x <- rdirichlet_cpp(draws,alpha_m)
+
+ dat <- data.frame(Category = factor(1:dimen),
+                   Density = as.vector(t(x)))
+
+ library(ggplot2)
+ ggplot(dat,aes(x = Category,y = Density,ymin = 0, ymax = Density)) +
+     geom_point(colour = "darkblue",fill = "darkblue") +
+     geom_linerange(colour = "darkblue") +
+     scale_y_continuous(lim=c(0,0.5))
+```
+
+
+## QR decomposition
+> This is not giving the same results. Programmatically works.
+
+https://stackoverflow.com/questions/10964047/qr-decomposition-in-rcpparmadillo
+
+```{r engine='Rcpp'}
+#include <RcppArmadillo.h>
+using namespace Rcpp; 
+using namespace RcppArmadillo;
+using namespace arma;
+
+//[[Rcpp::depends(RcppArmadillo)]]
+//[[Rcpp::export]]
+
+Rcpp::List QR(mat Xr, int q ) {
+    arma::arma_rng::set_seed(42);
+    
+    int n = Xr.n_rows, k = Xr.n_cols;
+    arma::mat X(Xr.begin(), n, k, false);
+    //cout << "X" << X.n_rows << X.n_cols  << endl;
+
+    arma::mat G, Y, B;
+
+    G = arma::randn(q, n);
+    //cout << "G \n" << G.n_rows << "x" << G.n_cols  << endl;
+
+    Y = X * G;
+
+    arma::mat Q, R;
+    arma::qr(Q, R, Y);
+
+    return Rcpp::List::create(Rcpp::Named("Q")=Q, 
+                              Rcpp::Named("R")=R,
+                              Rcpp::Named("Y")=Y);
+    //return Rcpp::List::create(Rcpp::Named("Y") = Y);
+}
+```
+
+```{r}
+set.seed(42)
+mx <- matrix(1:2000, nrow = 1000, ncol = 20)
+qr <- QR(mx, 20)
+names(qr)
+length(qr[[1]])
+length(qr[[2]])
+length(qr[[3]])
+
+arma.qr <- qr[[1]]
+```
+
+```{r}
+set.seed(42)
+r.qr = qr.Q(qr(mx), complete=TRUE)
+identical(r.qr, arma.qr)
+```
+
+
