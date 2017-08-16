@@ -78,9 +78,13 @@ Other examples will have a description `benchmark` when performing a comparison 
 ## Benchmarks
 
 * `arma-classes-simple-array.Rmd`
+
 * `arma-cxxfunction-classes-kalman.Rmd`
+
 * `arma-engine-pass_by_ref_by_value.Rmd`
+
 * `arma-engine-pass_by_ref_by_value.Rmd`
+
 * `arma-engine-simulate_multivariate.Rmd`
 
 

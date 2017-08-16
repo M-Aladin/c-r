@@ -6,7 +6,7 @@ using namespace arma;
 //[[Rcpp::export]]
 
 
-mat cubeMeans(arma::cube X){
+mat cubeMeans(arma::cube X) {
     int nSlice = X.n_slices;
     int nCol = X.n_cols;
     int nRow = X.n_rows;
