@@ -1,8 +1,10 @@
 #include <RcppArmadillo.h>
+#include <progress.hpp>
+
 using namespace Rcpp; 
 using namespace arma;
 
-//[[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::depends(RcppArmadillo,RcppProgress)]]
 //[[Rcpp::export]]
 
 
@@ -14,6 +16,13 @@ mat cubeMeans(arma::cube X) {
     arma::vec Vtmp(nCol);
     arma::mat Mtmp(nRow, nCol);
     arma::mat Means(nCol, nSlice);
+    
+    // Initiate Progress Bar
+    Progress prog(niter, display_progress);
+    
+        // update Progress Bar
+        prog.increment(); 
+        
     
     for (int i = 0; i < nSlice; i++){
         Mtmp = X.slice(i);
