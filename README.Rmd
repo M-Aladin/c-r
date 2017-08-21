@@ -51,7 +51,6 @@ dyn.load(paste("../src/bessel", .Platform$dynlib.ext, sep = ""))  # load
 
 
 
-
 ## Comparison of R vs C++
 There is a notebook, `Kalman.Rmd`, that compares different implementations of R code vs a single C++ program. The example uses C++ classes.
 
@@ -80,6 +79,19 @@ Other examples will have a description `benchmark` when performing a comparison 
 * Keep always in mind the array/matrix/vector indices; in C and C++ the index starts at `0`
 
 * C code is called with the function .C()
+
+
+## Benchmarks
+
+* `arma-classes-simple-array.Rmd`
+
+* `arma-cxxfunction-classes-kalman.Rmd`
+
+* `arma-engine-pass_by_ref_by_value.Rmd`
+
+* `arma-engine-pass_by_ref_by_value.Rmd`
+
+* `arma-engine-simulate_multivariate.Rmd`
 
 
 
